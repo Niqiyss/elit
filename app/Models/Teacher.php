@@ -35,9 +35,6 @@ class Teacher extends Authenticatable
         'latest_age',
         'password',
         'role',
-        'resignation_request_date',
-        'resignation_request_reason',
-        'resignation_request_status',
     ];
 
     protected $hidden = [

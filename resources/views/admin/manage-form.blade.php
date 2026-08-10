@@ -170,7 +170,7 @@
 
                                 <td class="px-6 py-5 text-center">
 
-                                    <a href="#"
+                                    <a href="{{ route('admin.post.form') }}"
                                         class="inline-block bg-blue-700
                                                hover:bg-blue-800
                                                text-white px-5 py-2

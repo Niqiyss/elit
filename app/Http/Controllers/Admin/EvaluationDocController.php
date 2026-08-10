@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\EvaluationDoc;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Auth;
 
 class EvaluationDocController extends Controller
 {
@@ -42,14 +43,12 @@ class EvaluationDocController extends Controller
         );
 
 
-        // Store file
         $path = $file->store(
             'evaluation-documents',
             'public'
         );
 
 
-        // Determine file type
         $fileType = $extension === 'pdf'
             ? 'PDF'
             : 'EXCEL';
@@ -61,6 +60,9 @@ class EvaluationDocController extends Controller
             'file_name' => $originalName,
             'file_path' => $path,
             'file_type' => $fileType,
+
+            // Logged-in Admin
+            'staffid' => Auth::guard('admin')->id(),
         ]);
 
 

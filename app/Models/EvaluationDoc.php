@@ -19,5 +19,15 @@ class EvaluationDoc extends Model
         'file_path',
         'file_type',
         'uploaded_at',
+        'staffid',
     ];
+
+    public function admin()
+    {
+        return $this->belongsTo(
+            StaffEdu::class,
+            'staffid',
+            'staffid'
+        );
+    }
 }
