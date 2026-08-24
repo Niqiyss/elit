@@ -130,9 +130,9 @@
 
                                     <div class="flex items-center gap-4">
 
-                                        <div class="w-11 h-11 rounded-full bg-violet-100 flex items-center justify-center border-2 border-violet-500">
+                                        <div class="w-11 h-11 rounded-full bg-blue-100 flex items-center justify-center border-2 border-blue-500">
 
-                                            <span class="text-violet-700 font-bold text-sm">
+                                            <span class="text-blue-700 font-bold text-sm">
                                                 {{ strtoupper(substr($guru->gn_name, 0, 1)) }}
                                             </span>
 

@@ -20,6 +20,13 @@ use App\Http\Controllers\Admin\EvaluationDocController;
 use App\Http\Controllers\EvaluationDocDownloadController;
 use App\Http\Controllers\Admin\PostFormController;
 use App\Http\Controllers\PostObservationController;
+use App\Http\Controllers\Observer\ListEvaluateController;
+use App\Http\Controllers\Observer\ManageEvaluateController;
+use App\Http\Controllers\Admin\PreFormController;
+use App\Http\Controllers\Observer\PreObservationController;
+use App\Http\Controllers\Admin\AuditObservationController;
+use App\Http\Controllers\Admin\PdpcFormController;
+use App\Http\Controllers\PdpcObservationController;
 
 
 /*Home*/
@@ -36,12 +43,40 @@ Route::middleware('auth:admin')->prefix('admin')->group(function () {
     Route::get('/profile', [AdminProfileController::class, 'index'])->name('admin.profile');
     Route::put('/profile/password', [AdminProfileController::class, 'updatePassword'])->name('admin.profile.password');
 
+    Route::get('/audit-observation', [AuditObservationController::class, 'index'])->name('admin.audit.observation');
+
     Route::get('/manage-form', [ManageFormController::class, 'index'])->name('admin.manage.form');
     Route::post('/evaluation-doc', [EvaluationDocController::class, 'store'])->name('admin.evaluation.doc.store');
     Route::delete('/evaluation-doc/{doc_id}', [EvaluationDocController::class, 'destroy'])->name('admin.evaluation.doc.delete');
 
+    // PRE FORM
+    Route::get('/pre-form', [PreFormController::class, 'index'])->name('admin.pre.form');
+    Route::post('/pre-form', [PreFormController::class, 'storeForm'])->name('admin.pre.form.store');
+    Route::put('/pre-form/{formID}', [PreFormController::class, 'updateForm'])->name('admin.pre.form.update');
+
+    // PRE SECTION
+    Route::post('/pre-form/section', [PreFormController::class, 'storeSection'])->name('admin.pre.section.store');
+    Route::put('/pre-form/section/{sectionID}', [PreFormController::class, 'updateSection'])->name('admin.pre.section.update');
+    Route::delete('/pre-form/section/{sectionID}', [PreFormController::class, 'destroySection'])->name('admin.pre.section.delete');
+
+    // PRE CRITERIA
+    Route::post('/pre-form/criteria', [PreFormController::class, 'storeCriteria'])->name('admin.pre.criteria.store');
+    Route::put('/pre-form/criteria/{criteriaID}', [PreFormController::class, 'updateCriteria'])->name('admin.pre.criteria.update');
+    Route::delete('/pre-form/criteria/{criteriaID}', [PreFormController::class, 'destroyCriteria'])->name('admin.pre.criteria.delete');
+
+    // EXTERNAL FORM
+    Route::get('/pdpc-form', [PdpcFormController::class, 'index'])->name('admin.pdpc.form');
+    Route::post('/pdpc-form', [PdpcFormController::class, 'store'])->name('admin.pdpc.form.store');
+    Route::get('/pdpc-form/{pdpcForm}', [PdpcFormController::class, 'show'])->name('admin.pdpc.form.show');
+    Route::get('/pdpc-form/{pdpcForm}/edit', [PdpcFormController::class, 'edit'])->name('admin.pdpc.form.edit');
+    Route::put('/pdpc-form/{pdpcForm}', [PdpcFormController::class, 'update'])->name('admin.pdpc.form.update');
+    Route::delete('/pdpc-form/{pdpcForm}', [PdpcFormController::class, 'destroy'])->name('admin.pdpc.form.destroy');
+
     // POST FORM
     Route::get('/post-form', [PostFormController::class, 'index'])->name('admin.post.form');
+
+    Route::put('/post-form/sections/reorder', [PostFormController::class, 'reorderSections'])->name('admin.post.sections.reorder');
+    Route::put('/post-form/fields/reorder', [PostFormController::class, 'reorderFields'])->name('admin.post.fields.reorder');
 
     // FORM
     Route::post('/post-form', [PostFormController::class, 'storeForm'])->name('admin.post.form.store');
@@ -102,8 +137,30 @@ Route::middleware('auth:teacher')->prefix('observer')->group(function () {
     Route::get('/profile', [OBProfile::class, 'index'])->name('observer.profile');
     Route::put('/profile/password', [OBProfile::class, 'updatePassword'])->name('observer.profile.password');
     Route::get('/download-form', [EvaluationDocDownloadController::class, 'observer'])->name('observer.download.form');
+
+    // PRE OBSERVATION
+    Route::get('/pre-observation/{gn_id}', [PreObservationController::class, 'create'])->name('observer.pre.create');
+    Route::post('/pre-observation/{gn_id}', [PreObservationController::class, 'store'])->name('observer.pre.store');
+    Route::get('/pre-observation/{responseID}/edit', [PreObservationController::class, 'edit'])->name('observer.pre.edit');
+    Route::put('/pre-observation/{responseID}', [PreObservationController::class, 'update'])->name('observer.pre.update');
+    Route::get('/pre-observation/{responseID}/view', [PreObservationController::class, 'show'])->name('observer.pre.view');
+
+    // PDPC OBSERVATION
+    Route::get('/pdpc-observation/{gn_id}/create', [PdpcObservationController::class, 'create'])->name('observer.pdpc.create');
+    Route::post('/pdpc-observation/{gn_id}', [PdpcObservationController::class, 'store'])->name('observer.pdpc.store');
+    Route::get('/pdpc-observation/{responseID}/edit', [PdpcObservationController::class, 'edit'])->name('observer.pdpc.edit');
+    Route::put('/pdpc-observation/{responseID}', [PdpcObservationController::class, 'update'])->name('observer.pdpc.update');
+    Route::get('/pdpc-observation/{responseID}/view', [PdpcObservationController::class, 'show'])->name('observer.pdpc.view');
+
+    // POST / FEEDBACK OBSERVATION
     Route::get('/post-observation/{gn_id}', [PostObservationController::class, 'create'])->name('observer.post.create');
     Route::post('/post-observation/{gn_id}', [PostObservationController::class, 'store'])->name('observer.post.store');
+    Route::get('/post-observation/{responseID}/edit', [PostObservationController::class, 'edit'])->name('observer.post.edit');
+    Route::put('/post-observation/{responseID}', [PostObservationController::class, 'update'])->name('observer.post.update');
+    Route::get('/post-observation/{responseID}/view', [PostObservationController::class, 'show'])->name('observer.post.view');
+
+    Route::get('/list-evaluate', [ListEvaluateController::class, 'index'])->name('observer.list.evaluate');
+    Route::get('/manage/{gn_id}', [ManageEvaluateController::class, 'index'])->name('observer.manage');
 });
 
 
@@ -114,8 +171,23 @@ Route::middleware('auth:teacher')->prefix('external-observer')->group(function (
     Route::get('/profile', [EXTProfile::class, 'index'])->name('external.profile');
     Route::put('/profile/password', [EXTProfile::class, 'updatePassword'])->name('external.profile.password');
     Route::get('/download-form', [EvaluationDocDownloadController::class, 'external'])->name('external.download.form');
+
+    // Feedback Observation Form
     Route::get('/post-observation/{gn_id}', [PostObservationController::class, 'create'])->name('external.post.create');
     Route::post('/post-observation/{gn_id}', [PostObservationController::class, 'store'])->name('external.post.store');
+    Route::get('/post-observation/{responseID}/edit', [PostObservationController::class, 'edit'])->name('external.post.edit');
+    Route::put('/post-observation/{responseID}', [PostObservationController::class, 'update'])->name('external.post.update');
+    Route::get('/post-observation/{responseID}/view', [PostObservationController::class, 'show'])->name('external.post.view');
+
+    // PDPC observation
+    Route::get('/pdpc-observation/{gn_id}/create', [PdpcObservationController::class, 'create'])->name('external.pdpc.create');
+    Route::post('/pdpc-observation/{gn_id}', [PdpcObservationController::class, 'store'])->name('external.pdpc.store');
+    Route::get('/pdpc-observation/{responseID}/edit', [PdpcObservationController::class, 'edit'])->name('external.pdpc.edit');
+    Route::put('/pdpc-observation/{responseID}', [PdpcObservationController::class, 'update'])->name('external.pdpc.update');
+    Route::get('/pdpc-observation/{responseID}/view', [PdpcObservationController::class, 'show'])->name('external.pdpc.view');
+
+    Route::get('/list-evaluate', [ListEvaluateController::class, 'index'])->name('external.list.evaluate');
+    Route::get('/manage/{gn_id}', [ManageEvaluateController::class, 'index'])->name('external.manage');
 });
 
 

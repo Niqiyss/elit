@@ -21,9 +21,9 @@
                     Dashboard
                 </a>
 
-                <a href="#"
+                <a href="{{ route('external.list.evaluate') }}"
                     class="text-lg font-semibold text-gray-700 hover:text-purple-700 transition">
-                    List Evaluate
+                List Evaluate
                 </a>
 
                 <a href="{{ route('external.download.form') }}"

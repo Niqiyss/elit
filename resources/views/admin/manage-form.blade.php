@@ -6,11 +6,11 @@
         </h2>
     </x-slot>
 
-
     <div class="py-10 bg-gray-100 min-h-screen">
 
         <div class="max-w-7xl mx-auto px-6">
 
+            {{-- Header --}}
             <div class="relative bg-gradient-to-br from-slate-900 via-violet-950 to-purple-900
                         rounded-3xl p-8 shadow-xl overflow-hidden mb-8">
 
@@ -32,6 +32,8 @@
 
             </div>
 
+
+            {{-- Observation forms --}}
             <div class="bg-white rounded-3xl shadow-lg overflow-hidden">
 
                 <div class="px-8 py-6 border-b border-gray-100">
@@ -55,7 +57,7 @@
 
                             <tr>
 
-                                <th class="px-6 py-4 text-left font-semibold">
+                                <th class="px-6 py-4 text-left font-semibold w-24">
                                     No
                                 </th>
 
@@ -63,11 +65,7 @@
                                     Form
                                 </th>
 
-                                <th class="px-6 py-4 text-left font-semibold">
-                                    Description
-                                </th>
-
-                                <th class="px-6 py-4 text-center font-semibold">
+                                <th class="px-6 py-4 text-center font-semibold w-48">
                                     Action
                                 </th>
 
@@ -75,8 +73,10 @@
 
                         </thead>
 
+
                         <tbody class="divide-y divide-gray-100">
 
+                            {{-- Pre observation form --}}
                             <tr class="hover:bg-violet-50/50 transition">
 
                                 <td class="px-6 py-5 text-gray-600">
@@ -86,34 +86,32 @@
                                 <td class="px-6 py-5">
 
                                     <p class="font-bold text-gray-800">
-                                        Pre Observation Form
+                                        {{ $preForm?->form_name ?? 'Pre Observation Form' }}
                                     </p>
 
                                 </td>
 
-                                <td class="px-6 py-5 text-gray-600">
-                                    Form used for pre stage evaluation
-                                </td>
-
                                 <td class="px-6 py-5 text-center">
 
-                                    <button
-                                        type="button"
-                                        disabled
-                                        class="bg-gray-300 text-gray-500
+                                    <a
+                                        href="{{ route('admin.pre.form') }}"
+                                        class="inline-block
+                                               bg-blue-700 hover:bg-blue-800
+                                               text-white
                                                px-5 py-2 rounded-xl
                                                font-semibold text-sm
-                                               cursor-not-allowed">
+                                               shadow transition">
 
                                         Manage
 
-                                    </button>
+                                    </a>
 
                                 </td>
 
                             </tr>
 
 
+                            {{-- External observation form --}}
                             <tr class="hover:bg-violet-50/50 transition">
 
                                 <td class="px-6 py-5 text-gray-600">
@@ -128,28 +126,19 @@
 
                                 </td>
 
-                                <td class="px-6 py-5 text-gray-600">
-                                    Form used for pre and post stage evaluation
-                                </td>
-
                                 <td class="px-6 py-5 text-center">
-
-                                    <button
-                                        type="button"
-                                        disabled
-                                        class="bg-gray-300 text-gray-500
-                                               px-5 py-2 rounded-xl
-                                               font-semibold text-sm
-                                               cursor-not-allowed">
-
+                                    <a href="{{ route('admin.pdpc.form') }}"
+                                        class="inline-flex items-center justify-center px-5 py-2
+                                        bg-blue-700 hover:bg-blue-800
+                                        text-white font-semibold rounded-xl transition">
                                         Manage
-
-                                    </button>
-
+                                    </a>
                                 </td>
 
                             </tr>
 
+
+                            {{-- Feedback observation form --}}
                             <tr class="hover:bg-violet-50/50 transition">
 
                                 <td class="px-6 py-5 text-gray-600">
@@ -159,23 +148,21 @@
                                 <td class="px-6 py-5">
 
                                     <p class="font-bold text-gray-800">
-                                        Feedback Observation Form
+                                        {{ $postForm?->form_name ?? 'Feedback Observation Form' }}
                                     </p>
 
                                 </td>
 
-                                <td class="px-6 py-5 text-gray-600">
-                                    Form used for post stage evaluation
-                                </td>
-
                                 <td class="px-6 py-5 text-center">
 
-                                    <a href="{{ route('admin.post.form') }}"
-                                        class="inline-block bg-blue-700
-                                               hover:bg-blue-800
-                                               text-white px-5 py-2
-                                               rounded-xl font-semibold
-                                               text-sm shadow transition">
+                                    <a
+                                        href="{{ route('admin.post.form') }}"
+                                        class="inline-block
+                                               bg-blue-700 hover:bg-blue-800
+                                               text-white
+                                               px-5 py-2 rounded-xl
+                                               font-semibold text-sm
+                                               shadow transition">
 
                                         Manage
 
@@ -194,20 +181,23 @@
             </div>
 
 
+            {{-- Upload evaluation form --}}
             <div class="bg-white rounded-3xl shadow-lg overflow-hidden mt-8">
 
                 <div class="px-8 py-6 border-b border-gray-100">
 
                     <h2 class="text-xl font-bold text-gray-800">
-                        Evaluation Documents
+                        Upload Evaluation Form
                     </h2>
 
                     <p class="text-sm text-gray-400 mt-1">
-                        Upload PDF or Excel forms for observers to download
+                        Upload PDF or Excel forms for observer and external observer to download
                     </p>
 
                 </div>
 
+
+                {{-- Upload form --}}
                 <div class="p-8 border-b border-gray-100">
 
                     <form
@@ -224,7 +214,9 @@
                                 <label
                                     for="form_name"
                                     class="block text-gray-700 text-sm font-semibold mb-2">
+
                                     Form Name
+
                                 </label>
 
                                 <input
@@ -239,19 +231,24 @@
                                            focus:ring-purple-500">
 
                                 @error('form_name')
+
                                 <p class="text-red-500 text-sm mt-1">
                                     {{ $message }}
                                 </p>
+
                                 @enderror
 
                             </div>
+
 
                             <div>
 
                                 <label
                                     for="file"
                                     class="block text-gray-700 text-sm font-semibold mb-2">
+
                                     Upload File
+
                                 </label>
 
                                 <input
@@ -269,19 +266,24 @@
                                 </p>
 
                                 @error('file')
+
                                 <p class="text-red-500 text-sm mt-1">
                                     {{ $message }}
                                 </p>
+
                                 @enderror
 
                             </div>
+
 
                             <div class="md:col-span-2">
 
                                 <label
                                     for="description"
                                     class="block text-gray-700 text-sm font-semibold mb-2">
+
                                     Description
+
                                 </label>
 
                                 <input
@@ -295,9 +297,11 @@
                                            focus:ring-purple-500">
 
                                 @error('description')
+
                                 <p class="text-red-500 text-sm mt-1">
                                     {{ $message }}
                                 </p>
+
                                 @enderror
 
                             </div>
@@ -310,11 +314,11 @@
                             <button
                                 type="submit"
                                 class="inline-flex items-center gap-2
-                                px-5 py-2
-                                bg-blue-700
-                                hover:bg-blue-800
-                                text-white font-semibold text-sm
-                                rounded-xl shadow transition">
+                                       px-5 py-2
+                                       bg-blue-700
+                                       hover:bg-blue-800
+                                       text-white font-semibold text-sm
+                                       rounded-xl shadow transition">
 
                                 <svg
                                     xmlns="http://www.w3.org/2000/svg"
@@ -335,7 +339,6 @@
 
                             </button>
 
-
                         </div>
 
                     </form>
@@ -343,6 +346,7 @@
                 </div>
 
 
+                {{-- Uploaded evaluation forms --}}
                 <div class="overflow-x-auto">
 
                     <table class="w-full text-sm">
@@ -382,13 +386,11 @@
 
                             <tr class="hover:bg-violet-50/50 transition">
 
-                                {{-- NUMBER --}}
                                 <td class="px-6 py-5 text-gray-600">
                                     {{ $loop->iteration }}
                                 </td>
 
 
-                                {{-- FORM NAME --}}
                                 <td class="px-6 py-5">
 
                                     <p class="font-bold text-gray-800">
@@ -429,6 +431,7 @@
 
                                 </td>
 
+
                                 <td class="px-6 py-5 text-center">
 
                                     <form
@@ -441,19 +444,18 @@
                                         @csrf
                                         @method('DELETE')
 
-
                                         <button
                                             type="submit"
                                             onclick="return confirm('Delete this file?')"
                                             title="Delete"
                                             class="inline-flex items-center justify-center
-                                            w-10 h-10
-                                            bg-red-500
-                                            hover:bg-red-600
-                                            text-white
-                                            rounded-xl
-                                            shadow
-                                            transition">
+                                                       w-10 h-10
+                                                       bg-red-500
+                                                       hover:bg-red-600
+                                                       text-white
+                                                       rounded-xl
+                                                       shadow
+                                                       transition">
 
                                             <svg
                                                 xmlns="http://www.w3.org/2000/svg"

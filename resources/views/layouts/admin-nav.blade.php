@@ -17,7 +17,7 @@
                     Dashboard
                 </a>
 
-                <a href="#"
+                <a href="{{ route('admin.audit.observation') }}"
                     class="text-lg font-semibold text-gray-700 hover:text-purple-700 transition">
                     Audit
                 </a>
