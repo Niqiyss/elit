@@ -6,7 +6,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>{{ $form->form_name }}_{{ $guru->gn_name }}_{{ $response->observation_date ? \Carbon\Carbon::parse($response->observation_date)->format('d-m-Y') : 'No Date' }}</title>
+    <title>
+        {{ $form->form_name }}_{{ $guru->gn_name }}_{{ $response->observation_date ? $response->observation_date->format('d-m-Y') : 'No Date' }}
+    </title>
 
     <style>
         * {
@@ -21,7 +23,6 @@
             font-size: 11px;
         }
 
-        /* Toolbar */
         .toolbar {
             position: sticky;
             top: 0;
@@ -59,7 +60,6 @@
             color: #334155;
         }
 
-        /* Paper */
         .paper {
             width: 210mm;
             margin: 18px auto;
@@ -74,7 +74,6 @@
             background: white;
         }
 
-        /* Header */
         .report-header {
             margin: 0 0 14px;
             text-align: center;
@@ -92,7 +91,6 @@
             font-weight: 700;
         }
 
-        /* Teacher information */
         .meta-table {
             width: 100%;
             margin-bottom: 12px;
@@ -118,7 +116,6 @@
             border-bottom: 1px solid #111;
         }
 
-        /* Evaluation table */
         .score-table {
             width: 100%;
             border-collapse: collapse;
@@ -172,7 +169,6 @@
             line-height: 1.4;
         }
 
-        /* Score */
         .score-grid {
             display: grid;
             grid-template-columns: repeat(5, 1fr);
@@ -194,7 +190,6 @@
             font-weight: 700;
         }
 
-        /* Summary */
         .summary-row td {
             vertical-align: middle;
             font-weight: 700;
@@ -204,13 +199,11 @@
             text-align: right;
         }
 
-        /* Page 2 */
         .page-two {
             page-break-before: always;
             break-before: page;
         }
 
-        /* Other comment */
         .other-comment {
             page-break-inside: avoid;
             break-inside: avoid;
@@ -229,7 +222,6 @@
             white-space: pre-line;
         }
 
-        /* Achievement */
         .achievement-section {
             margin-top: 22px;
             page-break-inside: avoid;
@@ -272,7 +264,6 @@
             font-weight: 700;
         }
 
-        /* Signature */
         .signature-section {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -337,7 +328,6 @@
                 page-break-before: always;
                 break-before: page;
             }
-
         }
     </style>
 
@@ -348,22 +338,15 @@
     {{-- Toolbar --}}
     <div class="toolbar">
 
-        <strong>
-            PRE Observation Result
-        </strong>
+        <strong>PRE Observation Result</strong>
 
         <div class="toolbar-actions">
 
-            <a
-                href="{{ route('observer.manage', $response->gn_id) }}"
-                class="button secondary">
+            <a href="{{ route('principal.result.show', $guru->gn_id) }}" class="button secondary">
                 Back
             </a>
 
-            <button
-                type="button"
-                class="button"
-                onclick="window.print()">
+            <button type="button" class="button" onclick="window.print()">
                 Print / Save PDF
             </button>
 
@@ -377,16 +360,11 @@
         {{-- PAGE 1 --}}
         <section class="page">
 
-            {{-- Header --}}
             <header class="report-header">
 
-                <h1>
-                    PUSAT PENDIDIKAN AL AMIN BERHAD (PPAAB)
-                </h1>
+                <h1>PUSAT PENDIDIKAN AL AMIN BERHAD (PPAAB)</h1>
 
-                <h2>
-                    {{ $form->form_name }}
-                </h2>
+                <h2>{{ $form->form_name }}</h2>
 
             </header>
 
@@ -395,80 +373,33 @@
             <table class="meta-table">
 
                 <tr>
-
-                    <td class="meta-label">
-                        NAMA GURU
-                    </td>
-
-                    <td class="meta-colon">
-                        :
-                    </td>
-
-                    <td class="meta-value">
-                        {{ $guru->gn_name }}
-                    </td>
-
+                    <td class="meta-label">NAMA GURU</td>
+                    <td class="meta-colon">:</td>
+                    <td class="meta-value">{{ $guru->gn_name }}</td>
                 </tr>
 
                 <tr>
-
-                    <td class="meta-label">
-                        MATA PELAJARAN & KELAS
-                    </td>
-
-                    <td class="meta-colon">
-                        :
-                    </td>
-
+                    <td class="meta-label">MATA PELAJARAN & KELAS</td>
+                    <td class="meta-colon">:</td>
                     <td class="meta-value">
-                        {{ $response->subject_name ?? '-' }}
-                        /
-                        {{ $response->class_name ?? '-' }}
+                        {{ $response->subject_name ?? '-' }} / {{ $response->class_name ?? '-' }}
                     </td>
-
                 </tr>
 
                 <tr>
-
-                    <td class="meta-label">
-                        HARI & TARIKH
-                    </td>
-
-                    <td class="meta-colon">
-                        :
-                    </td>
-
+                    <td class="meta-label">HARI & TARIKH</td>
+                    <td class="meta-colon">:</td>
                     <td class="meta-value">
-
-                        {{
-                            $response->observation_date
-                                ? \Carbon\Carbon::parse($response->observation_date)->format('l, d/m/Y')
-                                : '-'
-                        }}
-
+                        {{ $response->observation_date ? \Carbon\Carbon::parse($response->observation_date)->format('l, d/m/Y') : '-' }}
                     </td>
-
                 </tr>
 
                 <tr>
-
-                    <td class="meta-label">
-                        PENYELIA
-                    </td>
-
-                    <td class="meta-colon">
-                        :
-                    </td>
-
+                    <td class="meta-label">PENYELIA</td>
+                    <td class="meta-colon">:</td>
                     <td class="meta-value">
-
-                        {{
-                            $response->observer?->teacher?->teacher_name
-                            ?? '-'
-                        }}
-
+                        {{ $response->observer?->teacher?->teacher_name ?? '-' }}
                     </td>
-
                 </tr>
 
             </table>
@@ -480,23 +411,10 @@
                 <thead>
 
                     <tr>
-
-                        <th class="bil-col">
-                            BIL
-                        </th>
-
-                        <th class="item-col">
-                            PERKARA
-                        </th>
-
-                        <th class="score-col">
-                            SKOR
-                        </th>
-
-                        <th class="comment-col">
-                            ULASAN
-                        </th>
-
+                        <th class="bil-col">BIL</th>
+                        <th class="item-col">PERKARA</th>
+                        <th class="score-col">SKOR</th>
+                        <th class="comment-col">ULASAN</th>
                     </tr>
 
                 </thead>
@@ -509,13 +427,10 @@
 
                     <tr>
 
-                        {{-- Number --}}
                         <td class="bil-col">
                             {{ $loop->iteration }}
                         </td>
 
-
-                        {{-- Section and Criteria --}}
                         <td class="item-col">
 
                             <div class="section-title">
@@ -525,19 +440,14 @@
                             @foreach($section->criteria as $criteria)
 
                             <div class="criteria-line">
-
                                 {{ chr(96 + $loop->iteration) }}.
-
                                 {{ $criteria->criteria_label }}
-
                             </div>
 
                             @endforeach
 
                         </td>
 
-
-                        {{-- Score --}}
                         <td class="score-col">
 
                             @foreach($section->criteria as $criteria)
@@ -562,15 +472,8 @@
 
                         </td>
 
-
-                        {{-- Comment --}}
                         <td class="comment-col">
-
-                            {{
-                                        $sectionComments[$section->sectionID]
-                                        ?? '-'
-                                    }}
-
+                            {{ $sectionComments[$section->sectionID] ?? '-' }}
                         </td>
 
                     </tr>
@@ -581,15 +484,11 @@
 
 
                     @php
-                    $criteriaCount = $form->sections->sum(
-                    fn($section) => $section->criteria->count()
-                    );
-
+                    $criteriaCount = $form->sections->sum(fn($section) => $section->criteria->count());
                     $maximumScore = $criteriaCount * $form->max_score;
                     @endphp
 
 
-                    {{-- Total --}}
                     <tr class="summary-row">
 
                         <td></td>
@@ -599,14 +498,11 @@
                         </td>
 
                         <td class="score-col">
-                            {{ $response->total_score }}
-                            /
-                            {{ $maximumScore }}
+                            {{ $response->total_score }} / {{ $maximumScore }}
                         </td>
 
                         <td>
-                            PERATUS :
-                            {{ number_format((float) $response->percentage, 2) }}%
+                            PERATUS : {{ number_format((float) $response->percentage, 2) }}%
                         </td>
 
                     </tr>
@@ -621,7 +517,6 @@
         {{-- PAGE 2 --}}
         <section class="page page-two">
 
-            {{-- Other Comment --}}
             <section class="other-comment">
 
                 <div class="other-comment-title">
@@ -647,27 +542,11 @@
                     <thead>
 
                         <tr>
-
-                            <th>
-                                LEMAH
-                            </th>
-
-                            <th>
-                                MEMUASKAN
-                            </th>
-
-                            <th>
-                                BAIK
-                            </th>
-
-                            <th>
-                                SANGAT BAIK
-                            </th>
-
-                            <th>
-                                CEMERLANG
-                            </th>
-
+                            <th>LEMAH</th>
+                            <th>MEMUASKAN</th>
+                            <th>BAIK</th>
+                            <th>SANGAT BAIK</th>
+                            <th>CEMERLANG</th>
                         </tr>
 
                     </thead>
@@ -701,43 +580,23 @@
                         <tr>
 
                             <td class="check">
-
-                                @if($response->achievement_level === 'Weak')
-                                ✓
-                                @endif
-
+                                @if($response->achievement_level === 'Weak') ✓ @endif
                             </td>
 
                             <td class="check">
-
-                                @if($response->achievement_level === 'Satisfactory')
-                                ✓
-                                @endif
-
+                                @if($response->achievement_level === 'Satisfactory') ✓ @endif
                             </td>
 
                             <td class="check">
-
-                                @if($response->achievement_level === 'Good')
-                                ✓
-                                @endif
-
+                                @if($response->achievement_level === 'Good') ✓ @endif
                             </td>
 
                             <td class="check">
-
-                                @if($response->achievement_level === 'Very Good')
-                                ✓
-                                @endif
-
+                                @if($response->achievement_level === 'Very Good') ✓ @endif
                             </td>
 
                             <td class="check">
-
-                                @if($response->achievement_level === 'Excellent')
-                                ✓
-                                @endif
-
+                                @if($response->achievement_level === 'Excellent') ✓ @endif
                             </td>
 
                         </tr>
@@ -759,16 +618,10 @@
                     </div>
 
                     <div class="signature-line">
-
-                        ( {{
-                            $response->observer?->teacher?->teacher_name
-                            ?? '-'
-                        }} )
-
+                        ( {{ $response->observer?->teacher?->teacher_name ?? '-' }} )
                     </div>
 
                 </div>
-
 
                 <div class="signature-box">
 

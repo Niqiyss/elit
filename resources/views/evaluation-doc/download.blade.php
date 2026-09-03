@@ -20,11 +20,11 @@
                 <div class="relative z-10">
 
                     <h1 class="text-3xl font-extrabold text-white">
-                        Download Evaluation Forms
+                        Download Observation Forms
                     </h1>
 
                     <p class="text-violet-300 mt-2">
-                        You can download the evaluation forms below
+                        You can download the observation forms below
                     </p>
 
                 </div>
@@ -36,11 +36,11 @@
                 <div class="px-8 py-6 border-b border-gray-100">
 
                     <h2 class="text-xl font-bold text-gray-800">
-                        Evaluation Forms
+                        Observation Forms
                     </h2>
 
                     <p class="text-sm text-gray-400 mt-1">
-                        Click Download to obtain the required evaluation form
+                        Download the observation form
                     </p>
 
                 </div>
@@ -50,7 +50,7 @@
 
                     <table class="w-full text-sm">
 
-                        <thead class="bg-slate-50 text-gray-500 uppercase text-xs">
+                        <thead class="bg-slate-50 text-gray-900 uppercase text-xs">
 
                             <tr>
 

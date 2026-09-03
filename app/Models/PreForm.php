@@ -12,7 +12,10 @@ class PreForm extends Model
 
     protected $fillable = [
         'form_name',
+        'version',
         'instruction',
+        'min_score',
+        'max_score',
         'status',
         'staffid',
     ];

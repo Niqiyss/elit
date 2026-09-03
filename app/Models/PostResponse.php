@@ -14,6 +14,7 @@ class PostResponse extends Model
 
     protected $fillable = [
         'observation_stage',
+        'attempt_no',
         'class_name',
         'subject_name',
         'observation_date',

@@ -15,7 +15,6 @@ use Illuminate\Pagination\LengthAwarePaginator;
 
 class ListEvaluateController extends Controller
 {
-    // Show evaluation list
     public function index(Request $request)
     {
         $teacher = Auth::guard('teacher')->user();
@@ -30,13 +29,11 @@ class ListEvaluateController extends Controller
             $teacher->teacherID
         )->first();
 
-
         abort_if(
             !$observer && !$externalObserver,
             403,
             'You are not registered as an observer.'
         );
-
 
         $isObserver = !is_null($observer);
 
@@ -45,7 +42,6 @@ class ListEvaluateController extends Controller
             'active'
         );
 
-
         if (
             $isObserver &&
             $status === 'repeat'
@@ -53,18 +49,12 @@ class ListEvaluateController extends Controller
             $status = 'active';
         }
 
-
         $listRoute = $isObserver
             ? 'observer.list.evaluate'
             : 'external.list.evaluate';
 
 
-        /*
-        |--------------------------------------------------------------------------
-        | Get assignments
-        |--------------------------------------------------------------------------
-        */
-
+        // Get assignments
         $query = DB::table('observer_assignment')
             ->join(
                 'guru_new',
@@ -84,135 +74,61 @@ class ListEvaluateController extends Controller
                 'school.school_name'
             );
 
-
         if ($isObserver) {
-
             $query->where(
                 'observer_assignment.observer_id',
                 $observer->observer_id
             );
-
         } else {
-
             $query->where(
                 'observer_assignment.external_observer_id',
                 $externalObserver->external_observer_id
             );
         }
 
-
         $allAssignments = $query
-            ->orderByDesc(
-                'observer_assignment.assigned_date'
-            )
+            ->orderByDesc('observer_assignment.assigned_date')
             ->get();
 
 
-        /*
-        |--------------------------------------------------------------------------
-        | Check submitted forms
-        |--------------------------------------------------------------------------
-        */
-
+        // Check form status
         foreach ($allAssignments as $assignment) {
 
             $gnId = $assignment->gn_id;
 
 
-            /*
-            |--------------------------------------------------------------------------
-            | NORMAL OBSERVER
-            |--------------------------------------------------------------------------
-            |
-            | 1. PRE Observation Form
-            | 2. PDPC Observation Form
-            | 3. Feedback Observation Form
-            |
-            */
-
+            // Normal observer
             if ($isObserver) {
 
-                /*
-                | PRE FORM
-                */
-
-                $preResponse = PreResponse::where(
-                    'gn_id',
-                    $gnId
-                )
-                    ->where(
-                        'observation_stage',
-                        'PRE'
-                    )
-                    ->where(
-                        'observer_id',
-                        $observer->observer_id
-                    )
+                $preResponse = PreResponse::where('gn_id', $gnId)
+                    ->where('observation_stage', 'PRE')
+                    ->where('observer_id', $observer->observer_id)
                     ->latest('responseID')
                     ->first();
-
 
                 $assignment->pre_status =
-                    $this->getFormStatus(
-                        $preResponse
-                    );
+                    $this->getFormStatus($preResponse);
 
 
-                /*
-                | PDPC FORM - POST
-                */
-
-                $pdpcResponse = PdpcResponse::where(
-                    'gn_id',
-                    $gnId
-                )
-                    ->where(
-                        'observation_stage',
-                        'POST'
-                    )
-                    ->where(
-                        'observer_id',
-                        $observer->observer_id
-                    )
+                $pdpcResponse = PdpcResponse::where('gn_id', $gnId)
+                    ->where('observation_stage', 'POST')
+                    ->where('observer_id', $observer->observer_id)
                     ->latest('responseID')
                     ->first();
-
 
                 $assignment->pdpc_status =
-                    $this->getFormStatus(
-                        $pdpcResponse
-                    );
+                    $this->getFormStatus($pdpcResponse);
 
 
-                /*
-                | FEEDBACK FORM - POST
-                */
-
-                $feedbackResponse = PostResponse::where(
-                    'gn_id',
-                    $gnId
-                )
-                    ->where(
-                        'observation_stage',
-                        'POST'
-                    )
-                    ->where(
-                        'observer_id',
-                        $observer->observer_id
-                    )
+                $feedbackResponse = PostResponse::where('gn_id', $gnId)
+                    ->where('observation_stage', 'POST')
+                    ->where('observer_id', $observer->observer_id)
                     ->latest('responseID')
                     ->first();
 
-
                 $assignment->feedback_status =
-                    $this->getFormStatus(
-                        $feedbackResponse
-                    );
+                    $this->getFormStatus($feedbackResponse);
 
-
-                /*
-                | Count submitted forms
-                */
 
                 $assignment->completed_count =
                     ($assignment->pre_status === 'Completed' ? 1 : 0)
@@ -221,9 +137,7 @@ class ListEvaluateController extends Controller
                     +
                     ($assignment->feedback_status === 'Completed' ? 1 : 0);
 
-
                 $assignment->total_forms = 3;
-
 
                 $assignment->has_draft =
                     $assignment->pre_status === 'Draft'
@@ -232,182 +146,156 @@ class ListEvaluateController extends Controller
                     ||
                     $assignment->feedback_status === 'Draft';
 
-
                 $assignment->is_repeat = false;
-
+                $assignment->attempt_no = null;
 
                 $assignment->is_fully_completed =
                     $assignment->completed_count ===
                     $assignment->total_forms;
 
-
                 continue;
             }
 
 
-            /*
-            |--------------------------------------------------------------------------
-            | EXTERNAL OBSERVER
-            |--------------------------------------------------------------------------
-            |
-            | 1. PDPC Observation Form
-            | 2. Feedback Observation Form
-            |
-            */
-
-
-            /*
-            | Current evaluator PDPC draft
-            */
-
-            $pdpcDraft = PdpcResponse::where(
-                'gn_id',
-                $gnId
-            )
-                ->where(
-                    'observation_stage',
-                    'EXTERNAL'
-                )
+            // Get latest External PDPC by current external observer.
+            $currentOwnPdpc = PdpcResponse::where('gn_id', $gnId)
+                ->where('observation_stage', 'EXTERNAL')
                 ->where(
                     'external_observer_id',
                     $externalObserver->external_observer_id
-                )
-                ->where(
-                    'status',
-                    'Draft'
-                )
-                ->latest('responseID')
-                ->first();
-
-
-            /*
-            | Latest submitted PDPC attempt
-            |
-            | Not restricted to current external observer
-            | because repeat can be assigned to another observer.
-            */
-
-            $latestPdpcSubmitted = PdpcResponse::where(
-                'gn_id',
-                $gnId
-            )
-                ->where(
-                    'observation_stage',
-                    'EXTERNAL'
-                )
-                ->where(
-                    'status',
-                    'Submitted'
                 )
                 ->orderByDesc('attempt_no')
                 ->orderByDesc('responseID')
                 ->first();
 
 
-            if ($pdpcDraft) {
-
-                $assignment->pdpc_status =
-                    'Draft';
-
-            } elseif ($latestPdpcSubmitted) {
-
-                $assignment->pdpc_status =
-                    'Completed';
-
-            } else {
-
-                $assignment->pdpc_status =
-                    'Pending';
-            }
-
-
-            /*
-            | Feedback Form
-            */
-
-            $feedbackResponse = PostResponse::where(
-                'gn_id',
-                $gnId
-            )
-                ->where(
-                    'observation_stage',
-                    'EXTERNAL'
-                )
+            // Get latest External Feedback by current external observer.
+            $currentOwnFeedback = PostResponse::where('gn_id', $gnId)
+                ->where('observation_stage', 'EXTERNAL')
                 ->where(
                     'external_observer_id',
                     $externalObserver->external_observer_id
+                )
+                ->orderByDesc('attempt_no')
+                ->orderByDesc('responseID')
+                ->first();
+
+
+            // Get latest submitted External PDPC across all external observers.
+            $latestPdpcSubmitted = PdpcResponse::where('gn_id', $gnId)
+                ->where('observation_stage', 'EXTERNAL')
+                ->where('status', 'Submitted')
+                ->orderByDesc('attempt_no')
+                ->orderByDesc('responseID')
+                ->first();
+
+
+            // Keep current observer attempt if they already started one.
+            if ($currentOwnPdpc || $currentOwnFeedback) {
+
+                $currentAttemptNo = max(
+                    $currentOwnPdpc?->attempt_no ?? 0,
+                    $currentOwnFeedback?->attempt_no ?? 0
+                );
+            } else {
+
+                // New external observer continues after latest submitted attempt.
+                $currentAttemptNo =
+                    ($latestPdpcSubmitted?->attempt_no ?? 0) + 1;
+            }
+
+
+            $assignment->attempt_no =
+                $currentAttemptNo;
+
+
+            // Get PDPC for current attempt
+            $currentPdpcResponse = PdpcResponse::where('gn_id', $gnId)
+                ->where('observation_stage', 'EXTERNAL')
+                ->where(
+                    'external_observer_id',
+                    $externalObserver->external_observer_id
+                )
+                ->where(
+                    'attempt_no',
+                    $currentAttemptNo
                 )
                 ->latest('responseID')
                 ->first();
 
 
-            $assignment->feedback_status =
+            // Get Feedback for current attempt
+            $currentFeedbackResponse = PostResponse::where('gn_id', $gnId)
+                ->where('observation_stage', 'EXTERNAL')
+                ->where(
+                    'external_observer_id',
+                    $externalObserver->external_observer_id
+                )
+                ->where(
+                    'attempt_no',
+                    $currentAttemptNo
+                )
+                ->latest('responseID')
+                ->first();
+
+
+            // PDPC status
+            $assignment->pdpc_status =
                 $this->getFormStatus(
-                    $feedbackResponse
+                    $currentPdpcResponse
                 );
 
 
-            /*
-            | PDPC result
-            */
+            // Feedback status
+            $assignment->feedback_status =
+                $this->getFormStatus(
+                    $currentFeedbackResponse
+                );
 
+
+            // Latest PDPC result
             $assignment->external_result =
                 $latestPdpcSubmitted?->result;
 
 
-            /*
-            | Repeat means latest submitted PDPC
-            | result is REPEAT.
-            */
-
+            // Repeat required
             $assignment->is_repeat =
                 $latestPdpcSubmitted
                 &&
                 $latestPdpcSubmitted->result === 'REPEAT';
 
 
-            /*
-            | Count actual submitted forms
-            */
-
+            // Completion count
             $assignment->completed_count =
                 ($assignment->pdpc_status === 'Completed' ? 1 : 0)
                 +
                 ($assignment->feedback_status === 'Completed' ? 1 : 0);
 
-
             $assignment->total_forms = 2;
 
 
+            // Draft exists
             $assignment->has_draft =
                 $assignment->pdpc_status === 'Draft'
                 ||
                 $assignment->feedback_status === 'Draft';
 
 
-            /*
-            | External completed:
-            |
-            | - PDPC submitted
-            | - Feedback submitted
-            | - PDPC PASS
-            */
-
+            // Fully completed
             $assignment->is_fully_completed =
-                $assignment->completed_count === 2
+                $currentPdpcResponse
                 &&
-                $latestPdpcSubmitted
+                $currentPdpcResponse->status === 'Submitted'
                 &&
-                $latestPdpcSubmitted->result === 'PASS';
+                $currentPdpcResponse->result === 'PASS'
+                &&
+                $currentFeedbackResponse
+                &&
+                $currentFeedbackResponse->status === 'Submitted';
         }
 
 
-        /*
-        |--------------------------------------------------------------------------
-        | Filter
-        |--------------------------------------------------------------------------
-        */
-
+        // Filter
         if ($status === 'completed') {
 
             $filtered = $allAssignments
@@ -416,7 +304,6 @@ class ListEvaluateController extends Controller
                     $assignment->is_fully_completed
                 )
                 ->values();
-
         } elseif (
             !$isObserver &&
             $status === 'repeat'
@@ -428,7 +315,6 @@ class ListEvaluateController extends Controller
                     $assignment->is_repeat
                 )
                 ->values();
-
         } else {
 
             $filtered = $allAssignments
@@ -436,7 +322,6 @@ class ListEvaluateController extends Controller
                     function ($assignment) use ($isObserver) {
 
                         if (!$isObserver) {
-
                             return
                                 !$assignment->is_fully_completed
                                 &&
@@ -451,19 +336,10 @@ class ListEvaluateController extends Controller
         }
 
 
-        /*
-        |--------------------------------------------------------------------------
-        | Pagination
-        |--------------------------------------------------------------------------
-        */
-
-        $page = $request->get(
-            'page',
-            1
-        );
+        // Pagination
+        $page = $request->get('page', 1);
 
         $perPage = 10;
-
 
         $assignments = new LengthAwarePaginator(
             $filtered
@@ -480,11 +356,8 @@ class ListEvaluateController extends Controller
             $page,
 
             [
-                'path' =>
-                    $request->url(),
-
-                'query' =>
-                    $request->query(),
+                'path' => $request->url(),
+                'query' => $request->query(),
             ]
         );
 
@@ -501,7 +374,7 @@ class ListEvaluateController extends Controller
     }
 
 
-    // Convert response into list status
+    // Convert response to status
     private function getFormStatus($response): string
     {
         if (!$response) {

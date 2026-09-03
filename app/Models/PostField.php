@@ -3,12 +3,9 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
 
 class PostField extends Model
 {
-    use SoftDeletes;
-
     protected $table = 'post_field';
 
     protected $primaryKey = 'fieldID';
@@ -21,7 +18,6 @@ class PostField extends Model
         'field_type',
         'display_order',
         'is_required',
-        'status',
     ];
 
     public function section()

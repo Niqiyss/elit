@@ -17,7 +17,6 @@ class PreCriteria extends Model
         'sectionID',
         'criteria_label',
         'display_order',
-        'status',
     ];
 
     protected $dates = [

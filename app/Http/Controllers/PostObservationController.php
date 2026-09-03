@@ -2,13 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\PostForm;
-use App\Models\PostResponse;
-use App\Models\PostAnswer;
-use App\Models\Observer;
-use App\Models\ExternalObserver;
-use App\Models\GuruNew;
-use App\Models\AuditObservation;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -20,20 +13,16 @@ class PostObservationController extends Controller
     {
         $teacherID = Auth::guard('teacher')->id();
 
-        $observer = Observer::where(
-            'teacherID',
-            $teacherID
-        )->first();
+        $observer = DB::table('observer')
+            ->where('teacherID', $teacherID)
+            ->first();
 
-        $externalObserver = ExternalObserver::where(
-            'teacherID',
-            $teacherID
-        )->first();
-
+        $externalObserver = DB::table('external_observer')
+            ->where('teacherID', $teacherID)
+            ->first();
 
         // Determine role and stage
         if ($request->routeIs('observer.post.create')) {
-
             abort_if(
                 !$observer,
                 403,
@@ -42,8 +31,8 @@ class PostObservationController extends Controller
 
             $role = 'observer';
             $stage = 'POST';
+            $attemptNo = 1;
         } else {
-
             abort_if(
                 !$externalObserver,
                 403,
@@ -52,44 +41,31 @@ class PostObservationController extends Controller
 
             $role = 'external';
             $stage = 'EXTERNAL';
-        }
 
+            $attemptNo = $this->getCurrentExternalAttemptNo(
+                $gn_id
+            );
+        }
 
         // Get teacher
-        $guru = GuruNew::with('school')
-            ->where(
-                'gn_id',
-                $gn_id
-            )
-            ->firstOrFail();
-
+        $guru = $this->getGuruNew($gn_id);
 
         // Check assignment
-        if ($role === 'observer') {
-
-            $assigned = DB::table('observer_assignment')
-                ->where(
-                    'gn_id',
-                    $gn_id
-                )
-                ->where(
-                    'observer_id',
-                    $observer->observer_id
-                )
-                ->exists();
-        } else {
-
-            $assigned = DB::table('observer_assignment')
-                ->where(
-                    'gn_id',
-                    $gn_id
-                )
-                ->where(
-                    'external_observer_id',
-                    $externalObserver->external_observer_id
-                )
-                ->exists();
-        }
+        $assigned = $role === 'observer'
+            ? DB::table('observer_assignment')
+            ->where('gn_id', $gn_id)
+            ->where(
+                'observer_id',
+                $observer->observer_id
+            )
+            ->exists()
+            : DB::table('observer_assignment')
+            ->where('gn_id', $gn_id)
+            ->where(
+                'external_observer_id',
+                $externalObserver->external_observer_id
+            )
+            ->exists();
 
         abort_if(
             !$assigned,
@@ -97,44 +73,29 @@ class PostObservationController extends Controller
             'This teacher is not assigned to you.'
         );
 
+        // Get current attempt response
+        $existingQuery = DB::table('post_response')
+            ->where('gn_id', $gn_id)
+            ->where('observation_stage', $stage)
+            ->where('attempt_no', $attemptNo);
 
-        // Check existing response
         if ($role === 'observer') {
-
-            $existingResponse = PostResponse::where(
-                'gn_id',
-                $gn_id
-            )
-                ->where(
-                    'observation_stage',
-                    'POST'
-                )
-                ->where(
-                    'observer_id',
-                    $observer->observer_id
-                )
-                ->latest('responseID')
-                ->first();
+            $existingQuery->where(
+                'observer_id',
+                $observer->observer_id
+            );
         } else {
-
-            $existingResponse = PostResponse::where(
-                'gn_id',
-                $gn_id
-            )
-                ->where(
-                    'observation_stage',
-                    'EXTERNAL'
-                )
-                ->where(
-                    'external_observer_id',
-                    $externalObserver->external_observer_id
-                )
-                ->latest('responseID')
-                ->first();
+            $existingQuery->where(
+                'external_observer_id',
+                $externalObserver->external_observer_id
+            );
         }
 
+        $existingResponse = $existingQuery
+            ->orderByDesc('responseID')
+            ->first();
 
-        // Redirect draft to edit page
+        // Redirect draft
         if (
             $existingResponse &&
             $existingResponse->status === 'Draft'
@@ -147,8 +108,7 @@ class PostObservationController extends Controller
             );
         }
 
-
-        // Prevent duplicate submitted response
+        // Prevent duplicate submitted feedback
         if (
             $existingResponse &&
             $existingResponse->status === 'Submitted'
@@ -162,14 +122,12 @@ class PostObservationController extends Controller
                 )
                 ->with(
                     'error',
-                    'This feedback observation has already been submitted.'
+                    'Feedback for this evaluation attempt has already been submitted.'
                 );
         }
 
-
         // Get active form
         $form = $this->getActiveForm();
-
 
         return view(
             'post-observation.form',
@@ -178,7 +136,8 @@ class PostObservationController extends Controller
                 'guru',
                 'gn_id',
                 'role',
-                'stage'
+                'stage',
+                'attemptNo'
             )
         );
     }
@@ -189,20 +148,16 @@ class PostObservationController extends Controller
     {
         $teacherID = Auth::guard('teacher')->id();
 
-        $observer = Observer::where(
-            'teacherID',
-            $teacherID
-        )->first();
+        $observer = DB::table('observer')
+            ->where('teacherID', $teacherID)
+            ->first();
 
-        $externalObserver = ExternalObserver::where(
-            'teacherID',
-            $teacherID
-        )->first();
-
+        $externalObserver = DB::table('external_observer')
+            ->where('teacherID', $teacherID)
+            ->first();
 
         // Determine role and stage
         if ($request->routeIs('observer.post.store')) {
-
             abort_if(
                 !$observer,
                 403,
@@ -211,8 +166,8 @@ class PostObservationController extends Controller
 
             $role = 'observer';
             $stage = 'POST';
+            $attemptNo = 1;
         } else {
-
             abort_if(
                 !$externalObserver,
                 403,
@@ -221,42 +176,37 @@ class PostObservationController extends Controller
 
             $role = 'external';
             $stage = 'EXTERNAL';
-        }
 
+            $attemptNo = $this->getCurrentExternalAttemptNo(
+                $gn_id
+            );
+        }
 
         // Make sure teacher exists
-        GuruNew::where(
-            'gn_id',
-            $gn_id
-        )->firstOrFail();
-
+        abort_if(
+            !DB::table('guru_new')
+                ->where('gn_id', $gn_id)
+                ->exists(),
+            404,
+            'Teacher not found.'
+        );
 
         // Check assignment
-        if ($role === 'observer') {
-
-            $assigned = DB::table('observer_assignment')
-                ->where(
-                    'gn_id',
-                    $gn_id
-                )
-                ->where(
-                    'observer_id',
-                    $observer->observer_id
-                )
-                ->exists();
-        } else {
-
-            $assigned = DB::table('observer_assignment')
-                ->where(
-                    'gn_id',
-                    $gn_id
-                )
-                ->where(
-                    'external_observer_id',
-                    $externalObserver->external_observer_id
-                )
-                ->exists();
-        }
+        $assigned = $role === 'observer'
+            ? DB::table('observer_assignment')
+            ->where('gn_id', $gn_id)
+            ->where(
+                'observer_id',
+                $observer->observer_id
+            )
+            ->exists()
+            : DB::table('observer_assignment')
+            ->where('gn_id', $gn_id)
+            ->where(
+                'external_observer_id',
+                $externalObserver->external_observer_id
+            )
+            ->exists();
 
         abort_if(
             !$assigned,
@@ -264,17 +214,14 @@ class PostObservationController extends Controller
             'This teacher is not assigned to you.'
         );
 
-
         // Get active form
         $form = $this->getActiveForm();
 
-
-        // Validate form
+        // Validate response
         $this->validateForm(
             $request,
             $form
         );
-
 
         DB::transaction(function () use (
             $request,
@@ -283,125 +230,106 @@ class PostObservationController extends Controller
             $observer,
             $externalObserver,
             $role,
-            $stage
+            $stage,
+            $attemptNo
         ) {
-
-            // Prevent duplicate response
-            if ($role === 'observer') {
-
-                $existingResponse = PostResponse::where(
-                    'gn_id',
-                    $gn_id
+            // Prevent duplicate attempt
+            $existingResponse = DB::table('post_response')
+                ->where('gn_id', $gn_id)
+                ->where(
+                    'observation_stage',
+                    $stage
                 )
-                    ->where(
-                        'observation_stage',
-                        'POST'
-                    )
-                    ->where(
-                        'observer_id',
-                        $observer->observer_id
-                    )
-                    ->latest('responseID')
-                    ->first();
-            } else {
-
-                $existingResponse = PostResponse::where(
-                    'gn_id',
-                    $gn_id
+                ->where(
+                    'attempt_no',
+                    $attemptNo
                 )
-                    ->where(
-                        'observation_stage',
-                        'EXTERNAL'
-                    )
-                    ->where(
-                        'external_observer_id',
-                        $externalObserver->external_observer_id
-                    )
-                    ->latest('responseID')
-                    ->first();
-            }
-
+                ->exists();
 
             abort_if(
                 $existingResponse,
                 409,
-                'A feedback response already exists for this teacher.'
+                'A feedback response already exists for this evaluation attempt.'
             );
 
-
             // Create response
-            $response = new PostResponse();
+            $responseID = DB::table('post_response')
+                ->insertGetId([
+                    'gn_id' => $gn_id,
+                    'formID' => $form->formID,
+                    'observation_stage' => $stage,
+                    'attempt_no' => $attemptNo,
 
-            $response->gn_id =
-                $gn_id;
+                    'observer_id' =>
+                    $role === 'observer'
+                        ? $observer->observer_id
+                        : null,
 
-            $response->formID =
-                $form->formID;
+                    'external_observer_id' =>
+                    $role === 'external'
+                        ? $externalObserver->external_observer_id
+                        : null,
 
-            $response->observation_stage =
-                $stage;
+                    'class_name' =>
+                    $request->class_name,
 
-            $response->observer_id =
-                $role === 'observer'
-                ? $observer->observer_id
-                : null;
+                    'subject_name' =>
+                    $request->subject_name,
 
-            $response->external_observer_id =
-                $role === 'external'
-                ? $externalObserver->external_observer_id
-                : null;
+                    'observation_date' =>
+                    $request->observation_date,
 
-            $response->class_name =
-                $request->class_name;
+                    'observation_time' =>
+                    $request->observation_time,
 
-            $response->subject_name =
-                $request->subject_name;
-
-            $response->observation_date =
-                $request->observation_date;
-
-            $response->observation_time =
-                $request->observation_time;
-
-            $response->status =
-                $request->submit_action;
-
-            $response->save();
-
+                    'status' =>
+                    $request->submit_action,
+                ]);
 
             // Save answers
             $this->saveAnswers(
                 $request,
                 $form,
-                $response
+                $responseID
             );
 
-            if ($request->submit_action === 'Submitted') {
+            // Save audit
+            if (
+                $request->submit_action ===
+                'Submitted'
+            ) {
+                DB::table('audit_observation')
+                    ->insert([
+                        'teacherID' =>
+                        $role === 'observer'
+                            ? $observer->teacherID
+                            : $externalObserver->teacherID,
 
-                AuditObservation::create([
-                    'teacherID' => $role === 'observer'
-                        ? $observer->teacherID
-                        : $externalObserver->teacherID,
+                        'gn_id' =>
+                        $gn_id,
 
-                    'gn_id' => $gn_id,
+                        'role' =>
+                        $role === 'observer'
+                            ? 'Observer'
+                            : 'External Observer',
 
-                    'role' => $role === 'observer'
-                        ? 'Observer'
-                        : 'External Observer',
+                        'stage' =>
+                        $stage,
 
-                    'stage' => $stage,
+                        'form_name' =>
+                        $form->form_name,
 
-                    'form_name' => $form->form_name,
+                        'action' =>
+                        'Submitted',
 
-                    'action' => 'Submitted',
+                        'audit_date' =>
+                        now()->toDateString(),
 
-                    'audit_date' => now()->toDateString(),
-
-                    'audit_time' => now()->format('H:i:s'),
-                ]);
+                        'audit_time' =>
+                        now()->format('H:i:s'),
+                    ]);
             }
         });
-
 
         return redirect()
             ->route(
@@ -424,20 +352,16 @@ class PostObservationController extends Controller
     {
         $teacherID = Auth::guard('teacher')->id();
 
-        $observer = Observer::where(
-            'teacherID',
-            $teacherID
-        )->first();
+        $observer = DB::table('observer')
+            ->where('teacherID', $teacherID)
+            ->first();
 
-        $externalObserver = ExternalObserver::where(
-            'teacherID',
-            $teacherID
-        )->first();
-
+        $externalObserver = DB::table('external_observer')
+            ->where('teacherID', $teacherID)
+            ->first();
 
         // Determine role and stage
         if ($request->routeIs('observer.post.edit')) {
-
             abort_if(
                 !$observer,
                 403,
@@ -447,7 +371,6 @@ class PostObservationController extends Controller
             $role = 'observer';
             $stage = 'POST';
         } else {
-
             abort_if(
                 !$externalObserver,
                 403,
@@ -458,22 +381,26 @@ class PostObservationController extends Controller
             $stage = 'EXTERNAL';
         }
 
-
         // Get response
-        $response = PostResponse::where(
-            'responseID',
-            $responseID
-        )
+        $response = DB::table('post_response')
+            ->where(
+                'responseID',
+                $responseID
+            )
             ->where(
                 'observation_stage',
                 $stage
             )
-            ->firstOrFail();
+            ->first();
 
+        abort_if(
+            !$response,
+            404,
+            'Feedback response not found.'
+        );
 
         // Check ownership
         if ($role === 'observer') {
-
             abort_if(
                 $response->observer_id !=
                     $observer->observer_id,
@@ -481,7 +408,6 @@ class PostObservationController extends Controller
                 'You are not allowed to edit this response.'
             );
         } else {
-
             abort_if(
                 $response->external_observer_id !=
                     $externalObserver->external_observer_id,
@@ -490,75 +416,31 @@ class PostObservationController extends Controller
             );
         }
 
-
-        // Submitted response cannot be edited
+        // Submitted cannot be edited
         abort_if(
             $response->status === 'Submitted',
             403,
             'Submitted feedback cannot be edited.'
         );
 
-
         // Get teacher
-        $guru = GuruNew::with('school')
-            ->where(
-                'gn_id',
-                $response->gn_id
-            )
-            ->firstOrFail();
+        $guru = $this->getGuruNew(
+            $response->gn_id
+        );
 
-        $gn_id =
-            $response->gn_id;
+        $gn_id = $response->gn_id;
 
-
-        // Get current active fields from form
+        // Get form version used
         $form = $this->getForm(
             $response->formID
         );
 
-
         // Get saved answers
-        $answers = PostAnswer::where(
-            'responseID',
-            $response->responseID
-        )->get();
-
-        $existingAnswers = [];
-
-
-        // Prepare saved answers
-        foreach ($answers as $answer) {
-
-            $field = $form->sections
-                ->flatMap(function ($section) {
-                    return $section->fields;
-                })
-                ->firstWhere(
-                    'fieldID',
-                    $answer->fieldID
-                );
-
-
-            // Field may have been made inactive by Admin
-            if (!$field) {
-                continue;
-            }
-
-
-            if ($field->field_type === 'checkbox') {
-
-                $existingAnswers[$answer->fieldID] =
-                    json_decode(
-                        $answer->answer_value,
-                        true
-                    ) ?? [];
-            } else {
-
-                $existingAnswers[$answer->fieldID] =
-                    $answer->answer_value;
-            }
-        }
-
+        $existingAnswers =
+            $this->getExistingAnswers(
+                $response->responseID,
+                $form
+            );
 
         return view(
             'post-observation.edit',
@@ -576,24 +458,22 @@ class PostObservationController extends Controller
 
 
     // Update draft response
-    public function update(Request $request, $responseID)
-    {
+    public function update(
+        Request $request,
+        $responseID
+    ) {
         $teacherID = Auth::guard('teacher')->id();
 
-        $observer = Observer::where(
-            'teacherID',
-            $teacherID
-        )->first();
+        $observer = DB::table('observer')
+            ->where('teacherID', $teacherID)
+            ->first();
 
-        $externalObserver = ExternalObserver::where(
-            'teacherID',
-            $teacherID
-        )->first();
-
+        $externalObserver = DB::table('external_observer')
+            ->where('teacherID', $teacherID)
+            ->first();
 
         // Determine role and stage
         if ($request->routeIs('observer.post.update')) {
-
             abort_if(
                 !$observer,
                 403,
@@ -603,7 +483,6 @@ class PostObservationController extends Controller
             $role = 'observer';
             $stage = 'POST';
         } else {
-
             abort_if(
                 !$externalObserver,
                 403,
@@ -614,22 +493,26 @@ class PostObservationController extends Controller
             $stage = 'EXTERNAL';
         }
 
-
         // Get response
-        $response = PostResponse::where(
-            'responseID',
-            $responseID
-        )
+        $response = DB::table('post_response')
+            ->where(
+                'responseID',
+                $responseID
+            )
             ->where(
                 'observation_stage',
                 $stage
             )
-            ->firstOrFail();
+            ->first();
 
+        abort_if(
+            !$response,
+            404,
+            'Feedback response not found.'
+        );
 
         // Check ownership
         if ($role === 'observer') {
-
             abort_if(
                 $response->observer_id !=
                     $observer->observer_id,
@@ -637,7 +520,6 @@ class PostObservationController extends Controller
                 'You are not allowed to edit this response.'
             );
         } else {
-
             abort_if(
                 $response->external_observer_id !=
                     $externalObserver->external_observer_id,
@@ -646,27 +528,23 @@ class PostObservationController extends Controller
             );
         }
 
-
-        // Submitted response cannot be edited
+        // Submitted cannot be edited
         abort_if(
             $response->status === 'Submitted',
             403,
             'Submitted feedback cannot be edited.'
         );
 
-
-        // Get current active fields
+        // Get form version used
         $form = $this->getForm(
             $response->formID
         );
 
-
-        // Validate form
+        // Validate response
         $this->validateForm(
             $request,
             $form
         );
-
 
         DB::transaction(function () use (
             $request,
@@ -677,31 +555,35 @@ class PostObservationController extends Controller
             $role,
             $stage
         ) {
-
             // Update response
-            $response->class_name =
-                $request->class_name;
+            DB::table('post_response')
+                ->where(
+                    'responseID',
+                    $response->responseID
+                )
+                ->update([
+                    'class_name' =>
+                    $request->class_name,
 
-            $response->subject_name =
-                $request->subject_name;
+                    'subject_name' =>
+                    $request->subject_name,
 
-            $response->observation_date =
-                $request->observation_date;
+                    'observation_date' =>
+                    $request->observation_date,
 
-            $response->observation_time =
-                $request->observation_time;
+                    'observation_time' =>
+                    $request->observation_time,
 
-            $response->status =
-                $request->submit_action;
+                    'status' =>
+                    $request->submit_action,
+                ]);
 
-            $response->save();
-
-
-            // Replace active-field answers only
-            $activeFieldIDs = $form->sections
-                ->flatMap(function ($section) {
-                    return $section->fields;
-                })
+            // Get editable field IDs
+            $fieldIDs = $form->sections
+                ->flatMap(
+                    fn($section) =>
+                    $section->fields
+                )
                 ->where(
                     'field_type',
                     '!=',
@@ -709,52 +591,64 @@ class PostObservationController extends Controller
                 )
                 ->pluck('fieldID');
 
-
-            // Delete answers only for fields currently editable
-            PostAnswer::where(
-                'responseID',
-                $response->responseID
-            )
-                ->whereIn(
-                    'fieldID',
-                    $activeFieldIDs
-                )
-                ->delete();
-
+            // Replace saved answers
+            if ($fieldIDs->isNotEmpty()) {
+                DB::table('post_answer')
+                    ->where(
+                        'responseID',
+                        $response->responseID
+                    )
+                    ->whereIn(
+                        'fieldID',
+                        $fieldIDs
+                    )
+                    ->delete();
+            }
 
             // Save current answers
             $this->saveAnswers(
                 $request,
                 $form,
-                $response
+                $response->responseID
             );
 
-            if ($request->submit_action === 'Submitted') {
+            // Save audit
+            if (
+                $request->submit_action ===
+                'Submitted'
+            ) {
+                DB::table('audit_observation')
+                    ->insert([
+                        'teacherID' =>
+                        $role === 'observer'
+                            ? $observer->teacherID
+                            : $externalObserver->teacherID,
 
-                AuditObservation::create([
-                    'teacherID' => $role === 'observer'
-                        ? $observer->teacherID
-                        : $externalObserver->teacherID,
+                        'gn_id' =>
+                        $response->gn_id,
 
-                    'gn_id' => $response->gn_id,
+                        'role' =>
+                        $role === 'observer'
+                            ? 'Observer'
+                            : 'External Observer',
 
-                    'role' => $role === 'observer'
-                        ? 'Observer'
-                        : 'External Observer',
+                        'stage' =>
+                        $stage,
 
-                    'stage' => $stage,
+                        'form_name' =>
+                        $form->form_name,
 
-                    'form_name' => $form->form_name,
+                        'action' =>
+                        'Submitted',
 
-                    'action' => 'Submitted',
+                        'audit_date' =>
+                        now()->toDateString(),
 
-                    'audit_date' => now()->toDateString(),
-
-                    'audit_time' => now()->format('H:i:s'),
-                ]);
+                        'audit_time' =>
+                        now()->format('H:i:s'),
+                    ]);
             }
         });
-
 
         return redirect()
             ->route(
@@ -771,25 +665,24 @@ class PostObservationController extends Controller
             );
     }
 
-    // Show submitted feedback observation
-    public function show(Request $request, $responseID)
-    {
+
+    // Show submitted feedback
+    public function show(
+        Request $request,
+        $responseID
+    ) {
         $teacherID = Auth::guard('teacher')->id();
 
-        $observer = Observer::where(
-            'teacherID',
-            $teacherID
-        )->first();
+        $observer = DB::table('observer')
+            ->where('teacherID', $teacherID)
+            ->first();
 
-        $externalObserver = ExternalObserver::where(
-            'teacherID',
-            $teacherID
-        )->first();
-
+        $externalObserver = DB::table('external_observer')
+            ->where('teacherID', $teacherID)
+            ->first();
 
         // Determine role and stage
         if ($request->routeIs('observer.post.view')) {
-
             abort_if(
                 !$observer,
                 403,
@@ -799,7 +692,6 @@ class PostObservationController extends Controller
             $role = 'observer';
             $stage = 'POST';
         } else {
-
             abort_if(
                 !$externalObserver,
                 403,
@@ -810,12 +702,12 @@ class PostObservationController extends Controller
             $stage = 'EXTERNAL';
         }
 
-
-        // Get response
-        $response = PostResponse::where(
-            'responseID',
-            $responseID
-        )
+        // Get submitted response
+        $response = DB::table('post_response')
+            ->where(
+                'responseID',
+                $responseID
+            )
             ->where(
                 'observation_stage',
                 $stage
@@ -824,12 +716,16 @@ class PostObservationController extends Controller
                 'status',
                 'Submitted'
             )
-            ->firstOrFail();
+            ->first();
 
+        abort_if(
+            !$response,
+            404,
+            'Submitted feedback response not found.'
+        );
 
         // Check ownership
         if ($role === 'observer') {
-
             abort_if(
                 $response->observer_id !=
                     $observer->observer_id,
@@ -837,7 +733,6 @@ class PostObservationController extends Controller
                 'You are not allowed to view this response.'
             );
         } else {
-
             abort_if(
                 $response->external_observer_id !=
                     $externalObserver->external_observer_id,
@@ -846,63 +741,22 @@ class PostObservationController extends Controller
             );
         }
 
-
         // Get teacher
-        $guru = GuruNew::with('school')
-            ->where(
-                'gn_id',
-                $response->gn_id
-            )
-            ->firstOrFail();
+        $guru = $this->getGuruNew(
+            $response->gn_id
+        );
 
-
-        // Get form used by this response
+        // Get exact form version used
         $form = $this->getForm(
             $response->formID
         );
 
-
         // Get saved answers
-        $answers = PostAnswer::where(
-            'responseID',
-            $response->responseID
-        )->get();
-
-
-        $existingAnswers = [];
-
-
-        foreach ($answers as $answer) {
-
-            $field = $form->sections
-                ->flatMap(function ($section) {
-                    return $section->fields;
-                })
-                ->firstWhere(
-                    'fieldID',
-                    $answer->fieldID
-                );
-
-
-            if (!$field) {
-                continue;
-            }
-
-
-            if ($field->field_type === 'checkbox') {
-
-                $existingAnswers[$answer->fieldID] =
-                    json_decode(
-                        $answer->answer_value,
-                        true
-                    ) ?? [];
-            } else {
-
-                $existingAnswers[$answer->fieldID] =
-                    $answer->answer_value;
-            }
-        }
-
+        $existingAnswers =
+            $this->getExistingAnswers(
+                $response->responseID,
+                $form
+            );
 
         return view(
             'post-observation.view',
@@ -918,40 +772,51 @@ class PostObservationController extends Controller
     }
 
 
+    // Get current EXTERNAL attempt
+    private function getCurrentExternalAttemptNo(
+        $gn_id
+    ): int {
+        $latestPdpcAttempt =
+            DB::table('pdpc_response')
+            ->where(
+                'gn_id',
+                $gn_id
+            )
+            ->where(
+                'observation_stage',
+                'EXTERNAL'
+            )
+            ->max('attempt_no');
+
+        $latestFeedbackAttempt =
+            DB::table('post_response')
+            ->where(
+                'gn_id',
+                $gn_id
+            )
+            ->where(
+                'observation_stage',
+                'EXTERNAL'
+            )
+            ->max('attempt_no');
+
+        return max(
+            (int) ($latestPdpcAttempt ?? 1),
+            (int) ($latestFeedbackAttempt ?? 1)
+        );
+    }
+
+
     // Get active POST form
     private function getActiveForm()
     {
-        $form = PostForm::where(
-            'status',
-            'Active'
-        )
-            ->with([
-                'sections' => function ($query) {
-                    $query->orderBy(
-                        'display_order'
-                    );
-                },
-
-                'sections.fields' => function ($query) {
-                    $query
-                        ->where(
-                            'status',
-                            'Active'
-                        )
-                        ->orderBy(
-                            'display_order'
-                        );
-                },
-
-                'sections.fields.options' => function ($query) {
-                    $query->orderBy(
-                        'display_order'
-                    );
-                },
-            ])
-            ->orderBy('formID')
+        $form = DB::table('post_form')
+            ->where(
+                'status',
+                'Active'
+            )
+            ->orderByDesc('formID')
             ->first();
-
 
         abort_if(
             !$form,
@@ -959,44 +824,21 @@ class PostObservationController extends Controller
             'No active post observation form found.'
         );
 
-
-        return $form;
+        return $this->attachFormStructure(
+            $form
+        );
     }
 
 
-    // Get form used by existing response
+    // Get exact form version used
     private function getForm($formID)
     {
-        $form = PostForm::where(
-            'formID',
-            $formID
-        )
-            ->with([
-                'sections' => function ($query) {
-                    $query->orderBy(
-                        'display_order'
-                    );
-                },
-
-                'sections.fields' => function ($query) {
-                    $query
-                        ->where(
-                            'status',
-                            'Active'
-                        )
-                        ->orderBy(
-                            'display_order'
-                        );
-                },
-
-                'sections.fields.options' => function ($query) {
-                    $query->orderBy(
-                        'display_order'
-                    );
-                },
-            ])
+        $form = DB::table('post_form')
+            ->where(
+                'formID',
+                $formID
+            )
             ->first();
-
 
         abort_if(
             !$form,
@@ -1004,8 +846,125 @@ class PostObservationController extends Controller
             'Post observation form not found.'
         );
 
+        return $this->attachFormStructure(
+            $form
+        );
+    }
+
+
+    // Attach sections, fields and options
+    private function attachFormStructure($form)
+    {
+        $sections = DB::table('post_section')
+            ->where(
+                'formID',
+                $form->formID
+            )
+            ->orderBy('display_order')
+            ->get();
+
+        foreach ($sections as $section) {
+            $fields = DB::table('post_field')
+                ->where(
+                    'sectionID',
+                    $section->sectionID
+                )
+                ->orderBy('display_order')
+                ->get();
+
+            foreach ($fields as $field) {
+                $field->options =
+                    DB::table('post_field_option')
+                    ->where(
+                        'fieldID',
+                        $field->fieldID
+                    )
+                    ->orderBy('display_order')
+                    ->get();
+            }
+
+            $section->fields = $fields;
+        }
+
+        $form->sections = $sections;
 
         return $form;
+    }
+
+
+    // Get GN with school
+    private function getGuruNew($gn_id)
+    {
+        $guru = DB::table('guru_new')
+            ->where(
+                'gn_id',
+                $gn_id
+            )
+            ->first();
+
+        abort_if(
+            !$guru,
+            404,
+            'Teacher not found.'
+        );
+
+        $guru->school = $guru->schoolID
+            ? DB::table('school')
+            ->where(
+                'schoolID',
+                $guru->schoolID
+            )
+            ->first()
+            : null;
+
+        return $guru;
+    }
+
+
+    // Get saved answers
+    private function getExistingAnswers(
+        $responseID,
+        $form
+    ): array {
+        $answers = DB::table('post_answer')
+            ->where(
+                'responseID',
+                $responseID
+            )
+            ->get();
+
+        $fields = $form->sections
+            ->flatMap(
+                fn($section) =>
+                $section->fields
+            );
+
+        $existingAnswers = [];
+
+        foreach ($answers as $answer) {
+            $field = $fields->firstWhere(
+                'fieldID',
+                $answer->fieldID
+            );
+
+            if (!$field) {
+                continue;
+            }
+
+            if (
+                $field->field_type ===
+                'checkbox'
+            ) {
+                $existingAnswers[$answer->fieldID] = json_decode(
+                    $answer->answer_value,
+                    true
+                ) ?? [];
+            } else {
+                $existingAnswers[$answer->fieldID] = $answer->answer_value;
+            }
+        }
+
+        return $existingAnswers;
     }
 
 
@@ -1018,10 +977,9 @@ class PostObservationController extends Controller
             $request->submit_action ===
             'Submitted';
 
-
         $rules = [
-
-            'class_name' => $isSubmit
+            'class_name' =>
+            $isSubmit
                 ? [
                     'required',
                     'string',
@@ -1033,7 +991,8 @@ class PostObservationController extends Controller
                     'max:100',
                 ],
 
-            'subject_name' => $isSubmit
+            'subject_name' =>
+            $isSubmit
                 ? [
                     'required',
                     'string',
@@ -1045,7 +1004,8 @@ class PostObservationController extends Controller
                     'max:100',
                 ],
 
-            'observation_date' => $isSubmit
+            'observation_date' =>
+            $isSubmit
                 ? [
                     'required',
                     'date',
@@ -1055,7 +1015,8 @@ class PostObservationController extends Controller
                     'date',
                 ],
 
-            'observation_time' => $isSubmit
+            'observation_time' =>
+            $isSubmit
                 ? [
                     'required',
                     'date_format:H:i',
@@ -1071,11 +1032,8 @@ class PostObservationController extends Controller
             ],
         ];
 
-
         foreach ($form->sections as $section) {
-
             foreach ($section->fields as $field) {
-
                 if (
                     $field->field_type ===
                     'display'
@@ -1083,18 +1041,15 @@ class PostObservationController extends Controller
                     continue;
                 }
 
-
                 $answerKey =
                     'answers.' .
                     $field->fieldID;
 
-
-                // Checkbox validation
+                // Checkbox
                 if (
                     $field->field_type ===
                     'checkbox'
                 ) {
-
                     $rules[$answerKey] =
                         $isSubmit &&
                         $field->is_required
@@ -1108,14 +1063,12 @@ class PostObservationController extends Controller
                             'array',
                         ];
 
-
                     $rules[$answerKey . '.*'] = [
                         'string',
                         'max:255',
                     ];
                 } else {
-
-                    // Text, textarea and radio validation
+                    // Text, textarea and radio
                     $rules[$answerKey] =
                         $isSubmit &&
                         $field->is_required
@@ -1131,23 +1084,20 @@ class PostObservationController extends Controller
             }
         }
 
-
         $request->validate(
             $rules
         );
     }
 
 
-    // Save answered fields only
+    // Save answered fields
     private function saveAnswers(
         Request $request,
         $form,
-        PostResponse $response
+        $responseID
     ) {
         foreach ($form->sections as $section) {
-
             foreach ($section->fields as $field) {
-
                 if (
                     $field->field_type ===
                     'display'
@@ -1155,23 +1105,19 @@ class PostObservationController extends Controller
                     continue;
                 }
 
-
                 $answerValue =
                     $request->input(
                         'answers.' .
                             $field->fieldID
                     );
 
-
                 // Save checkbox as JSON
                 if (
                     $field->field_type ===
                     'checkbox'
                 ) {
-
                     if (
-                        !is_array($answerValue)
-                        ||
+                        !is_array($answerValue) ||
                         empty($answerValue)
                     ) {
                         continue;
@@ -1182,11 +1128,9 @@ class PostObservationController extends Controller
                             $answerValue
                         );
                 } else {
-
-                    // Do not save empty answers
+                    // Skip empty answer
                     if (
-                        $answerValue === null
-                        ||
+                        $answerValue === null ||
                         trim(
                             (string) $answerValue
                         ) === ''
@@ -1195,17 +1139,17 @@ class PostObservationController extends Controller
                     }
                 }
 
+                DB::table('post_answer')
+                    ->insert([
+                        'responseID' =>
+                        $responseID,
 
-                PostAnswer::create([
-                    'responseID' =>
-                    $response->responseID,
+                        'fieldID' =>
+                        $field->fieldID,
 
-                    'fieldID' =>
-                    $field->fieldID,
-
-                    'answer_value' =>
-                    $answerValue,
-                ]);
+                        'answer_value' =>
+                        $answerValue,
+                    ]);
             }
         }
     }

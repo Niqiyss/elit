@@ -24,6 +24,11 @@
                     List Teacher
                 </a>
 
+                <a href="{{ route('principal.result') }}"
+                    class="text-lg font-semibold text-gray-700 hover:text-purple-700 transition">
+                    List Result
+                </a>
+
                 <a href="{{ route('principal.profile') }}"
                     class="text-lg font-semibold text-gray-700 hover:text-purple-700 transition">
                     MyProfile

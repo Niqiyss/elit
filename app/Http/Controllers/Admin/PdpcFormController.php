@@ -4,6 +4,11 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\PdpcForm;
+use App\Models\PdpcAspect;
+use App\Models\PdpcTums;
+use App\Models\PdpcTt;
+use App\Models\PdpcTtPoint;
+use App\Models\PdpcRubric;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -12,100 +17,68 @@ use Illuminate\View\View;
 
 class PdpcFormController extends Controller
 {
-    // Show form builder
+    // Version list
     public function index(): View
     {
-        $forms = PdpcForm::query()
-            ->with([
-                'aspects.tums.tt.points',
-                'aspects.tums.rubrics',
-            ])
-            ->latest('formID')
+        $forms = PdpcForm::with([
+            'aspects.tums.tt.points',
+            'aspects.tums.rubrics',
+        ])
+            ->orderByDesc('version_no')
             ->get();
 
-        $initialAspects = old('aspects', $this->blankAspects());
+        foreach ($forms as $form) {
+            $form->is_used = $this->isFormUsed($form);
+            $form->aspect_count = $form->aspects->count();
+            $form->tums_count = $form->aspects->sum(fn($aspect) => $aspect->tums->count());
 
-        $editingForm = null;
+            $form->point_count = $form->aspects->sum(function ($aspect) {
+                return $aspect->tums->sum(function ($tums) {
+                    return $tums->tt->sum(fn($tt) => $tt->points->count());
+                });
+            });
+        }
 
-        return view(
-            'admin.pdpc-form',
-            compact(
-                'editingForm',
-                'forms',
-                'initialAspects'
-            )
-        );
+        return view('admin.pdpc-form', compact('forms'));
     }
 
-    // Store new PDPC form
+    // Create first form
     public function store(Request $request): RedirectResponse
     {
-        $validated = $request->validate($this->rules());
+        $request->validate([
+            'form_name' => ['required', 'string', 'max:255'],
+            'instruction' => ['nullable', 'string', 'max:2000'],
+        ]);
 
-        $form = DB::transaction(function () use ($validated): PdpcForm {
+        if (PdpcForm::exists()) {
+            return redirect()->route('admin.pdpc.form')->with('error', 'A PDPC form already exists. Create a new version instead.');
+        }
 
-            PdpcForm::where('status', 'Active')->update([
-                'status' => 'Inactive',
-            ]);
+        $form = PdpcForm::create([
+            'form_name' => $request->form_name,
+            'instruction' => $request->instruction,
+            'version_no' => 1,
+            'status' => 'Active',
+            'staffid' => Auth::guard('admin')->id(),
+        ]);
 
-            $nextVersion = (PdpcForm::max('version_no') ?? 0) + 1;
-
-            $form = PdpcForm::create([
-                'form_name' => $validated['form_name'],
-                'instruction' => $validated['instruction'] ?? null,
-                'version_no' => $nextVersion,
-                'status' => 'Active',
-                'staffid' => Auth::guard('admin')->id(),
-            ]);
-
-            $this->saveHierarchy(
-                $form,
-                $validated['aspects']
-            );
-
-            return $form;
-        });
-
-        return redirect()
-            ->route(
-                'admin.pdpc.form.show',
-                $form->formID
-            )
-            ->with(
-                'success',
-                'PDPC form saved successfully.'
-            )
-            ->with(
-                'created_form_id',
-                $form->formID
-            );
+        return redirect()->route('admin.pdpc.form.edit', $form)->with('success', 'PDPC form created. You can now add the form content.');
     }
 
-    // View saved form
-    public function show(PdpcForm $pdpcForm): View
+    // Preview selected version
+    public function preview(PdpcForm $pdpcForm): View
     {
         $pdpcForm->load([
             'aspects.tums.tt.points',
             'aspects.tums.rubrics',
         ]);
 
-        $forms = PdpcForm::query()
-            ->with([
-                'aspects.tums',
-            ])
-            ->latest('formID')
-            ->get();
-
-        return view(
-            'admin.pdpc-form-show',
-            compact(
-                'forms',
-                'pdpcForm'
-            )
-        );
+        return view('admin.pdpc-form-preview', [
+            'form' => $pdpcForm,
+        ]);
     }
 
-    // Show edit form
+    // Edit selected version
     public function edit(PdpcForm $pdpcForm): View
     {
         $pdpcForm->load([
@@ -113,61 +86,213 @@ class PdpcFormController extends Controller
             'aspects.tums.rubrics',
         ]);
 
-        $forms = PdpcForm::query()
-            ->with([
-                'aspects.tums',
-            ])
-            ->latest('formID')
-            ->get();
+        $formUsed = $this->isFormUsed($pdpcForm);
 
         $initialAspects = old(
             'aspects',
             $this->formAspects($pdpcForm)
         );
 
-        $editingForm = $pdpcForm;
-
-        return view(
-            'admin.pdpc-form',
-            compact(
-                'editingForm',
-                'forms',
-                'initialAspects'
-            )
-        );
+        return view('admin.pdpc-form-edit', [
+            'form' => $pdpcForm,
+            'formUsed' => $formUsed,
+            'initialAspects' => $initialAspects,
+        ]);
     }
 
-    // Update existing form
+    // Create new version
+    public function createNewVersion(PdpcForm $pdpcForm): RedirectResponse
+    {
+        $pdpcForm->load([
+            'aspects.tums.tt.points',
+            'aspects.tums.rubrics',
+        ]);
+
+        $newFormID = null;
+
+        DB::transaction(function () use ($pdpcForm, &$newFormID) {
+
+            PdpcForm::where('status', 'Active')->update([
+                'status' => 'Inactive',
+            ]);
+
+            $nextVersion = (PdpcForm::max('version_no') ?? 0) + 1;
+
+            $newForm = PdpcForm::create([
+                'form_name' => $pdpcForm->form_name,
+                'instruction' => $pdpcForm->instruction,
+                'version_no' => $nextVersion,
+                'status' => 'Active',
+                'staffid' => Auth::guard('admin')->id(),
+            ]);
+
+            $newFormID = $newForm->formID;
+
+            foreach ($pdpcForm->aspects as $oldAspect) {
+
+                $newAspect = PdpcAspect::create([
+                    'formID' => $newForm->formID,
+                    'aspect_code' => $oldAspect->aspect_code,
+                    'aspect_name' => $oldAspect->aspect_name,
+                    'display_order' => $oldAspect->display_order,
+                ]);
+
+                foreach ($oldAspect->tums as $oldTums) {
+
+                    $newTums = PdpcTums::create([
+                        'aspectID' => $newAspect->aspectID,
+                        'tums_code' => $oldTums->tums_code,
+                        'tums_name' => $oldTums->tums_name,
+                        'wajaran' => $oldTums->wajaran,
+                        'display_order' => $oldTums->display_order,
+                    ]);
+
+                    foreach ($oldTums->tt as $oldTt) {
+
+                        $newTt = PdpcTt::create([
+                            'tumsID' => $newTums->tumsID,
+                            'display_order' => $oldTt->display_order,
+                        ]);
+
+                        foreach ($oldTt->points as $oldPoint) {
+
+                            PdpcTtPoint::create([
+                                'ttID' => $newTt->ttID,
+                                'point_text' => $oldPoint->point_text,
+                                'display_order' => $oldPoint->display_order,
+                            ]);
+                        }
+                    }
+
+                    foreach ($oldTums->rubrics as $oldRubric) {
+
+                        PdpcRubric::create([
+                            'tumsID' => $newTums->tumsID,
+                            'score' => $oldRubric->score,
+                            'description' => $oldRubric->description,
+                        ]);
+                    }
+                }
+            }
+        });
+
+        return redirect()
+            ->route('admin.pdpc.form.edit', $newFormID)
+            ->with('success', 'New PDPC form version created successfully.');
+    }
+
+    // Update selected version
     public function update(
         Request $request,
         PdpcForm $pdpcForm
     ): RedirectResponse {
 
-        if ($pdpcForm->responses()->exists()) {
+        $formUsed = $this->isFormUsed($pdpcForm);
+
+        // Used form: wording only
+        if ($formUsed) {
+
+            $validated = $request->validate([
+                'form_name' => ['required', 'string', 'max:255'],
+                'instruction' => ['nullable', 'string', 'max:2000'],
+
+                'aspects' => ['required', 'array'],
+                'aspects.*.aspectID' => ['required', 'integer'],
+                'aspects.*.aspect_name' => ['required', 'string', 'max:255'],
+
+                'aspects.*.tums' => ['required', 'array'],
+                'aspects.*.tums.*.tumsID' => ['required', 'integer'],
+                'aspects.*.tums.*.tums_name' => ['required', 'string', 'max:500'],
+
+                'aspects.*.tums.*.tt' => ['required', 'array'],
+                'aspects.*.tums.*.tt.*.ttID' => ['required', 'integer'],
+                'aspects.*.tums.*.tt.*.points' => ['required', 'array'],
+                'aspects.*.tums.*.tt.*.points.*.pointID' => ['required', 'integer'],
+                'aspects.*.tums.*.tt.*.points.*.point_text' => ['required', 'string', 'max:2000'],
+
+                'aspects.*.tums.*.rubrics' => ['required', 'array:0,1,2,3,4'],
+                'aspects.*.tums.*.rubrics.*' => ['required', 'string', 'max:2000'],
+            ]);
+
+            DB::transaction(function () use ($pdpcForm, $validated) {
+
+                // Update form wording
+                $pdpcForm->update([
+                    'form_name' => $validated['form_name'],
+                    'instruction' => $validated['instruction'] ?? null,
+                    'staffid' => Auth::guard('admin')->id(),
+                ]);
+
+                foreach ($validated['aspects'] as $aspectData) {
+
+                    // Update Aspect name only
+                    $aspect = PdpcAspect::where('aspectID', $aspectData['aspectID'])
+                        ->where('formID', $pdpcForm->formID)
+                        ->firstOrFail();
+
+                    $aspect->update([
+                        'aspect_name' => $aspectData['aspect_name'],
+                    ]);
+
+                    foreach ($aspectData['tums'] as $tumsData) {
+
+                        // Update TUMS name only
+                        $tums = PdpcTums::where('tumsID', $tumsData['tumsID'])
+                            ->where('aspectID', $aspect->aspectID)
+                            ->firstOrFail();
+
+                        $tums->update([
+                            'tums_name' => $tumsData['tums_name'],
+                        ]);
+
+                        foreach ($tumsData['tt'] as $ttData) {
+
+                            // Ensure TT still belongs to this TUMS
+                            $tt = PdpcTt::where('ttID', $ttData['ttID'])
+                                ->where('tumsID', $tums->tumsID)
+                                ->firstOrFail();
+
+                            foreach ($ttData['points'] as $pointData) {
+
+                                // Update TT Point wording only
+                                PdpcTtPoint::where('pointID', $pointData['pointID'])
+                                    ->where('ttID', $tt->ttID)
+                                    ->update([
+                                        'point_text' => $pointData['point_text'],
+                                    ]);
+                            }
+                        }
+
+                        // Update RTK wording only
+                        foreach ($tumsData['rubrics'] as $score => $description) {
+
+                            PdpcRubric::where('tumsID', $tums->tumsID)
+                                ->where('score', (int) $score)
+                                ->update([
+                                    'description' => trim($description),
+                                ]);
+                        }
+                    }
+                }
+            });
+
             return redirect()
-                ->route(
-                    'admin.pdpc.form.show',
-                    $pdpcForm->formID
-                )
-                ->with(
-                    'error',
-                    'This form cannot be edited because it has already been used for an observation.'
-                );
+                ->route('admin.pdpc.form.edit', $pdpcForm)
+                ->with('success', 'Form wording updated successfully.');
         }
 
+        // Unused form: everything can still be changed
         $validated = $request->validate($this->rules());
 
-        DB::transaction(function () use (
-            $pdpcForm,
-            $validated
-        ): void {
+        DB::transaction(function () use ($pdpcForm, $validated) {
 
             $pdpcForm->update([
                 'form_name' => $validated['form_name'],
                 'instruction' => $validated['instruction'] ?? null,
+                'staffid' => Auth::guard('admin')->id(),
             ]);
 
-            $pdpcForm->aspects()->delete();
+            $this->deleteHierarchy($pdpcForm);
 
             $this->saveHierarchy(
                 $pdpcForm,
@@ -176,113 +301,198 @@ class PdpcFormController extends Controller
         });
 
         return redirect()
-            ->route(
-                'admin.pdpc.form.show',
-                $pdpcForm->formID
-            )
-            ->with(
-                'success',
-                'PDPC form updated successfully.'
-            );
+            ->route('admin.pdpc.form.edit', $pdpcForm)
+            ->with('success', 'PDPC form updated successfully.');
     }
 
-    // Delete form
-    public function destroy(
-        PdpcForm $pdpcForm
-    ): RedirectResponse {
-
-        if ($pdpcForm->responses()->exists()) {
+    // Delete unused version
+    public function destroy(PdpcForm $pdpcForm): RedirectResponse
+    {
+        if ($this->isFormUsed($pdpcForm)) {
             return redirect()
-                ->route(
-                    'admin.pdpc.form.show',
-                    $pdpcForm->formID
-                )
-                ->with(
-                    'error',
-                    'This form cannot be deleted because it has already been used for an observation.'
-                );
+                ->route('admin.pdpc.form')
+                ->with('error', 'This version has already been used and cannot be deleted.');
         }
 
-        $pdpcForm->delete();
+        $wasActive = $pdpcForm->status === 'Active';
+
+        DB::transaction(function () use ($pdpcForm) {
+
+            $this->deleteHierarchy($pdpcForm);
+
+            DB::table('pdpc_form')
+                ->where('formID', $pdpcForm->formID)
+                ->delete();
+        });
+
+        if ($wasActive) {
+
+            PdpcForm::where('status', 'Active')->update([
+                'status' => 'Inactive',
+            ]);
+
+            $previousForm = PdpcForm::orderByDesc('version_no')->first();
+
+            if ($previousForm) {
+                $previousForm->update([
+                    'status' => 'Active',
+                ]);
+            }
+        }
 
         return redirect()
             ->route('admin.pdpc.form')
-            ->with(
-                'success',
-                'PDPC form deleted successfully.'
-            );
+            ->with('success', 'PDPC form version deleted successfully.');
     }
 
-    // Save complete hierarchy
+    // Save hierarchy
     private function saveHierarchy(
         PdpcForm $form,
         array $aspects
     ): void {
 
-        foreach (
-            array_values($aspects)
-            as $aspectIndex => $aspectData
-        ) {
+        foreach (array_values($aspects) as $aspectIndex => $aspectData) {
 
-            $aspect = $form->aspects()->create([
+            $aspect = PdpcAspect::create([
+                'formID' => $form->formID,
                 'aspect_code' => $aspectData['aspect_code'] ?? null,
                 'aspect_name' => $aspectData['aspect_name'],
                 'display_order' => $aspectIndex + 1,
             ]);
 
-            foreach (
-                array_values($aspectData['tums'])
-                as $tumsIndex => $tumsData
-            ) {
+            foreach (array_values($aspectData['tums']) as $tumsIndex => $tumsData) {
 
-                $tums = $aspect->tums()->create([
+                $tums = PdpcTums::create([
+                    'aspectID' => $aspect->aspectID,
                     'tums_code' => $tumsData['tums_code'] ?? null,
                     'tums_name' => $tumsData['tums_name'],
                     'wajaran' => $tumsData['wajaran'],
                     'display_order' => $tumsIndex + 1,
                 ]);
 
-                foreach (
-                    array_values($tumsData['tt'])
-                    as $ttIndex => $ttData
-                ) {
+                foreach (array_values($tumsData['tt']) as $ttIndex => $ttData) {
 
-                    $tt = $tums->tt()->create([
+                    $tt = PdpcTt::create([
+                        'tumsID' => $tums->tumsID,
                         'display_order' => $ttIndex + 1,
                     ]);
 
-                    foreach (
-                        array_values($ttData['points'])
-                        as $pointIndex => $pointData
-                    ) {
+                    foreach (array_values($ttData['points']) as $pointIndex => $pointData) {
 
-                        $tt->points()->create([
+                        PdpcTtPoint::create([
+                            'ttID' => $tt->ttID,
                             'point_text' => $pointData['point_text'],
                             'display_order' => $pointIndex + 1,
                         ]);
                     }
                 }
 
-                // Save one RTK rubric set for this TUMS
-                foreach (
-                    $tumsData['rubrics'] ?? []
-                    as $score => $description
-                ) {
+                foreach ($tumsData['rubrics'] ?? [] as $score => $description) {
 
-                    if (
-                        $description === null ||
-                        trim($description) === ''
-                    ) {
+                    if ($description === null || trim($description) === '') {
                         continue;
                     }
 
-                    $tums->rubrics()->create([
+                    PdpcRubric::create([
+                        'tumsID' => $tums->tumsID,
                         'score' => (int) $score,
                         'description' => trim($description),
                     ]);
                 }
             }
         }
+    }
+
+    // Delete hierarchy safely
+    private function deleteHierarchy(PdpcForm $form): void
+    {
+        $aspectIDs = DB::table('pdpc_aspect')
+            ->where('formID', $form->formID)
+            ->pluck('aspectID');
+
+        if ($aspectIDs->isEmpty()) {
+            return;
+        }
+
+        $tumsIDs = DB::table('pdpc_tums')
+            ->whereIn('aspectID', $aspectIDs)
+            ->pluck('tumsID');
+
+        if ($tumsIDs->isNotEmpty()) {
+
+            $ttIDs = DB::table('pdpc_tt')
+                ->whereIn('tumsID', $tumsIDs)
+                ->pluck('ttID');
+
+            if ($ttIDs->isNotEmpty()) {
+
+                $pointIDs = DB::table('pdpc_tt_point')
+                    ->whereIn('ttID', $ttIDs)
+                    ->pluck('pointID');
+
+                if ($pointIDs->isNotEmpty()) {
+                    DB::table('pdpc_score')
+                        ->whereIn('pointID', $pointIDs)
+                        ->delete();
+
+                    DB::table('pdpc_tt_point')
+                        ->whereIn('pointID', $pointIDs)
+                        ->delete();
+                }
+
+                DB::table('pdpc_tt')
+                    ->whereIn('ttID', $ttIDs)
+                    ->delete();
+            }
+
+            DB::table('pdpc_rubric')
+                ->whereIn('tumsID', $tumsIDs)
+                ->delete();
+
+            DB::table('pdpc_tums')
+                ->whereIn('tumsID', $tumsIDs)
+                ->delete();
+        }
+
+        DB::table('pdpc_aspect')
+            ->whereIn('aspectID', $aspectIDs)
+            ->delete();
+    }
+
+    // Check version usage
+    private function isFormUsed(PdpcForm $form): bool
+    {
+        return DB::table('pdpc_response')
+            ->where('formID', $form->formID)
+            ->exists();
+    }
+
+    // Create form with hierarchy
+    private function createFormWithHierarchy(
+        int $version,
+        string $formName,
+        ?string $instruction,
+        array $aspects
+    ): PdpcForm {
+
+        PdpcForm::where('status', 'Active')->update([
+            'status' => 'Inactive',
+        ]);
+
+        $form = PdpcForm::create([
+            'form_name' => $formName,
+            'instruction' => $instruction,
+            'version_no' => $version,
+            'status' => 'Active',
+            'staffid' => Auth::guard('admin')->id(),
+        ]);
+
+        $this->saveHierarchy(
+            $form,
+            $aspects
+        );
+
+        return $form;
     }
 
     // Validation
@@ -314,103 +524,39 @@ class PdpcFormController extends Controller
         ];
     }
 
-    // Initial blank form
-    private function blankAspects(): array
+    // Convert DB hierarchy for edit
+    private function formAspects(PdpcForm $form): array
     {
-        return [[
-            'aspect_code' => '4.1',
-            'aspect_name' => '',
+        return $form->aspects->map(fn($aspect) => [
 
-            'tums' => [[
-                'tums_code' => '4.1.1',
-                'tums_name' => '',
-                'wajaran' => '',
+            'aspectID' => $aspect->aspectID,
+            'aspect_code' => $aspect->aspect_code,
+            'aspect_name' => $aspect->aspect_name,
 
-                'tt' => [[
-                    'points' => [[
-                        'point_text' => '',
-                    ]],
-                ]],
+            'tums' => $aspect->tums->map(fn($tums) => [
 
-                'rubrics' => [
-                    4 => '',
-                    3 => '',
-                    2 => '',
-                    1 => '',
-                    0 => '',
-                ],
-            ]],
-        ]];
-    }
+                'tumsID' => $tums->tumsID,
+                'tums_code' => $tums->tums_code,
+                'tums_name' => $tums->tums_name,
+                'wajaran' => $tums->wajaran,
 
-    // Convert database hierarchy for edit form
-    private function formAspects(
-        PdpcForm $form
-    ): array {
+                'tt' => $tums->tt->map(fn($tt) => [
 
-        return $form
-            ->aspects
-            ->map(
-                fn($aspect) => [
+                    'ttID' => $tt->ttID,
 
-                    'aspect_code' =>
-                    $aspect->aspect_code,
+                    'points' => $tt->points->map(fn($point) => [
+                        'pointID' => $point->pointID,
+                        'point_text' => $point->point_text,
+                    ])->values()->all(),
 
-                    'aspect_name' =>
-                    $aspect->aspect_name,
+                ])->values()->all(),
 
-                    'tums' =>
-                    $aspect
-                        ->tums
-                        ->map(
-                            fn($tums) => [
+                'rubrics' => $tums->rubrics
+                    ->pluck('description', 'score')
+                    ->all(),
 
-                                'tums_code' =>
-                                $tums->tums_code,
+            ])->values()->all(),
 
-                                'tums_name' =>
-                                $tums->tums_name,
-
-                                'wajaran' =>
-                                $tums->wajaran,
-
-                                'tt' =>
-                                $tums
-                                    ->tt
-                                    ->map(
-                                        fn($tt) => [
-
-                                            'points' =>
-                                            $tt
-                                                ->points
-                                                ->map(
-                                                    fn($point) => [
-                                                        'point_text' =>
-                                                        $point->point_text,
-                                                    ]
-                                                )
-                                                ->values()
-                                                ->all(),
-                                        ]
-                                    )
-                                    ->values()
-                                    ->all(),
-
-                                'rubrics' =>
-                                $tums
-                                    ->rubrics
-                                    ->pluck(
-                                        'description',
-                                        'score'
-                                    )
-                                    ->all(),
-                            ]
-                        )
-                        ->values()
-                        ->all(),
-                ]
-            )
-            ->values()
-            ->all();
+        ])->values()->all();
     }
 }

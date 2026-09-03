@@ -14,6 +14,7 @@ class PostForm extends Model
 
     protected $fillable = [
         'form_name',
+        'version',
         'instruction',
         'status',
         'staffid',

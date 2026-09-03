@@ -1,544 +1,197 @@
 <x-app-layout>
 
-    <div class="py-10 bg-gray-100 min-h-screen">
+    <div class="min-h-screen bg-slate-100 py-8 px-6">
 
-        <div class="max-w-7xl mx-auto px-6">
+        <div class="max-w-7xl mx-auto">
 
-            <div class="relative bg-gradient-to-br
-                        from-slate-900 via-violet-950 to-purple-900
-                        rounded-3xl p-8 shadow-xl
-                        overflow-hidden mb-8">
+            {{-- Header --}}
+            <div class="relative bg-gradient-to-br from-slate-900 via-violet-950 to-purple-900 rounded-3xl p-8 shadow-xl overflow-hidden mb-8">
 
-                <div class="absolute right-0 top-0
-                            translate-x-10 -translate-y-10
-                            w-72 h-72
-                            bg-purple-500/10
-                            rounded-full blur-3xl">
-                </div>
+                <div class="absolute right-0 top-0 translate-x-10 -translate-y-10 w-72 h-72 bg-purple-500/10 rounded-full blur-3xl"></div>
 
-
-                <div class="relative z-10
-                            flex flex-col md:flex-row
-                            md:items-center
-                            md:justify-between gap-6">
+                <div class="relative z-10 flex flex-col md:flex-row md:items-center md:justify-between gap-6">
 
                     <div>
 
-                        <p class="text-violet-300
-                                  text-sm font-semibold mb-2">
-                            Welcome back,
+                        <p class="text-xs uppercase tracking-[0.2em] font-bold text-violet-300">
+                            Admin/Staff Dashboard
                         </p>
 
-                        <h1 class="text-3xl
-                                   font-extrabold text-white">
-
-                            Administrator
-
+                        <h1 class="text-3xl font-extrabold text-white mt-2">
+                            Welcome, {{ $admin->staffname }}
                         </h1>
 
-
                     </div>
 
+                    <a
+                        href="{{ route('admin.manage.form') }}"
+                        class="px-5 py-2.5 bg-white text-violet-900 rounded-xl text-sm font-semibold shadow hover:bg-violet-50 transition">
 
-                    <div class="flex flex-wrap gap-3">
+                        Manage Forms
 
-                        <a
-                            href="{{ route('admin.manage.form') }}"
-                            class="px-5 py-3
-                                   bg-white
-                                   text-violet-900
-                                   rounded-xl
-                                   font-semibold
-                                   shadow
-                                   hover:bg-violet-50
-                                   transition">
-
-                            Manage Forms
-
-                        </a>
-
-                    </div>
+                    </a>
 
                 </div>
 
             </div>
 
 
-            <div class="grid grid-cols-1
-                        sm:grid-cols-2
-                        lg:grid-cols-4
-                        gap-6 mb-8">
+            {{-- Summary Cards --}}
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
 
+                {{-- Total Forms --}}
+                <div class="bg-white rounded-2xl border border-slate-200 shadow-sm px-5 py-4">
 
-                {{-- TOTAL FORMS --}}
-                <div class="bg-white
-                            rounded-3xl
-                            shadow-lg
-                            p-6
-                            border border-gray-100">
+                    <p class="text-sm font-semibold text-slate-900">
+                        Total Forms
+                    </p>
 
-                    <div class="flex
-                                items-center
-                                justify-between">
-
-                        <div>
-
-                            <p class="text-sm
-                                      font-semibold
-                                      text-gray-400">
-
-                                Total Forms
-
-                            </p>
-
-                            <p class="text-3xl
-                                      font-extrabold
-                                      text-gray-800
-                                      mt-2">
-
-                                {{ $totalForms }}
-
-                            </p>
-
-                        </div>
-
-
-                        <div class="w-14 h-14
-                                    rounded-2xl
-                                    bg-violet-100
-                                    flex items-center
-                                    justify-center">
-
-                            <svg xmlns="http://www.w3.org/2000/svg"
-                                class="h-7 w-7 text-violet-700"
-                                fill="none"
-                                viewBox="0 0 24 24"
-                                stroke="currentColor">
-
-                                <path
-                                    stroke-linecap="round"
-                                    stroke-linejoin="round"
-                                    stroke-width="2"
-                                    d="M9 12h6m-6 4h6
-                                       M9 8h6
-                                       M5 4h14a2 2 0 012 2v12
-                                       a2 2 0 01-2 2H5
-                                       a2 2 0 01-2-2V6
-                                       a2 2 0 012-2z" />
-
-                            </svg>
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-
-
-                {{-- ACTIVE FORMS --}}
-                <div class="bg-white
-                            rounded-3xl
-                            shadow-lg
-                            p-6
-                            border border-gray-100">
-
-                    <div class="flex
-                                items-center
-                                justify-between">
-
-                        <div>
-
-                            <p class="text-sm
-                                      font-semibold
-                                      text-gray-400">
-
-                                Active Forms
-
-                            </p>
-
-                            <p class="text-3xl
-                                      font-extrabold
-                                      text-green-600
-                                      mt-2">
-
-                                {{ $activeForms }}
-
-                            </p>
-
-                        </div>
-
-
-                        <div class="w-14 h-14
-                                    rounded-2xl
-                                    bg-green-100
-                                    flex items-center
-                                    justify-center">
-
-                            <svg xmlns="http://www.w3.org/2000/svg"
-                                class="h-7 w-7 text-green-700"
-                                fill="none"
-                                viewBox="0 0 24 24"
-                                stroke="currentColor">
-
-                                <path
-                                    stroke-linecap="round"
-                                    stroke-linejoin="round"
-                                    stroke-width="2"
-                                    d="M9 12l2 2 4-4
-                                       m6 2a9 9 0 11-18 0
-                                       9 9 0 0118 0z" />
-
-                            </svg>
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-
-
-                {{-- DOCUMENTS --}}
-                <div class="bg-white
-                            rounded-3xl
-                            shadow-lg
-                            p-6
-                            border border-gray-100">
-
-                    <div class="flex
-                                items-center
-                                justify-between">
-
-                        <div>
-
-                            <p class="text-sm
-                                      font-semibold
-                                      text-gray-400">
-
-                                Evaluation Documents
-
-                            </p>
-
-                            <p class="text-3xl
-                                      font-extrabold
-                                      text-blue-600
-                                      mt-2">
-
-                                {{ $totalDocuments }}
-
-                            </p>
-
-                        </div>
-
-
-                        <div class="w-14 h-14
-                                    rounded-2xl
-                                    bg-blue-100
-                                    flex items-center
-                                    justify-center">
-
-                            <svg xmlns="http://www.w3.org/2000/svg"
-                                class="h-7 w-7 text-blue-700"
-                                fill="none"
-                                viewBox="0 0 24 24"
-                                stroke="currentColor">
-
-                                <path
-                                    stroke-linecap="round"
-                                    stroke-linejoin="round"
-                                    stroke-width="2"
-                                    d="M7 21h10
-                                       a2 2 0 002-2V7
-                                       l-5-5H7
-                                       a2 2 0 00-2 2v15
-                                       a2 2 0 002 2z
-                                       M14 2v5h5" />
-
-                            </svg>
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-
-
-                {{-- OBSERVATION RECORDS --}}
-                <div class="bg-white
-                            rounded-3xl
-                            shadow-lg
-                            p-6
-                            border border-gray-100">
-
-                    <div class="flex
-                                items-center
-                                justify-between">
-
-                        <div>
-
-                            <p class="text-sm
-                                      font-semibold
-                                      text-gray-400">
-
-                                Observation Records
-
-                            </p>
-
-                            <p class="text-3xl
-                                      font-extrabold
-                                      text-orange-500
-                                      mt-2">
-
-                                {{ $totalAudits }}
-
-                            </p>
-
-                        </div>
-
-
-                        <div class="w-14 h-14
-                                    rounded-2xl
-                                    bg-orange-100
-                                    flex items-center
-                                    justify-center">
-
-                            <svg xmlns="http://www.w3.org/2000/svg"
-                                class="h-7 w-7 text-orange-600"
-                                fill="none"
-                                viewBox="0 0 24 24"
-                                stroke="currentColor">
-
-                                <path
-                                    stroke-linecap="round"
-                                    stroke-linejoin="round"
-                                    stroke-width="2"
-                                    d="M9 5H7a2 2 0 00-2 2v12
-                                       a2 2 0 002 2h10
-                                       a2 2 0 002-2V7
-                                       a2 2 0 00-2-2h-2
-                                       M9 5a2 2 0 002 2h2
-                                       a2 2 0 002-2
-                                       M9 5a2 2 0 012-2h2
-                                       a2 2 0 012 2
-                                       m-6 8l2 2 4-4" />
-
-                            </svg>
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-            </div>
-
-
-
-            {{-- ========================================================= --}}
-            {{-- FORM MANAGEMENT --}}
-            {{-- ========================================================= --}}
-
-            <div class="bg-white
-                        rounded-3xl
-                        shadow-lg
-                        p-8 mb-8">
-
-
-                <div class="mb-7">
-
-                    <h2 class="text-xl
-                               font-bold
-                               text-gray-800">
-
-                        Evaluation Form Management
-
-                    </h2>
-
-                    <p class="text-sm
-                              text-gray-400
-                              mt-1">
-
-                        Manage observation and evaluation forms
-
+                    <p class="text-2xl font-bold text-slate-900 mt-1">
+                        {{ $totalForms }}
                     </p>
 
                 </div>
 
 
+                {{-- Active Forms --}}
+                <div class="bg-white rounded-2xl border border-slate-200 shadow-sm px-5 py-4">
 
-                <div class="grid grid-cols-1
-                            md:grid-cols-3
-                            gap-6">
+                    <p class="text-sm font-semibold text-slate-900">
+                        Active Forms
+                    </p>
+
+                    <p class="text-2xl font-bold text-slate-900 mt-1">
+                        {{ $activeForms }}
+                    </p>
+
+                </div>
 
 
-                    {{-- PRE --}}
+                {{-- Total Records --}}
+                <div class="bg-white rounded-2xl border border-slate-200 shadow-sm px-5 py-4">
+
+                    <p class="text-sm font-semibold text-slate-900">
+                        Total Observation Records
+                    </p>
+
+                    <p class="text-2xl font-bold text-slate-900 mt-1">
+                        {{ $totalRecords }}
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            {{-- Observation Forms --}}
+            <div class="bg-white rounded-3xl border border-slate-200 shadow-sm p-7 mb-8">
+
+                <div class="mb-6">
+
+                    <h2 class="text-xl font-bold text-slate-900">
+                        Observation Forms
+                    </h2>
+
+                </div>
+
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+
+                    {{-- PRE Form --}}
                     <a
                         href="{{ route('admin.pre.form') }}"
-                        class="group
-                               border border-gray-200
-                               rounded-2xl
-                               p-6
-                               hover:border-violet-400
-                               hover:bg-violet-50/50
-                               transition">
+                        class="group border border-slate-200 rounded-2xl p-5 hover:border-violet-400 hover:bg-violet-50/50 transition">
 
-                        <div class="flex
-                                    items-center
-                                    justify-between
-                                    mb-5">
+                        <div class="flex items-center justify-between gap-4">
 
-                            <div class="w-12 h-12
-                                        rounded-xl
-                                        bg-violet-100
-                                        flex items-center
-                                        justify-center">
+                            <div class="min-w-0">
 
-                                <span class="font-bold
-                                             text-violet-700">
+                                <p class="text-xs font-bold text-violet-700 uppercase">
                                     PRE
-                                </span>
+                                </p>
+
+                                <h3 class="font-bold text-slate-900 mt-2 truncate">
+                                    {{ $activePreForm->form_name ?? 'Not Created Yet' }}
+                                </h3>
+
+                                <p class="text-sm text-slate-900 mt-1">
+                                    {{ $preFormCount }}
+                                    {{ $preFormCount === 1 ? 'version' : 'versions' }}
+                                </p>
 
                             </div>
 
-
-                            <span class="text-gray-300
-                                         group-hover:text-violet-600
-                                         text-xl">
+                            <span class="text-xl font-semibold text-slate-900 group-hover:text-violet-700 transition">
                                 →
                             </span>
 
                         </div>
 
-
-                        <h3 class="font-bold
-                                   text-gray-800">
-
-                            Pre-Observation Form
-
-                        </h3>
-
-                        <p class="text-sm
-                                  text-gray-400 mt-1">
-
-                            {{ $preFormCount }} form
-
-                        </p>
-
                     </a>
 
 
-
-                    {{-- PDPC --}}
+                    {{-- PDPC Form --}}
                     <a
                         href="{{ route('admin.pdpc.form') }}"
-                        class="group
-                               border border-gray-200
-                               rounded-2xl
-                               p-6
-                               hover:border-blue-400
-                               hover:bg-blue-50/50
-                               transition">
+                        class="group border border-slate-200 rounded-2xl p-5 hover:border-blue-400 hover:bg-blue-50/50 transition">
 
-                        <div class="flex
-                                    items-center
-                                    justify-between
-                                    mb-5">
+                        <div class="flex items-center justify-between gap-4">
 
-                            <div class="w-12 h-12
-                                        rounded-xl
-                                        bg-blue-100
-                                        flex items-center
-                                        justify-center">
+                            <div class="min-w-0">
 
-                                <span class="font-bold
-                                             text-blue-700">
+                                <p class="text-xs font-bold text-blue-700 uppercase">
                                     PDPC
-                                </span>
+                                </p>
+
+                                <h3 class="font-bold text-slate-900 mt-2 truncate">
+                                    {{ $activePdpcForm->form_name ?? 'Not Created Yet' }}
+                                </h3>
+
+                                <p class="text-sm text-slate-900 mt-1">
+                                    {{ $pdpcFormCount }}
+                                    {{ $pdpcFormCount === 1 ? 'version' : 'versions' }}
+                                </p>
 
                             </div>
 
-
-                            <span class="text-gray-300
-                                         group-hover:text-blue-600
-                                         text-xl">
+                            <span class="text-xl font-semibold text-slate-900 group-hover:text-blue-700 transition">
                                 →
                             </span>
 
                         </div>
-
-
-                        <h3 class="font-bold
-                                   text-gray-800">
-
-                            PDPC Evaluation Form
-
-                        </h3>
-
-                        <p class="text-sm
-                                  text-gray-400 mt-1">
-
-                            {{ $pdpcFormCount }} form(s)
-
-                        </p>
 
                     </a>
 
 
-
-                    {{-- POST --}}
+                    {{-- Feedback Form --}}
                     <a
                         href="{{ route('admin.post.form') }}"
-                        class="group
-                               border border-gray-200
-                               rounded-2xl
-                               p-6
-                               hover:border-green-400
-                               hover:bg-green-50/50
-                               transition">
+                        class="group border border-slate-200 rounded-2xl p-5 hover:border-emerald-400 hover:bg-emerald-50/50 transition">
 
-                        <div class="flex
-                                    items-center
-                                    justify-between
-                                    mb-5">
+                        <div class="flex items-center justify-between gap-4">
 
-                            <div class="w-12 h-12
-                                        rounded-xl
-                                        bg-green-100
-                                        flex items-center
-                                        justify-center">
+                            <div class="min-w-0">
 
-                                <span class="font-bold
-                                             text-green-700">
-                                    POST
-                                </span>
+                                <p class="text-xs font-bold text-emerald-700 uppercase">
+                                    Feedback
+                                </p>
+
+                                <h3 class="font-bold text-slate-900 mt-2 truncate">
+                                    {{ $activePostForm->form_name ?? 'Not Created Yet' }}
+                                </h3>
+
+                                <p class="text-sm text-slate-900 mt-1">
+                                    {{ $postFormCount }}
+                                    {{ $postFormCount === 1 ? 'version' : 'versions' }}
+                                </p>
 
                             </div>
 
-
-                            <span class="text-gray-300
-                                         group-hover:text-green-600
-                                         text-xl">
+                            <span class="text-xl font-semibold text-slate-900 group-hover:text-emerald-700 transition">
                                 →
                             </span>
 
                         </div>
-
-
-                        <h3 class="font-bold
-                                   text-gray-800">
-
-                            Post-Observation Form
-
-                        </h3>
-
-                        <p class="text-sm
-                                  text-gray-400 mt-1">
-
-                            {{ $postFormCount }} form
-
-                        </p>
 
                     </a>
 
@@ -547,89 +200,78 @@
             </div>
 
 
+            {{-- Observation Audit --}}
+            <div class="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden">
 
-            {{-- ========================================================= --}}
-            {{-- RECENT OBSERVATION ACTIVITY --}}
-            {{-- ========================================================= --}}
+                {{-- Audit Header --}}
+                <div class="px-8 py-6 border-b border-slate-100 flex items-center justify-between gap-4">
 
-            <div class="bg-white
-                        rounded-3xl
-                        shadow-lg
-                        overflow-hidden">
+                    <div>
 
+                        <h2 class="text-xl font-bold text-slate-900">
+                            Observation Audit
+                        </h2>
 
-                <div class="px-8 py-6
-                            border-b border-gray-100">
+                        <p class="text-sm text-slate-900 mt-1">
+                            Latest submitted observation records
+                        </p>
 
-                    <h2 class="text-xl
-                               font-bold
-                               text-gray-800">
+                    </div>
 
-                        Recent Observation Activity
+                    <a
+                        href="{{ route('admin.audit.observation') }}"
+                        class="inline-flex items-center justify-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold rounded-lg transition">
 
-                    </h2>
+                        View Audit
 
-                    <p class="text-sm
-                              text-gray-400
-                              mt-1">
-
-                        Latest submitted observation records
-
-                    </p>
+                    </a>
 
                 </div>
 
 
-
+                {{-- Audit Table --}}
                 <div class="overflow-x-auto">
 
                     <table class="w-full text-sm">
 
-
-                        <thead class="bg-slate-50
-                                      text-gray-500
-                                      uppercase text-xs">
+                        <thead class="bg-slate-50 text-slate-900 uppercase text-xs">
 
                             <tr>
 
-                                <th class="px-6 py-4
-                                           text-left
-                                           font-semibold">
-
-                                    Observer
-
+                                <th class="px-5 py-4 text-left font-semibold">
+                                    No.
                                 </th>
 
-                                <th class="px-6 py-4
-                                           text-left
-                                           font-semibold">
-
-                                    Teacher
-
-                                </th>
-
-                                <th class="px-6 py-4
-                                           text-left
-                                           font-semibold">
-
-                                    Role
-
-                                </th>
-
-                                <th class="px-6 py-4
-                                           text-left
-                                           font-semibold">
-
-                                    Stage
-
-                                </th>
-
-                                <th class="px-6 py-4
-                                           text-left
-                                           font-semibold">
-
+                                <th class="px-5 py-4 text-left font-semibold">
                                     Date
+                                </th>
 
+                                <th class="px-5 py-4 text-left font-semibold">
+                                    Time
+                                </th>
+
+                                <th class="px-5 py-4 text-left font-semibold whitespace-nowrap">
+                                    Observed By
+                                </th>
+
+                                <th class="px-5 py-4 text-left font-semibold">
+                                    Role
+                                </th>
+
+                                <th class="px-5 py-4 text-left font-semibold whitespace-nowrap">
+                                    Teacher Observed
+                                </th>
+
+                                <th class="px-5 py-4 text-left font-semibold">
+                                    Form
+                                </th>
+
+                                <th class="px-5 py-4 text-left font-semibold">
+                                    Stage
+                                </th>
+
+                                <th class="px-5 py-4 text-center font-semibold">
+                                    Action
                                 </th>
 
                             </tr>
@@ -637,141 +279,168 @@
                         </thead>
 
 
-
-                        <tbody class="divide-y
-                                     divide-gray-100">
+                        <tbody class="divide-y divide-slate-100">
 
                             @forelse($recentAudits as $audit)
 
-                                <tr class="hover:bg-violet-50/50
-                                           transition">
+                            <tr class="hover:bg-violet-50/50 transition">
+
+                                {{-- Number --}}
+                                <td class="px-5 py-5 text-slate-900">
+
+                                    {{ $loop->iteration }}
+
+                                </td>
 
 
-                                    {{-- OBSERVER --}}
-                                    <td class="px-6 py-5">
+                                {{-- Date --}}
+                                <td class="px-5 py-5 text-slate-900">
 
-                                        <p class="font-semibold
-                                                  text-gray-800">
+                                    {{ $audit->audit_date
+                                ? \Carbon\Carbon::parse($audit->audit_date)->format('d/m/Y')
+                                : '-' }}
 
-                                            {{ $audit->teacher?->teacher_name ?? '-' }}
-
-                                        </p>
-
-                                    </td>
+                                </td>
 
 
+                                {{-- Time --}}
+                                <td class="px-5 py-5 text-slate-900">
 
-                                    {{-- NEW TEACHER --}}
-                                    <td class="px-6 py-5">
+                                    {{ $audit->audit_time
+                                ? \Carbon\Carbon::parse($audit->audit_time)->format('h:i A')
+                                : '-' }}
 
-                                        <p class="font-semibold
-                                                  text-gray-800">
-
-                                            {{ $audit->guruNew?->gn_name ?? '-' }}
-
-                                        </p>
-
-                                        @if($audit->guruNew)
-
-                                            <p class="text-xs
-                                                      text-gray-400
-                                                      mt-1">
-
-                                                {{ $audit->guruNew->gn_id }}
-
-                                            </p>
-
-                                        @endif
-
-                                    </td>
+                                </td>
 
 
+                                {{-- Observed By --}}
+                                <td class="px-5 py-5">
 
-                                    {{-- ROLE --}}
-                                    <td class="px-6 py-5">
+                                    <p class="font-semibold text-slate-900 uppercase">
+                                        {{ $audit->teacher_name ?? '-' }}
+                                    </p>
 
-                                        @if($audit->role === 'External Observer')
-
-                                            <span class="inline-flex
-                                                         px-3 py-1
-                                                         rounded-full
-                                                         text-xs
-                                                         font-semibold
-                                                         bg-blue-100
-                                                         text-blue-700">
-
-                                                External Observer
-
-                                            </span>
-
-                                        @else
-
-                                            <span class="inline-flex
-                                                         px-3 py-1
-                                                         rounded-full
-                                                         text-xs
-                                                         font-semibold
-                                                         bg-violet-100
-                                                         text-violet-700">
-
-                                                {{ $audit->role }}
-
-                                            </span>
-
-                                        @endif
-
-                                    </td>
+                                </td>
 
 
+                                {{-- Role --}}
+                                <td class="px-5 py-5">
 
-                                    {{-- STAGE --}}
-                                    <td class="px-6 py-5">
+                                    @if($audit->role === 'Observer')
 
-                                        <span class="font-semibold
-                                                     text-gray-600">
+                                    <span class="inline-flex px-3 py-1 rounded-full bg-blue-100 text-blue-700 text-xs font-semibold">
+                                        Observer
+                                    </span>
 
-                                            {{ $audit->stage }}
+                                    @elseif($audit->role === 'External Observer')
 
-                                        </span>
+                                    <span class="inline-flex px-3 py-1 rounded-full bg-violet-100 text-violet-700 text-xs font-semibold">
+                                        External Observer
+                                    </span>
 
-                                    </td>
+                                    @else
+
+                                    <span class="inline-flex px-3 py-1 rounded-full bg-slate-100 text-slate-900 text-xs font-semibold">
+                                        {{ $audit->role ?? '-' }}
+                                    </span>
+
+                                    @endif
+
+                                </td>
 
 
+                                {{-- Teacher Observed --}}
+                                <td class="px-5 py-5">
 
-                                    {{-- DATE --}}
-                                    <td class="px-6 py-5
-                                               text-gray-600">
+                                    <p class="font-semibold text-slate-900 uppercase">
+                                        {{ $audit->gn_name ?? '-' }}
+                                    </p>
 
-                                        @if($audit->audit_date)
+                                </td>
 
-                                            {{ \Carbon\Carbon::parse($audit->audit_date)->format('d M Y') }}
 
-                                        @else
+                                {{-- Form --}}
+                                <td class="px-5 py-5 text-slate-900">
 
-                                            -
+                                    {{ $audit->form_name ?? '-' }}
 
-                                        @endif
+                                </td>
 
-                                    </td>
 
-                                </tr>
+                                {{-- Stage --}}
+                                <td class="px-5 py-5">
 
+                                    @if($audit->stage === 'PRE')
+
+                                    <span class="inline-flex px-3 py-1 rounded-full bg-sky-100 text-sky-700 text-xs font-semibold">
+                                        PRE
+                                    </span>
+
+                                    @elseif($audit->stage === 'POST')
+
+                                    <span class="inline-flex px-3 py-1 rounded-full bg-emerald-100 text-emerald-700 text-xs font-semibold">
+                                        POST
+                                    </span>
+
+                                    @elseif($audit->stage === 'EXTERNAL')
+
+                                    <span class="inline-flex px-3 py-1 rounded-full bg-amber-100 text-amber-700 text-xs font-semibold">
+                                        EXTERNAL
+                                    </span>
+
+                                    @else
+
+                                    <span class="inline-flex px-3 py-1 rounded-full bg-slate-100 text-slate-900 text-xs font-semibold">
+                                        {{ $audit->stage ?? '-' }}
+                                    </span>
+
+                                    @endif
+
+                                </td>
+
+
+                                {{-- Action --}}
+                                <td class="px-5 py-5 text-center">
+
+                                    @if($audit->action === 'Submitted')
+
+                                    <span class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-100 text-emerald-700 text-xs font-semibold">
+
+                                        <span class="w-2 h-2 bg-emerald-500 rounded-full"></span>
+
+                                        Submitted
+
+                                    </span>
+
+                                    @else
+
+                                    <span class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-100 text-blue-700 text-xs font-semibold">
+
+                                        <span class="w-2 h-2 bg-blue-500 rounded-full"></span>
+
+                                        {{ $audit->action ?? '-' }}
+
+                                    </span>
+
+                                    @endif
+
+                                </td>
+
+                            </tr>
 
                             @empty
 
-                                <tr>
+                            <tr>
 
-                                    <td
-                                        colspan="5"
-                                        class="text-center
-                                               py-12
-                                               text-gray-400">
+                                <td
+                                    colspan="9"
+                                    class="text-center py-12 text-slate-900">
 
-                                        No observation activity found
+                                    No observation audit records found.
 
-                                    </td>
+                                </td>
 
-                                </tr>
+                            </tr>
 
                             @endforelse
 
@@ -782,7 +451,6 @@
                 </div>
 
             </div>
-
 
         </div>
 

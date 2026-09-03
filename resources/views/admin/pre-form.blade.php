@@ -6,27 +6,24 @@
         </h2>
     </x-slot>
 
+
     <div class="py-10 bg-gray-100 min-h-screen">
 
         <div class="max-w-7xl mx-auto px-6">
 
-            {{-- HEADER --}}
-            <div class="relative bg-gradient-to-br
-                        from-slate-900 via-violet-950 to-purple-900
-                        rounded-3xl p-8 shadow-xl overflow-hidden mb-8">
+            {{-- Header --}}
+            <div class="relative bg-gradient-to-br from-slate-900 via-violet-950 to-purple-900 rounded-3xl px-8 py-7 shadow-xl overflow-hidden mb-8">
 
-                <div class="absolute right-0 top-0 translate-x-10 -translate-y-10
-                            w-72 h-72 bg-purple-500/10 rounded-full blur-3xl">
-                </div>
+                <div class="absolute right-0 top-0 translate-x-10 -translate-y-10 w-72 h-72 bg-purple-500/10 rounded-full blur-3xl"></div>
 
                 <div class="relative z-10">
 
                     <h1 class="text-3xl font-extrabold text-white">
-                        Manage Pre-Observation Form
+                        Pre-Observation Form Versions
                     </h1>
 
                     <p class="text-violet-300 mt-2">
-                        Manage form information, sections and criteria
+                        Manage form content
                     </p>
 
                 </div>
@@ -34,1038 +31,381 @@
             </div>
 
 
-            {{-- SUCCESS --}}
+            {{-- Success Message --}}
             @if(session('success'))
 
-                <div class="mb-6 px-5 py-4
-                            bg-green-100 border border-green-200
-                            text-green-700 rounded-xl">
-
-                    {{ session('success') }}
-
-                </div>
+            <div class="mb-6 px-5 py-4 bg-green-100 border border-green-200 text-green-700 rounded-xl">
+                {{ session('success') }}
+            </div>
 
             @endif
 
 
-            {{-- ERROR --}}
+            {{-- Error Message --}}
             @if(session('error'))
 
-                <div class="mb-6 px-5 py-4
-                            bg-red-100 border border-red-200
-                            text-red-700 rounded-xl">
-
-                    {{ session('error') }}
-
-                </div>
+            <div class="mb-6 px-5 py-4 bg-red-100 border border-red-200 text-red-700 rounded-xl">
+                {{ session('error') }}
+            </div>
 
             @endif
 
 
-            {{-- CREATE FORM --}}
-            @if(!$form)
+            {{-- Validation Errors --}}
+            @if($errors->any())
 
-                <div class="bg-white rounded-3xl shadow-lg overflow-hidden">
+            <div class="mb-6 px-5 py-4 bg-red-100 border border-red-200 text-red-700 rounded-xl">
 
-                    <div class="px-6 py-4 border-b border-gray-100">
+                <ul class="list-disc list-inside text-sm">
 
-                        <h2 class="text-lg font-bold text-gray-800">
-                            Create Pre-Observation Form
-                        </h2>
+                    @foreach($errors->all() as $error)
 
-                        <p class="text-sm text-gray-400 mt-1">
-                            Create the form before adding sections and criteria
-                        </p>
+                    <li>
+                        {{ $error }}
+                    </li>
 
-                    </div>
+                    @endforeach
 
+                </ul>
 
-                    <div class="px-6 py-5">
+            </div>
 
-                        <form
-                            method="POST"
-                            action="{{ route('admin.pre.form.store') }}">
-
-                            @csrf
+            @endif
 
 
-                            <div class="grid grid-cols-1
-                                        md:grid-cols-[1fr_180px_1fr]
-                                        gap-4">
+            {{-- Create First Form --}}
+            @if($forms->isEmpty())
 
-                                {{-- FORM NAME --}}
-                                <div>
+            <div class="bg-white rounded-3xl shadow-sm border border-gray-200 overflow-hidden mb-24">
 
-                                    <label class="block text-sm
-                                                  text-gray-700
-                                                  font-semibold mb-2">
-                                        Form Name
-                                    </label>
+                {{-- Create Header --}}
+                <div class="px-6 py-5 border-b border-gray-100">
 
-                                    <input
-                                        type="text"
-                                        name="form_name"
-                                        value="{{ old('form_name') }}"
-                                        required
-                                        placeholder="E.g. Pre-Observation Form"
-                                        class="w-full rounded-xl
-                                               border-gray-300
-                                               focus:border-purple-500
-                                               focus:ring-purple-500">
+                    <h2 class="text-lg font-bold text-gray-900">
+                        Create Pre-Observation Form
+                    </h2>
 
-                                </div>
-
-
-                                {{-- STATUS --}}
-                                <div>
-
-                                    <label class="block text-sm
-                                                  text-gray-700
-                                                  font-semibold mb-2">
-                                        Status
-                                    </label>
-
-                                    <select
-                                        name="status"
-                                        required
-                                        class="w-full rounded-xl
-                                               border-gray-300
-                                               focus:border-purple-500
-                                               focus:ring-purple-500">
-
-                                        <option value="Active">
-                                            Active
-                                        </option>
-
-                                        <option value="Inactive">
-                                            Inactive
-                                        </option>
-
-                                    </select>
-
-                                </div>
-
-
-                                {{-- INSTRUCTION --}}
-                                <div>
-
-                                    <label class="block text-sm
-                                                  text-gray-700
-                                                  font-semibold mb-2">
-                                        Instruction
-                                    </label>
-
-                                    <input
-                                        type="text"
-                                        name="instruction"
-                                        value="{{ old('instruction') }}"
-                                        placeholder="Enter instruction"
-                                        class="w-full rounded-xl
-                                               border-gray-300
-                                               focus:border-purple-500
-                                               focus:ring-purple-500">
-
-                                </div>
-
-                            </div>
-
-
-                            <div class="flex justify-end gap-3 mt-5">
-
-                                <a
-                                    href="{{ route('admin.manage.form') }}"
-                                    class="px-5 py-2
-                                           bg-gray-200 hover:bg-gray-300
-                                           text-gray-700 font-semibold text-sm
-                                           rounded-xl transition">
-
-                                    Back
-
-                                </a>
-
-                                <button
-                                    type="submit"
-                                    class="px-5 py-2
-                                           bg-blue-700 hover:bg-blue-800
-                                           text-white font-semibold text-sm
-                                           rounded-xl shadow transition">
-
-                                    Create Form
-
-                                </button>
-
-                            </div>
-
-                        </form>
-
-                    </div>
+                    <p class="text-sm text-gray-400 mt-1">
+                        Create the first version of the form
+                    </p>
 
                 </div>
 
+
+                {{-- Create Form --}}
+                <div class="p-6">
+
+                    <form
+                        method="POST"
+                        action="{{ route('admin.pre.form.store') }}">
+
+                        @csrf
+
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+
+                            {{-- Form Name --}}
+                            <div>
+
+                                <label class="block text-sm font-semibold text-gray-700 mb-2">
+                                    Form Name
+                                </label>
+
+                                <input
+                                    type="text"
+                                    name="form_name"
+                                    value="{{ old('form_name') }}"
+                                    required
+                                    class="w-full rounded-xl border-gray-300 focus:border-blue-500 focus:ring-blue-500">
+
+                            </div>
+
+
+                            {{-- Instruction --}}
+                            <div>
+
+                                <label class="block text-sm font-semibold text-gray-700 mb-2">
+                                    Instruction
+                                </label>
+
+                                <input
+                                    type="text"
+                                    name="instruction"
+                                    value="{{ old('instruction') }}"
+                                    class="w-full rounded-xl border-gray-300 focus:border-blue-500 focus:ring-blue-500">
+
+                            </div>
+
+
+                            {{-- Minimum Score --}}
+                            <div>
+
+                                <label class="block text-sm font-semibold text-gray-700 mb-2">
+                                    Minimum Score
+                                </label>
+
+                                <input
+                                    type="number"
+                                    name="min_score"
+                                    value="{{ old('min_score', 1) }}"
+                                    min="0"
+                                    required
+                                    class="w-full rounded-xl border-gray-300 focus:border-blue-500 focus:ring-blue-500">
+
+                            </div>
+
+
+                            {{-- Maximum Score --}}
+                            <div>
+
+                                <label class="block text-sm font-semibold text-gray-700 mb-2">
+                                    Maximum Score
+                                </label>
+
+                                <input
+                                    type="number"
+                                    name="max_score"
+                                    value="{{ old('max_score', 5) }}"
+                                    min="1"
+                                    required
+                                    class="w-full rounded-xl border-gray-300 focus:border-blue-500 focus:ring-blue-500">
+
+                            </div>
+
+                        </div>
+
+
+                        {{-- Create Button --}}
+                        <div class="flex justify-end mt-6">
+
+                            <button
+                                type="submit"
+                                class="px-6 py-2.5 bg-blue-700 hover:bg-blue-800 text-white text-sm font-semibold rounded-xl transition">
+
+                                Create Form
+
+                            </button>
+
+                        </div>
+
+                    </form>
+
+                </div>
+
+            </div>
 
             @else
 
-
-                {{-- FORM INFORMATION --}}
-                <div class="bg-white rounded-3xl shadow-lg overflow-hidden mb-8">
-
-                    <div class="px-6 py-4 border-b border-gray-100">
-
-                        <h2 class="text-lg font-bold text-gray-800">
-                            Form Information
-                        </h2>
-
-                        <p class="text-sm text-gray-400 mt-1">
-                            Update the main information displayed on the form
-                        </p>
-
-                    </div>
+            @php
+            $activeForm = $forms->firstWhere('status', 'Active');
+            @endphp
 
 
-                    <div class="px-6 py-5">
+            {{-- Version Table --}}
+            <div class="bg-white border border-gray-200 rounded-3xl shadow-sm mb-24">
 
-                        <form
-                            method="POST"
-                            action="{{ route(
-                                'admin.pre.form.update',
-                                $form->formID
-                            ) }}">
+                <div class="overflow-x-auto rounded-3xl">
 
-                            @csrf
-                            @method('PUT')
+                    <table class="w-full text-sm">
 
+                        <thead class="bg-slate-50 border-b border-gray-200">
 
-                            <div class="grid grid-cols-1
-                                        md:grid-cols-[1fr_180px_1fr]
-                                        gap-4">
+                            <tr class="text-xs uppercase tracking-wide text-gray-900">
 
-                                {{-- FORM NAME --}}
-                                <div>
+                                <th class="px-6 py-4 text-left w-32">
+                                    Version
+                                </th>
 
-                                    <label class="block text-sm
-                                                  text-gray-700
-                                                  font-semibold mb-2">
-                                        Form Name
-                                    </label>
+                                <th class="px-6 py-4 text-left">
+                                    Form Content
+                                </th>
 
-                                    <input
-                                        type="text"
-                                        name="form_name"
-                                        value="{{ old(
-                                            'form_name',
-                                            $form->form_name
-                                        ) }}"
-                                        required
-                                        class="w-full rounded-xl
-                                               border-gray-300">
+                                <th class="px-6 py-4 text-center w-32">
+                                    Status
+                                </th>
 
-                                </div>
+                                <th class="px-6 py-4 text-center w-32">
+                                    Usage
+                                </th>
+
+                                <th class="px-6 py-4 text-center w-24">
+                                    Action
+                                </th>
+
+                            </tr>
+
+                        </thead>
 
 
-                                {{-- STATUS --}}
-                                <div>
+                        <tbody class="divide-y divide-gray-100">
 
-                                    <label class="block text-sm
-                                                  text-gray-700
-                                                  font-semibold mb-2">
-                                        Status
-                                    </label>
+                            @foreach($forms as $form)
 
-                                    <select
-                                        name="status"
-                                        required
-                                        class="w-full rounded-xl
-                                               border-gray-300">
+                            <tr class="{{ $form->status === 'Active' ? 'bg-blue-50/40' : 'bg-white' }} hover:bg-slate-50 transition">
 
-                                        <option
-                                            value="Active"
-                                            {{ $form->status === 'Active'
-                                                ? 'selected'
-                                                : '' }}>
-                                            Active
-                                        </option>
+                                {{-- Version --}}
+                                <td class="px-6 py-6">
 
-                                        <option
-                                            value="Inactive"
-                                            {{ $form->status === 'Inactive'
-                                                ? 'selected'
-                                                : '' }}>
-                                            Inactive
-                                        </option>
+                                    <div class="w-14 h-14 rounded-2xl bg-blue-600 text-white flex items-center justify-center text-lg font-bold">
 
-                                    </select>
+                                        V{{ $form->version }}
 
-                                </div>
+                                    </div>
+
+                                </td>
 
 
-                                {{-- INSTRUCTION --}}
-                                <div>
+                                {{-- Form Content --}}
+                                <td class="px-6 py-6">
 
-                                    <label class="block text-sm
-                                                  text-gray-700
-                                                  font-semibold mb-2">
-                                        Instruction
-                                    </label>
+                                    <p class="font-bold text-slate-900 text-base mb-2">
+                                        {{ $form->form_name }}
+                                    </p>
 
-                                    <input
-                                        type="text"
-                                        name="instruction"
-                                        value="{{ old(
-                                            'instruction',
-                                            $form->instruction
-                                        ) }}"
-                                        class="w-full rounded-xl
-                                               border-gray-300">
+                                    <div class="flex flex-wrap items-center gap-x-6 gap-y-1 text-gray-500">
 
-                                </div>
+                                        <span>
 
-                            </div>
+                                            <strong class="text-gray-900">
+                                                {{ $form->section_count }}
+                                            </strong>
+
+                                            Sections
+
+                                        </span>
 
 
-                            <div class="flex justify-end gap-3 mt-5">
+                                        <span>
 
-                                <a
-                                    href="{{ route('admin.manage.form') }}"
-                                    class="px-5 py-2
-                                           bg-gray-200 hover:bg-gray-300
-                                           text-gray-700
-                                           font-semibold text-sm
-                                           rounded-xl transition">
+                                            <strong class="text-gray-900">
+                                                {{ $form->criteria_count }}
+                                            </strong>
 
-                                    Back
+                                            Criteria
 
-                                </a>
+                                        </span>
 
-                                <button
-                                    type="submit"
-                                    class="px-5 py-2
-                                           bg-blue-700 hover:bg-blue-800
-                                           text-white
-                                           font-semibold text-sm
-                                           rounded-xl shadow transition">
 
-                                    Save
+                                        <span>
 
-                                </button>
+                                            <strong class="text-gray-900">
+                                                {{ $form->min_score }} - {{ $form->max_score }}
+                                            </strong>
 
-                            </div>
+                                            Score Range
 
-                        </form>
+                                        </span>
 
-                    </div>
+
+                                        <span>
+
+                                            <strong class="text-amber-600">
+                                                {{ $form->max_mark }}
+                                            </strong>
+
+                                            Maximum Total
+
+                                        </span>
+
+                                    </div>
+
+
+                                    @if($form->instruction)
+
+                                    <p class="text-gray-400 mt-2">
+                                        {{ $form->instruction }}
+                                    </p>
+
+                                    @else
+
+                                    <p class="text-gray-300 mt-2">
+                                        No instruction
+                                    </p>
+
+                                    @endif
+
+                                </td>
+
+
+                                {{-- Status --}}
+                                <td class="px-6 py-6 text-center">
+
+                                    @if($form->status === 'Active')
+
+                                    <span class="inline-flex px-3 py-1 rounded-full bg-green-100 text-green-700 text-xs font-semibold">
+                                        Active
+                                    </span>
+
+                                    @else
+
+                                    <span class="inline-flex px-3 py-1 rounded-full bg-gray-100 text-gray-500 text-xs font-semibold">
+                                        Inactive
+                                    </span>
+
+                                    @endif
+
+                                </td>
+
+
+                                {{-- Usage --}}
+                                <td class="px-6 py-6 text-center">
+
+                                    @if($form->is_used)
+
+                                    <span class="inline-flex px-3 py-1 rounded-full bg-amber-100 text-amber-700 text-xs font-semibold">
+                                        Used
+                                    </span>
+
+                                    @else
+
+                                    <span class="inline-flex px-3 py-1 rounded-full bg-blue-100 text-blue-700 text-xs font-semibold">
+                                        Not Used
+                                    </span>
+
+                                    @endif
+
+                                </td>
+
+
+                                {{-- Action --}}
+                                <td class="px-6 py-6 text-center">
+
+                                    <button
+                                        type="button"
+                                        data-preview="{{ route('admin.pre.form.preview', $form) }}"
+                                        data-edit="{{ route('admin.pre.form.edit', $form) }}"
+                                        data-delete="{{ !$form->is_used ? route('admin.pre.form.delete', $form) : '' }}"
+                                        data-version="{{ $form->version }}"
+                                        onclick="openActionMenu(this)"
+                                        class="w-10 h-10 inline-flex items-center justify-center rounded-xl text-gray-500 hover:text-gray-800 hover:bg-gray-200 transition">
+
+                                        <svg
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            class="w-5 h-5"
+                                            fill="currentColor"
+                                            viewBox="0 0 24 24">
+
+                                            <circle cx="12" cy="5" r="1.7"></circle>
+                                            <circle cx="12" cy="12" r="1.7"></circle>
+                                            <circle cx="12" cy="19" r="1.7"></circle>
+
+                                        </svg>
+
+                                    </button>
+
+                                </td>
+
+                            </tr>
+
+                            @endforeach
+
+                        </tbody>
+
+                    </table>
 
                 </div>
 
-
-
-                {{-- FORM CONTENT --}}
-                <div class="bg-white rounded-3xl shadow-lg overflow-hidden mb-8">
-
-                    <div class="px-6 py-5 border-b border-gray-100">
-
-                        <h2 class="text-xl font-bold text-gray-800">
-                            Form Content
-                        </h2>
-
-                        <p class="text-sm text-gray-400 mt-1">
-                            Manage sections and criteria displayed in the Pre-Observation form
-                        </p>
-
-                    </div>
-
-
-                    <div class="overflow-x-auto">
-
-                        <table class="w-full text-sm">
-
-                            <thead class="bg-slate-50
-                                          text-gray-500
-                                          uppercase text-xs">
-
-                                <tr>
-
-                                    <th class="px-6 py-4 text-left w-24">
-                                        No
-                                    </th>
-
-                                    <th class="px-6 py-4 text-left">
-                                        Section / Criteria
-                                    </th>
-
-                                    <th class="px-6 py-4 text-center w-40">
-                                        Status
-                                    </th>
-
-                                    <th class="px-6 py-4 text-center w-48">
-                                        Action
-                                    </th>
-
-                                </tr>
-
-                            </thead>
-
-
-                            <tbody class="divide-y divide-gray-100">
-
-                                @forelse($form->sections as $section)
-
-                                    @php
-                                        $sectionNo = $loop->iteration;
-                                    @endphp
-
-                                    {{-- SECTION ROW --}}
-                                    <tr class="bg-violet-50">
-
-                                        <td class="px-6 py-5
-                                                   font-bold text-violet-700">
-
-                                            {{ $sectionNo }}
-
-                                        </td>
-
-
-                                        <td class="px-6 py-5">
-
-                                            <p class="font-bold text-gray-900">
-                                                {{ $section->section_name }}
-                                            </p>
-
-                                            <p class="text-xs text-gray-400 mt-1">
-                                                Section
-                                            </p>
-
-                                        </td>
-
-
-                                        <td class="px-6 py-5 text-center">
-
-                                            <span class="text-gray-400">
-                                                —
-                                            </span>
-
-                                        </td>
-
-
-                                        <td class="px-6 py-5 text-center">
-
-                                            <div class="inline-flex items-center gap-2">
-
-                                                <button
-                                                    type="button"
-                                                    data-section-id="{{ $section->sectionID }}"
-                                                    onclick="toggleSectionEdit(this)"
-                                                    class="px-4 py-2
-                                                           bg-blue-100
-                                                           text-blue-700
-                                                           hover:bg-blue-200
-                                                           rounded-xl
-                                                           text-sm
-                                                           font-semibold">
-
-                                                    Edit
-
-                                                </button>
-
-
-                                                <form
-                                                    method="POST"
-                                                    action="{{ route(
-                                                        'admin.pre.section.delete',
-                                                        $section->sectionID
-                                                    ) }}">
-
-                                                    @csrf
-                                                    @method('DELETE')
-
-                                                    <button
-                                                        type="submit"
-                                                        onclick="return confirm(
-                                                            'Delete this section and its criteria?'
-                                                        )"
-                                                        class="inline-flex
-                                                               items-center
-                                                               justify-center
-                                                               w-10 h-10
-                                                               bg-red-500
-                                                               hover:bg-red-600
-                                                               text-white
-                                                               rounded-xl">
-
-                                                        <svg
-                                                            xmlns="http://www.w3.org/2000/svg"
-                                                            class="w-5 h-5"
-                                                            fill="none"
-                                                            viewBox="0 0 24 24"
-                                                            stroke="currentColor"
-                                                            stroke-width="2">
-
-                                                            <path
-                                                                stroke-linecap="round"
-                                                                stroke-linejoin="round"
-                                                                d="M3 6h18M8 6V4h8v2m-9 0
-                                                                   1 14h8l1-14
-                                                                   M10 10v6m4-6v6" />
-
-                                                        </svg>
-
-                                                    </button>
-
-                                                </form>
-
-                                            </div>
-
-                                        </td>
-
-                                    </tr>
-
-
-                                    {{-- SECTION EDIT --}}
-                                    <tr
-                                        id="section-edit-{{ $section->sectionID }}"
-                                        class="hidden bg-slate-50">
-
-                                        <td colspan="4" class="p-6">
-
-                                            <form
-                                                method="POST"
-                                                action="{{ route(
-                                                    'admin.pre.section.update',
-                                                    $section->sectionID
-                                                ) }}">
-
-                                                @csrf
-                                                @method('PUT')
-
-
-                                                <div class="flex
-                                                            flex-col
-                                                            md:flex-row
-                                                            gap-4
-                                                            items-end">
-
-                                                    <div class="flex-1">
-
-                                                        <label class="block
-                                                                      text-sm
-                                                                      font-semibold
-                                                                      mb-2">
-                                                            Section Name
-                                                        </label>
-
-                                                        <input
-                                                            type="text"
-                                                            name="section_name"
-                                                            value="{{ $section->section_name }}"
-                                                            required
-                                                            class="w-full
-                                                                   rounded-xl
-                                                                   border-gray-300">
-
-                                                    </div>
-
-
-                                                    <button
-                                                        type="submit"
-                                                        class="px-5 py-2
-                                                               bg-blue-700
-                                                               hover:bg-blue-800
-                                                               text-white
-                                                               rounded-xl
-                                                               text-sm
-                                                               font-semibold">
-
-                                                        Update Section
-
-                                                    </button>
-
-                                                </div>
-
-                                            </form>
-
-                                        </td>
-
-                                    </tr>
-
-
-
-                                    {{-- CRITERIA ROWS --}}
-                                    @foreach($section->criteria as $criteria)
-
-                                        <tr class="hover:bg-slate-50 transition">
-
-                                            <td class="px-6 py-5 text-gray-500">
-
-                                                {{ $sectionNo }}.{{ $loop->iteration }}
-
-                                            </td>
-
-
-                                            <td class="px-6 py-5">
-
-                                                <div class="flex items-start gap-3">
-
-                                                    <span class="mt-2
-                                                                 w-2 h-2
-                                                                 rounded-full
-                                                                 bg-violet-300
-                                                                 flex-shrink-0">
-                                                    </span>
-
-                                                    <p class="text-gray-800">
-                                                        {{ $criteria->criteria_label }}
-                                                    </p>
-
-                                                </div>
-
-                                            </td>
-
-
-                                            <td class="px-6 py-5 text-center">
-
-                                                @if($criteria->status === 'Active')
-
-                                                    <span class="px-3 py-1
-                                                                 rounded-full
-                                                                 bg-green-100
-                                                                 text-green-700
-                                                                 text-xs
-                                                                 font-semibold">
-
-                                                        Active
-
-                                                    </span>
-
-                                                @else
-
-                                                    <span class="px-3 py-1
-                                                                 rounded-full
-                                                                 bg-gray-100
-                                                                 text-gray-600
-                                                                 text-xs
-                                                                 font-semibold">
-
-                                                        Inactive
-
-                                                    </span>
-
-                                                @endif
-
-                                            </td>
-
-
-                                            <td class="px-6 py-5 text-center">
-
-                                                <div class="inline-flex items-center gap-2">
-
-                                                    <button
-                                                        type="button"
-                                                        data-criteria-id="{{ $criteria->criteriaID }}"
-                                                        onclick="toggleCriteriaEdit(this)"
-                                                        class="px-4 py-2
-                                                               bg-blue-100
-                                                               text-blue-700
-                                                               hover:bg-blue-200
-                                                               rounded-xl
-                                                               text-sm
-                                                               font-semibold">
-
-                                                        Edit
-
-                                                    </button>
-
-
-                                                    <form
-                                                        method="POST"
-                                                        action="{{ route(
-                                                            'admin.pre.criteria.delete',
-                                                            $criteria->criteriaID
-                                                        ) }}">
-
-                                                        @csrf
-                                                        @method('DELETE')
-
-                                                        <button
-                                                            type="submit"
-                                                            onclick="return confirm(
-                                                                'Delete this criteria?'
-                                                            )"
-                                                            class="inline-flex
-                                                                   items-center
-                                                                   justify-center
-                                                                   w-10 h-10
-                                                                   bg-red-500
-                                                                   hover:bg-red-600
-                                                                   text-white
-                                                                   rounded-xl">
-
-                                                            <svg
-                                                                xmlns="http://www.w3.org/2000/svg"
-                                                                class="w-5 h-5"
-                                                                fill="none"
-                                                                viewBox="0 0 24 24"
-                                                                stroke="currentColor"
-                                                                stroke-width="2">
-
-                                                                <path
-                                                                    stroke-linecap="round"
-                                                                    stroke-linejoin="round"
-                                                                    d="M3 6h18M8 6V4h8v2m-9 0
-                                                                       1 14h8l1-14
-                                                                       M10 10v6m4-6v6" />
-
-                                                            </svg>
-
-                                                        </button>
-
-                                                    </form>
-
-                                                </div>
-
-                                            </td>
-
-                                        </tr>
-
-
-                                        {{-- CRITERIA EDIT --}}
-                                        <tr
-                                            id="criteria-edit-{{ $criteria->criteriaID }}"
-                                            class="hidden bg-slate-50">
-
-                                            <td colspan="4" class="p-6">
-
-                                                <form
-                                                    method="POST"
-                                                    action="{{ route(
-                                                        'admin.pre.criteria.update',
-                                                        $criteria->criteriaID
-                                                    ) }}">
-
-                                                    @csrf
-                                                    @method('PUT')
-
-
-                                                    <div class="grid
-                                                                grid-cols-1
-                                                                md:grid-cols-[1fr_180px]
-                                                                gap-4">
-
-                                                        <div>
-
-                                                            <label class="block
-                                                                          text-sm
-                                                                          font-semibold
-                                                                          mb-2">
-                                                                Criteria
-                                                            </label>
-
-                                                            <input
-                                                                type="text"
-                                                                name="criteria_label"
-                                                                value="{{ $criteria->criteria_label }}"
-                                                                required
-                                                                class="w-full
-                                                                       rounded-xl
-                                                                       border-gray-300">
-
-                                                        </div>
-
-
-                                                        <div>
-
-                                                            <label class="block
-                                                                          text-sm
-                                                                          font-semibold
-                                                                          mb-2">
-                                                                Status
-                                                            </label>
-
-                                                            <select
-                                                                name="status"
-                                                                required
-                                                                class="w-full
-                                                                       rounded-xl
-                                                                       border-gray-300">
-
-                                                                <option
-                                                                    value="Active"
-                                                                    {{ $criteria->status === 'Active'
-                                                                        ? 'selected'
-                                                                        : '' }}>
-                                                                    Active
-                                                                </option>
-
-                                                                <option
-                                                                    value="Inactive"
-                                                                    {{ $criteria->status === 'Inactive'
-                                                                        ? 'selected'
-                                                                        : '' }}>
-                                                                    Inactive
-                                                                </option>
-
-                                                            </select>
-
-                                                        </div>
-
-                                                    </div>
-
-
-                                                    <div class="flex justify-end mt-5">
-
-                                                        <button
-                                                            type="submit"
-                                                            class="px-5 py-2
-                                                                   bg-blue-700
-                                                                   hover:bg-blue-800
-                                                                   text-white
-                                                                   rounded-xl
-                                                                   text-sm
-                                                                   font-semibold">
-
-                                                            Update Criteria
-
-                                                        </button>
-
-                                                    </div>
-
-                                                </form>
-
-                                            </td>
-
-                                        </tr>
-
-                                    @endforeach
-
-
-
-                                    {{-- ADD CRITERIA --}}
-                                    <tr>
-
-                                        <td class="px-6 py-4"></td>
-
-                                        <td colspan="3" class="px-6 py-4">
-
-                                            <details>
-
-                                                <summary
-                                                    class="cursor-pointer
-                                                           inline-flex items-center
-                                                           text-blue-700
-                                                           hover:text-blue-800
-                                                           font-semibold text-sm">
-
-                                                    + Add Criteria
-
-                                                </summary>
-
-
-                                                <form
-                                                    method="POST"
-                                                    action="{{ route(
-                                                        'admin.pre.criteria.store'
-                                                    ) }}"
-                                                    class="mt-5">
-
-                                                    @csrf
-
-
-                                                    <input
-                                                        type="hidden"
-                                                        name="sectionID"
-                                                        value="{{ $section->sectionID }}">
-
-
-                                                    <div class="grid
-                                                                grid-cols-1
-                                                                md:grid-cols-[1fr_180px]
-                                                                gap-4">
-
-                                                        <div>
-
-                                                            <label class="block
-                                                                          text-sm
-                                                                          font-semibold
-                                                                          mb-2">
-                                                                Criteria
-                                                            </label>
-
-                                                            <input
-                                                                type="text"
-                                                                name="criteria_label"
-                                                                required
-                                                                placeholder="Enter criteria"
-                                                                class="w-full
-                                                                       rounded-xl
-                                                                       border-gray-300">
-
-                                                        </div>
-
-
-                                                        <div>
-
-                                                            <label class="block
-                                                                          text-sm
-                                                                          font-semibold
-                                                                          mb-2">
-                                                                Status
-                                                            </label>
-
-                                                            <select
-                                                                name="status"
-                                                                required
-                                                                class="w-full
-                                                                       rounded-xl
-                                                                       border-gray-300">
-
-                                                                <option value="Active">
-                                                                    Active
-                                                                </option>
-
-                                                                <option value="Inactive">
-                                                                    Inactive
-                                                                </option>
-
-                                                            </select>
-
-                                                        </div>
-
-                                                    </div>
-
-
-                                                    <div class="flex justify-end mt-5">
-
-                                                        <button
-                                                            type="submit"
-                                                            class="px-5 py-2
-                                                                   bg-blue-700
-                                                                   hover:bg-blue-800
-                                                                   text-white
-                                                                   rounded-xl
-                                                                   text-sm
-                                                                   font-semibold">
-
-                                                            Add Criteria
-
-                                                        </button>
-
-                                                    </div>
-
-                                                </form>
-
-                                            </details>
-
-                                        </td>
-
-                                    </tr>
-
-                                @empty
-
-                                    <tr>
-
-                                        <td
-                                            colspan="4"
-                                            class="py-12
-                                                   text-center
-                                                   text-gray-400">
-
-                                            No sections have been created
-
-                                        </td>
-
-                                    </tr>
-
-                                @endforelse
-
-                            </tbody>
-
-                        </table>
-
-                    </div>
-
-                </div>
-
-
-
-                {{-- ADD NEW SECTION --}}
-                <div class="bg-white rounded-3xl shadow-lg overflow-hidden">
-
-                    <div class="px-6 py-4 border-b border-gray-100">
-
-                        <h2 class="text-lg font-bold text-gray-800">
-                            Add New Section
-                        </h2>
-
-                        <p class="text-sm text-gray-400 mt-1">
-                            New sections are added to the bottom of the form
-                        </p>
-
-                    </div>
-
-
-                    <div class="px-6 py-5">
-
-                        <form
-                            method="POST"
-                            action="{{ route(
-                                'admin.pre.section.store'
-                            ) }}">
-
-                            @csrf
-
-
-                            <input
-                                type="hidden"
-                                name="formID"
-                                value="{{ $form->formID }}">
-
-
-                            <div class="flex
-                                        flex-col
-                                        md:flex-row
-                                        gap-4
-                                        items-end">
-
-                                <div class="flex-1">
-
-                                    <label class="block
-                                                  text-sm
-                                                  text-gray-700
-                                                  font-semibold mb-2">
-                                        Section Name
-                                    </label>
-
-                                    <input
-                                        type="text"
-                                        name="section_name"
-                                        required
-                                        placeholder="Enter section name"
-                                        class="w-full
-                                               rounded-xl
-                                               border-gray-300">
-
-                                </div>
-
-
-                                <button
-                                    type="submit"
-                                    class="px-5 py-2
-                                           bg-blue-700
-                                           hover:bg-blue-800
-                                           text-white
-                                           rounded-xl
-                                           text-sm
-                                           font-semibold">
-
-                                    Add Section
-
-                                </button>
-
-                            </div>
-
-                        </form>
-
-                    </div>
-
-                </div>
+            </div>
 
             @endif
 
@@ -1074,35 +414,321 @@
     </div>
 
 
+    {{-- Floating Action Menu --}}
+    <div
+        id="floatingActionMenu"
+        class="hidden fixed w-44 bg-white border border-gray-200 rounded-xl shadow-xl z-[9999] overflow-hidden">
+
+        {{-- Preview --}}
+        <a
+            id="actionPreview"
+            href="#"
+            class="flex items-center gap-3 px-4 py-3 text-sm text-gray-700 hover:bg-gray-50">
+
+            <svg
+                class="w-4 h-4 text-gray-400"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                stroke-width="2">
+
+                <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z">
+                </path>
+
+                <circle cx="12" cy="12" r="3"></circle>
+
+            </svg>
+
+            <span>
+                Preview
+            </span>
+
+        </a>
+
+
+        {{-- Edit --}}
+        <a
+            id="actionEdit"
+            href="#"
+            class="flex items-center gap-3 px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 border-t border-gray-100">
+
+            <svg
+                class="w-4 h-4 text-gray-400"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                stroke-width="2">
+
+                <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M15.232 5.232l3.536 3.536M16.732 3.732a2.5 2.5 0 013.536 3.536L7.5 20.036 3 21l.964-4.5L16.732 3.732z">
+                </path>
+
+            </svg>
+
+            <span>
+                Edit
+            </span>
+
+        </a>
+
+
+        {{-- Delete --}}
+        <form
+            id="actionDeleteForm"
+            method="POST"
+            action="">
+
+            @csrf
+            @method('DELETE')
+
+            <button
+                id="actionDeleteButton"
+                type="submit"
+                class="w-full flex items-center gap-3 px-4 py-3 text-left text-sm text-red-600 hover:bg-red-50 border-t border-gray-100">
+
+                <svg
+                    class="w-4 h-4"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    stroke-width="2">
+
+                    <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6M10 11v5M14 11v5">
+                    </path>
+
+                </svg>
+
+                <span>
+                    Delete
+                </span>
+
+            </button>
+
+        </form>
+
+    </div>
+
+
+    {{-- Sticky Action --}}
+    <div class="fixed bottom-4 left-0 right-0 z-40 px-6 pointer-events-none">
+
+        <div class="max-w-7xl mx-auto">
+
+            <div class="bg-white/95 backdrop-blur-md border border-gray-200 shadow-xl rounded-2xl px-6 py-4 pointer-events-auto">
+
+                <div class="flex items-center justify-between">
+
+                    {{-- Back --}}
+                    <a
+                        href="{{ route('admin.manage.form') }}"
+                        class="px-5 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold text-sm rounded-xl transition">
+
+                        Back
+
+                    </a>
+
+
+                    {{-- New Version --}}
+                    @if($forms->isNotEmpty() && $activeForm)
+
+                    <form
+                        method="POST"
+                        action="{{ route('admin.pre.form.new-version', $activeForm) }}">
+
+                        @csrf
+
+                        <button
+                            type="submit"
+                            onclick="return confirm('Create a new version based on Version {{ $activeForm->version }}?')"
+                            class="px-6 py-2.5 bg-blue-700 hover:bg-blue-800 text-white font-semibold text-sm rounded-xl transition">
+
+                            + New Version
+
+                        </button>
+
+                    </form>
+
+                    @endif
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
     <script>
+        function openActionMenu(button) {
 
-        function toggleSectionEdit(button)
-        {
-            const sectionID =
-                button.dataset.sectionId;
-
-            const row =
+            const menu =
                 document.getElementById(
-                    'section-edit-' + sectionID
+                    'floatingActionMenu'
                 );
 
-            row.classList.toggle('hidden');
+            const preview =
+                document.getElementById(
+                    'actionPreview'
+                );
+
+            const edit =
+                document.getElementById(
+                    'actionEdit'
+                );
+
+            const deleteForm =
+                document.getElementById(
+                    'actionDeleteForm'
+                );
+
+            const deleteButton =
+                document.getElementById(
+                    'actionDeleteButton'
+                );
+
+
+            preview.href =
+                button.dataset.preview;
+
+            edit.href =
+                button.dataset.edit;
+
+
+            if (button.dataset.delete) {
+
+                deleteForm.action =
+                    button.dataset.delete;
+
+                deleteForm.classList.remove(
+                    'hidden'
+                );
+
+                deleteButton.onclick =
+                    function() {
+
+                        return confirm(
+                            'Delete Version ' +
+                            button.dataset.version +
+                            '?'
+                        );
+                    };
+
+            } else {
+
+                deleteForm.classList.add(
+                    'hidden'
+                );
+
+            }
+
+
+            const rect =
+                button.getBoundingClientRect();
+
+            const menuWidth = 176;
+
+            const menuHeight =
+                button.dataset.delete ?
+                145 :
+                98;
+
+
+            let left =
+                rect.right -
+                menuWidth;
+
+            let top =
+                rect.bottom +
+                6;
+
+
+            if (left < 10) {
+
+                left = 10;
+
+            }
+
+
+            if (
+                top + menuHeight >
+                window.innerHeight - 10
+            ) {
+
+                top =
+                    rect.top -
+                    menuHeight -
+                    6;
+
+            }
+
+
+            menu.style.left =
+                left + 'px';
+
+            menu.style.top =
+                top + 'px';
+
+            menu.classList.remove(
+                'hidden'
+            );
+
         }
 
 
-        function toggleCriteriaEdit(button)
-        {
-            const criteriaID =
-                button.dataset.criteriaId;
+        document.addEventListener(
+            'click',
+            function(event) {
 
-            const row =
-                document.getElementById(
-                    'criteria-edit-' + criteriaID
-                );
+                const menu =
+                    document.getElementById(
+                        'floatingActionMenu'
+                    );
 
-            row.classList.toggle('hidden');
-        }
 
+                if (
+                    !event.target.closest(
+                        '[onclick="openActionMenu(this)"]'
+                    ) &&
+                    !event.target.closest(
+                        '#floatingActionMenu'
+                    )
+                ) {
+
+                    menu.classList.add(
+                        'hidden'
+                    );
+
+                }
+
+            }
+        );
+
+
+        window.addEventListener(
+            'scroll',
+            function() {
+
+                document
+                    .getElementById(
+                        'floatingActionMenu'
+                    )
+                    .classList
+                    .add(
+                        'hidden'
+                    );
+
+            },
+            true
+        );
     </script>
 
 </x-app-layout>

@@ -1,712 +1,335 @@
 <x-app-layout>
 
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ Auth::guard('admin')->user()->staffname }}
-        </h2>
+        <h2 class="font-semibold text-xl text-gray-800 leading-tight">{{ Auth::guard('admin')->user()->staffname }}</h2>
     </x-slot>
 
     <div class="py-10 bg-gray-100 min-h-screen">
-
         <div class="max-w-7xl mx-auto px-6">
 
             {{-- Header --}}
-            <div class="relative bg-gradient-to-br from-slate-900 via-violet-950 to-purple-900 rounded-3xl p-8 shadow-xl overflow-hidden mb-8">
-
+            <div class="relative bg-gradient-to-br from-slate-900 via-violet-950 to-purple-900 rounded-3xl px-8 py-7 shadow-xl overflow-hidden mb-8">
                 <div class="absolute right-0 top-0 translate-x-10 -translate-y-10 w-72 h-72 bg-purple-500/10 rounded-full blur-3xl"></div>
 
                 <div class="relative z-10">
-
-                    <h1 class="text-3xl font-extrabold text-white">
-                        Manage External Observation Form
-                    </h1>
-
-                    <p class="text-violet-200 mt-2">
-                        {{ $editingForm
-                            ? 'Update Aspect, TUMS, Tahap Tindakan and Rubric'
-                            : 'Manage form' }}
-                    </p>
-
-                    {{-- Content Guide --}}
-                    <div class="mt-5 pt-4 border-t border-white/10">
-
-                        <p class="text-sm font-semibold text-violet-200 mb-3">
-                            Content Guide
-                        </p>
-
-                        <div class="grid grid-cols-1 md:grid-cols-4 gap-3 text-sm">
-
-                            <div class="rounded-xl bg-white/10 px-4 py-3">
-                                <p class="font-bold text-white">
-                                    1. Aspect
-                                </p>
-
-                                <p class="text-violet-200 mt-1">
-                                    Add the main observation aspect
-                                </p>
-                            </div>
-
-                            <div class="rounded-xl bg-white/10 px-4 py-3">
-                                <p class="font-bold text-white">
-                                    2. TUMS
-                                </p>
-
-                                <p class="text-violet-200 mt-1">
-                                    Add TUMS and its weight
-                                </p>
-                            </div>
-
-                            <div class="rounded-xl bg-white/10 px-4 py-3">
-                                <p class="font-bold text-white">
-                                    3. Tahap Tindakan
-                                </p>
-
-                                <p class="text-violet-200 mt-1">
-                                    Add one or more TT points
-                                </p>
-                            </div>
-
-                            <div class="rounded-xl bg-white/10 px-4 py-3">
-                                <p class="font-bold text-white">
-                                    4. RTK Rubric
-                                </p>
-
-                                <p class="text-violet-200 mt-1">
-                                    Add one RTK 0 to RTK 4 rubric for each TUMS
-                                </p>
-                            </div>
-
-                        </div>
-
-                    </div>
-
+                    <h1 class="text-3xl font-extrabold text-white">PDPC Observation Form Versions</h1>
+                    <p class="text-violet-300 mt-2">View and manage saved versions</p>
                 </div>
-
             </div>
 
             {{-- Success --}}
             @if(session('success'))
-
-                <div class="mb-6 rounded-2xl border border-green-200 bg-green-50 p-4 text-green-800">
-
-                    <p class="font-bold">
-                        Form saved successfully
-                    </p>
-
-                    <p class="mt-1 text-sm">
-                        {{ session('success') }}
-
-                        @if(session('created_form_id'))
-                            Form ID: #{{ session('created_form_id') }}
-                        @endif
-                    </p>
-
-                </div>
-
+            <div class="mb-6 px-5 py-4 bg-green-100 border border-green-200 text-green-700 rounded-xl">{{ session('success') }}</div>
             @endif
 
             {{-- Error --}}
             @if(session('error'))
-
-                <div class="mb-6 rounded-2xl border border-red-200 bg-red-50 p-4 text-red-800">
-                    {{ session('error') }}
-                </div>
-
+            <div class="mb-6 px-5 py-4 bg-red-100 border border-red-200 text-red-700 rounded-xl">{{ session('error') }}</div>
             @endif
 
             {{-- Validation --}}
             @if($errors->any())
-
-                <div class="mb-6 rounded-2xl border border-red-200 bg-red-50 p-4 text-red-800">
-
-                    <p class="font-bold">
-                        Form cannot be saved. Please correct the following:
-                    </p>
-
-                    <ul class="mt-2 list-disc space-y-1 pl-5 text-sm">
-
-                        @foreach($errors->all() as $error)
-                            <li>{{ $error }}</li>
-                        @endforeach
-
-                    </ul>
-
-                </div>
-
+            <div class="mb-6 px-5 py-4 bg-red-100 border border-red-200 text-red-700 rounded-xl">
+                <ul class="list-disc list-inside text-sm">
+                    @foreach($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
             @endif
 
-            <div class="grid grid-cols-1 2xl:grid-cols-3 gap-8 items-start">
+            @if($forms->isEmpty())
 
-                {{-- Builder --}}
-                <div
-                    class="2xl:col-span-2"
-                    x-data="pdpcFormBuilder({{ $editingForm ? 'true' : 'false' }})">
+            {{-- Create First Version --}}
+            <div class="bg-white rounded-3xl shadow-sm border border-gray-200 overflow-hidden mb-24">
 
-                    <form
-                        method="POST"
-                        action="{{ $editingForm
-                            ? route('admin.pdpc.form.update', $editingForm)
-                            : route('admin.pdpc.form.store') }}"
-                        class="space-y-8">
+                <div class="px-6 py-5 border-b border-gray-100">
+                    <h2 class="text-lg font-bold text-gray-900">Create External Observation Form</h2>
+                    <p class="text-sm text-gray-400 mt-1">Create the first version before adding Aspect, TUMS, TT and RTK content</p>
+                </div>
 
+                <div class="p-6">
+
+                    <form method="POST" action="{{ route('admin.pdpc.form.store') }}">
                         @csrf
 
-                        @if($editingForm)
-                            @method('PUT')
-                        @endif
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
 
-                        {{-- Form Information --}}
-                        <section class="bg-white rounded-3xl shadow-lg overflow-hidden">
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 mb-2">Form Name</label>
 
-                            <div class="px-7 py-6 border-b border-gray-100">
-
-                                <h2 class="text-xl font-bold text-gray-800">
-                                    Form Information
-                                </h2>
-
-                                <p class="text-sm text-gray-400 mt-1">
-                                    Manage form name and instruction
-                                </p>
-
+                                <input
+                                    type="text"
+                                    name="form_name"
+                                    value="{{ old('form_name', 'PDPC Observation Form') }}"
+                                    required
+                                    class="w-full rounded-xl border-gray-300 focus:border-blue-500 focus:ring-blue-500">
                             </div>
 
-                            <div class="p-7">
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 mb-2">Instruction</label>
 
-                                <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-
-                                    <div>
-
-                                        <label class="block text-sm font-semibold text-slate-700 mb-2">
-                                            Form Name
-                                        </label>
-
-                                        <input
-                                            type="text"
-                                            name="form_name"
-                                            required
-                                            value="{{ old(
-                                                'form_name',
-                                                $editingForm?->form_name
-                                                ?? 'PDPC Observation Form'
-                                            ) }}"
-                                            class="w-full rounded-xl border-slate-300 focus:border-purple-500 focus:ring-purple-500">
-
-                                    </div>
-
-                                    <div>
-
-                                        <label class="block text-sm font-semibold text-slate-700 mb-2">
-                                            Version
-                                        </label>
-
-                                        <input
-                                            type="text"
-                                            value="{{ $editingForm?->version_no ?? 'New' }}"
-                                            disabled
-                                            class="w-full rounded-xl border-slate-300 bg-slate-100 text-slate-500">
-
-                                    </div>
-
-                                    <div class="md:col-span-2">
-
-                                        <label class="block text-sm font-semibold text-slate-700 mb-2">
-                                            Instruction
-                                        </label>
-
-                                        <textarea
-                                            name="instruction"
-                                            rows="3"
-                                            placeholder="Enter form instruction..."
-                                            class="w-full rounded-xl border-slate-300 focus:border-purple-500 focus:ring-purple-500">{{ old(
-                                                'instruction',
-                                                $editingForm?->instruction
-                                            ) }}</textarea>
-
-                                    </div>
-
-                                </div>
-
+                                <input
+                                    type="text"
+                                    name="instruction"
+                                    value="{{ old('instruction') }}"
+                                    placeholder="Enter instruction"
+                                    class="w-full rounded-xl border-gray-300 focus:border-blue-500 focus:ring-blue-500">
                             </div>
 
-                        </section>
-
-                        {{-- Aspects --}}
-                        <template
-                            x-for="(aspect, aspectIndex) in aspects"
-                            :key="aspect._key">
-
-                            <section class="bg-white rounded-3xl shadow-lg overflow-hidden">
-
-                                {{-- Aspect Header --}}
-                                <div class="bg-blue-900 px-7 py-6 text-white flex flex-col gap-5 md:flex-row md:items-end md:justify-between">
-
-                                    <div class="flex-1 grid grid-cols-1 md:grid-cols-4 gap-4">
-
-                                        <div>
-
-                                            <label class="block text-xs font-bold uppercase tracking-wider text-white mb-2">
-                                                Aspect Code
-                                            </label>
-
-                                            <input
-                                                type="text"
-                                                x-model="aspect.aspect_code"
-                                                :name="`aspects[${aspectIndex}][aspect_code]`"
-                                                placeholder="Example 4.1"
-                                                class="w-full rounded-xl border-blue-500 bg-white text-black focus:border-blue-300 focus:ring-blue-300">
-
-                                        </div>
-
-                                        <div class="md:col-span-3">
-
-                                            <label class="block text-xs font-bold uppercase tracking-wider text-white mb-2">
-                                                Aspect
-                                            </label>
-
-                                            <input
-                                                type="text"
-                                                x-model="aspect.aspect_name"
-                                                required
-                                                :name="`aspects[${aspectIndex}][aspect_name]`"
-                                                placeholder="Example: Guru Sebagai Perancang"
-                                                class="w-full rounded-xl border-blue-500 bg-white text-gray-800 font-normal focus:border-blue-300 focus:ring-blue-300">
-
-                                        </div>
-
-                                    </div>
-
-                                    <button
-                                        type="button"
-                                        x-show="aspects.length > 1"
-                                        @click="removeAspect(aspectIndex)"
-                                        class="shrink-0 px-4 py-2 rounded-xl bg-red-500 hover:bg-red-600 text-white text-sm font-semibold transition">
-
-                                        Remove Aspect
-
-                                    </button>
-
-                                </div>
-
-                                {{-- TUMS --}}
-                                <div class="p-6 md:p-8 space-y-6 bg-blue-50/40">
-
-                                    <template
-                                        x-for="(tum, tumIndex) in aspect.tums"
-                                        :key="tum._key">
-
-                                        <div class="rounded-2xl border border-blue-200 bg-white overflow-hidden">
-
-                                            {{-- TUMS Header --}}
-                                            <div class="p-5 bg-blue-50 border-b border-blue-100">
-
-                                                <div class="grid grid-cols-1 md:grid-cols-6 gap-4 items-end">
-
-                                                    <div>
-
-                                                        <label class="block text-xs font-bold uppercase tracking-wider text-blue-700 mb-2">
-                                                            TUMS Code
-                                                        </label>
-
-                                                        <input
-                                                            type="text"
-                                                            x-model="tum.tums_code"
-                                                            :name="`aspects[${aspectIndex}][tums][${tumIndex}][tums_code]`"
-                                                            placeholder="Example: 4.1.1"
-                                                            class="w-full rounded-xl border-gray-300 focus:border-blue-500 focus:ring-blue-500">
-
-                                                    </div>
-
-                                                    <div class="md:col-span-3">
-
-                                                        <label class="block text-xs font-bold uppercase tracking-wider text-blue-700 mb-2">
-                                                            TUMS
-                                                        </label>
-
-                                                        <input
-                                                            type="text"
-                                                            x-model="tum.tums_name"
-                                                            required
-                                                            :name="`aspects[${aspectIndex}][tums][${tumIndex}][tums_name]`"
-                                                            placeholder="Contoh: Guru merancang pelaksanaan PdPc"
-                                                            class="w-full rounded-xl border-gray-300 font-normal focus:border-blue-500 focus:ring-blue-500">
-
-                                                    </div>
-
-                                                    <div>
-
-                                                        <label class="block text-xs font-bold uppercase tracking-wider text-blue-700 mb-2">
-                                                            Wajaran
-                                                        </label>
-
-                                                        <input
-                                                            type="number"
-                                                            x-model="tum.wajaran"
-                                                            required
-                                                            min="0"
-                                                            max="100"
-                                                            step="0.01"
-                                                            :name="`aspects[${aspectIndex}][tums][${tumIndex}][wajaran]`"
-                                                            placeholder="10"
-                                                            class="w-full rounded-xl border-gray-300 focus:border-blue-500 focus:ring-blue-500">
-
-                                                    </div>
-
-                                                    <button
-                                                        type="button"
-                                                        x-show="aspect.tums.length > 1"
-                                                        @click="removeTum(aspectIndex, tumIndex)"
-                                                        class="px-4 py-2.5 rounded-xl bg-red-50 hover:bg-red-100 text-red-700 text-sm font-semibold">
-
-                                                        Remove TUMS
-
-                                                    </button>
-
-                                                </div>
-
-                                            </div>
-
-                                            {{-- TT --}}
-                                            <div class="p-5 space-y-4">
-
-                                                <template
-                                                    x-for="(tt, ttIndex) in tum.tt"
-                                                    :key="tt._key">
-
-                                                    <div class="rounded-xl bg-slate-50 p-4 border border-slate-200">
-
-                                                        <div class="flex items-center justify-between gap-4 pb-3">
-
-                                                            <p class="text-xs font-bold uppercase tracking-wider text-blue-700">
-                                                                Tahap Tindakan (TT)
-                                                            </p>
-
-                                                            <button
-                                                                type="button"
-                                                                x-show="tum.tt.length > 1"
-                                                                @click="removeTt(aspectIndex, tumIndex, ttIndex)"
-                                                                class="w-10 h-10 rounded-xl bg-red-50 hover:bg-red-100 text-red-600 font-bold">
-
-                                                                &times;
-
-                                                            </button>
-
-                                                        </div>
-
-                                                        {{-- TT Points --}}
-                                                        <div class="space-y-3">
-
-                                                            <template
-                                                                x-for="(point, pointIndex) in tt.points"
-                                                                :key="point._key">
-
-                                                                <div class="grid grid-cols-1 sm:grid-cols-[1fr_2.5rem] gap-3 items-start">
-
-                                                                    <textarea
-                                                                        x-model="point.point_text"
-                                                                        required
-                                                                        rows="2"
-                                                                        :name="`aspects[${aspectIndex}][tums][${tumIndex}][tt][${ttIndex}][points][${pointIndex}][point_text]`"
-                                                                        placeholder="Enter Tahap Tindakan point"
-                                                                        class="w-full rounded-xl border-gray-300 focus:border-blue-500 focus:ring-blue-500"></textarea>
-
-                                                                    <button
-                                                                        type="button"
-                                                                        x-show="tt.points.length > 1"
-                                                                        @click="removePoint(aspectIndex, tumIndex, ttIndex, pointIndex)"
-                                                                        class="h-10 rounded-xl bg-red-50 hover:bg-red-100 text-red-600 font-bold">
-
-                                                                        &times;
-
-                                                                    </button>
-
-                                                                </div>
-
-                                                            </template>
-
-                                                        </div>
-
-                                                        <button
-                                                            type="button"
-                                                            @click="addPoint(aspectIndex, tumIndex, ttIndex)"
-                                                            class="mt-3 px-4 py-2 rounded-xl bg-blue-100 hover:bg-blue-200 text-blue-800 text-sm font-semibold">
-
-                                                            + Add TT Point
-
-                                                        </button>
-
-                                                    </div>
-
-                                                </template>
-
-                                                <button
-                                                    type="button"
-                                                    @click="addTt(aspectIndex, tumIndex)"
-                                                    class="px-4 py-2 rounded-xl bg-violet-100 hover:bg-violet-200 text-violet-700 text-sm font-semibold">
-
-                                                    + Add Tahap Tindakan
-
-                                                </button>
-
-                                                {{-- RTK Rubric --}}
-                                                <details
-                                                    class="rounded-xl border border-violet-200 bg-violet-50/60"
-                                                    open>
-
-                                                    <summary
-                                                        class="cursor-pointer list-none px-4 py-3 font-bold text-sm text-violet-900 flex items-center justify-between gap-3">
-
-                                                        <span>
-                                                            RUBRIK TAHAP KUALITI (RTK)
-                                                        </span>
-
-                                                        <span class="text-xs font-semibold text-violet-700">
-                                                            RTK 0 - RTK 4
-                                                        </span>
-
-                                                    </summary>
-
-                                                    <div class="border-t border-violet-200 p-4 space-y-3">
-
-                                                        <template
-                                                            x-for="score in [4, 3, 2, 1, 0]"
-                                                            :key="score">
-
-                                                            <div class="grid grid-cols-[4.2rem_1fr] gap-3 items-start">
-
-                                                                <div
-                                                                    class="h-8 px-2 rounded-lg bg-violet-600 text-white flex items-center justify-center text-xs font-bold"
-                                                                    x-text="`RTK ${score}`">
-                                                                </div>
-
-                                                                <textarea
-                                                                    x-model="tum.rubrics[score]"
-                                                                    rows="4"
-                                                                    :name="`aspects[${aspectIndex}][tums][${tumIndex}][rubrics][${score}]`"
-                                                                    :placeholder="`Enter rubric for RTK ${score}`"
-                                                                    class="w-full rounded-xl text-sm border-violet-200 focus:border-violet-500 focus:ring-violet-500"></textarea>
-
-                                                            </div>
-
-                                                        </template>
-
-                                                    </div>
-
-                                                </details>
-
-                                            </div>
-
-                                        </div>
-
-                                    </template>
-
-                                    <button
-                                        type="button"
-                                        @click="addTum(aspectIndex)"
-                                        class="px-4 py-2.5 rounded-xl bg-blue-100 hover:bg-blue-200 text-blue-800 text-sm font-semibold">
-
-                                        + Add TUMS
-
-                                    </button>
-
-                                </div>
-
-                            </section>
-
-                        </template>
-
-                        {{-- Sticky Action Bar --}}
-                        <div class="sticky bottom-4 z-40 mt-8">
-
-                            <div class="bg-white/95 backdrop-blur-sm border border-slate-200 shadow-xl rounded-2xl px-6 py-4">
-
-                                <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-
-                                    <button
-                                        type="button"
-                                        @click="addAspect()"
-                                        class="px-5 py-2.5 rounded-xl bg-violet-100 hover:bg-violet-200 text-violet-800 font-semibold text-sm transition">
-
-                                        + Add Aspect
-
-                                    </button>
-
-                                    <div class="flex items-center gap-3 flex-shrink-0">
-
-                                        <a
-                                            href="{{ route('admin.manage.form') }}"
-                                            class="px-5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-900 font-semibold text-sm rounded-xl transition">
-
-                                            Back
-
-                                        </a>
-
-                                        @if($editingForm)
-
-                                            <a
-                                                href="{{ route(
-                                                    'admin.pdpc.form.show',
-                                                    $editingForm
-                                                ) }}"
-                                                class="px-5 py-2.5 bg-white hover:bg-slate-50 border border-slate-300 text-slate-700 font-semibold text-sm rounded-xl transition">
-
-                                                Cancel
-
-                                            </a>
-
-                                        @endif
-
-                                        <button
-                                            type="submit"
-                                            @if($editingForm)
-                                                :disabled="!hasChanges"
-                                                :class="hasChanges
-                                                    ? 'bg-blue-700 hover:bg-blue-800 text-white'
-                                                    : 'bg-slate-200 text-slate-400 cursor-not-allowed'"
-                                                class="px-6 py-2.5 rounded-xl font-semibold text-sm shadow-sm transition"
-                                            @else
-                                                class="px-6 py-2.5 rounded-xl bg-blue-700 hover:bg-blue-800 text-white font-semibold text-sm shadow-sm transition"
-                                            @endif>
-
-                                            {{ $editingForm
-                                                ? 'Save Changes'
-                                                : 'Save' }}
-
-                                        </button>
-
-                                    </div>
-
-                                </div>
-
-                            </div>
-
+                        </div>
+
+                        <div class="flex justify-end mt-6">
+                            <button
+                                type="submit"
+                                class="px-6 py-2.5 bg-blue-700 hover:bg-blue-800 text-white text-sm font-semibold rounded-xl transition">
+                                Create Form
+                            </button>
                         </div>
 
                     </form>
 
                 </div>
 
-                {{-- Saved Forms --}}
-                <aside class="2xl:sticky 2xl:top-0 space-y-5">
+            </div>
 
-                    <div class="bg-white rounded-3xl shadow-lg overflow-hidden">
+            @else
 
-                        <div class="px-6 py-5 border-b border-gray-100">
+            @php $activeForm = $forms->firstWhere('status', 'Active'); @endphp
 
-                            <h2 class="text-lg font-bold text-gray-800">
-                                Saved Forms
-                            </h2>
+            {{-- Version Table --}}
+            <div class="bg-white border border-gray-200 rounded-3xl shadow-sm mb-24">
 
-                            <p class="text-sm text-slate-400 mt-1">
-                                PDPC forms created by Admin
-                            </p>
+                <div class="overflow-x-auto rounded-3xl">
 
-                        </div>
+                    <table class="w-full text-sm">
 
-                        <div class="p-5 space-y-4">
+                        <thead class="bg-slate-50 border-b border-gray-200">
 
-                            @forelse($forms as $form)
+                            <tr class="text-xs uppercase tracking-wide text-gray-900">
+                                <th class="px-6 py-4 text-left w-32">Version</th>
+                                <th class="px-6 py-4 text-left">Form Content</th>
+                                <th class="px-6 py-4 text-center w-32">Status</th>
+                                <th class="px-6 py-4 text-center w-32">Usage</th>
+                                <th class="px-6 py-4 text-center w-24">Action</th>
+                            </tr>
 
-                                @php($isSelected = $editingForm?->formID === $form->formID)
+                        </thead>
 
-                                <article
-                                    @class([
-                                        'rounded-2xl border p-4 transition',
-                                        'border-blue-500 bg-blue-50 ring-2 ring-blue-200' => $isSelected,
-                                        'border-gray-200 bg-white' => !$isSelected,
-                                    ])>
+                        <tbody class="divide-y divide-gray-100">
 
-                                    <div class="flex items-start justify-between gap-3">
+                            @foreach($forms as $form)
 
-                                        <div>
+                            <tr class="{{ $form->status === 'Active' ? 'bg-blue-50/40' : 'bg-white' }} hover:bg-slate-50 transition">
 
-                                            <h3 class="font-bold text-gray-800">
-                                                {{ $form->form_name }}
-                                            </h3>
+                                {{-- Version --}}
+                                <td class="px-6 py-6">
 
-                                            <p class="mt-1 text-xs text-gray-500">
-                                                Version {{ $form->version_no }}
-                                            </p>
+                                    <div class="w-14 h-14 rounded-2xl bg-blue-600 text-white flex items-center justify-center text-lg font-bold">
+                                        V{{ $form->version_no }}
+                                    </div>
 
-                                        </div>
+                                </td>
 
-                                        <span
-                                            @class([
-                                                'rounded-full px-3 py-1.5 text-xs font-bold',
-                                                'bg-blue-600 text-white' => $isSelected,
-                                                'bg-emerald-800 text-white' =>
-                                                    !$isSelected &&
-                                                    $form->status === 'Active',
-                                                'bg-slate-100 text-slate-600' =>
-                                                    !$isSelected &&
-                                                    $form->status !== 'Active',
-                                            ])>
+                                {{-- Content --}}
+                                <td class="px-6 py-6">
 
-                                            {{ $isSelected
-                                                ? 'Editing'
-                                                : $form->status }}
+                                    <p class="font-bold text-slate-900 text-base mb-2">
+                                        {{ $form->form_name }}
+                                    </p>
 
+                                    <div class="flex flex-wrap items-center gap-x-6 gap-y-1 text-gray-500">
+
+                                        <span>
+                                            <strong class="text-gray-900">{{ $form->aspect_count }}</strong>
+                                            Aspects
+                                        </span>
+
+                                        <span>
+                                            <strong class="text-gray-900">{{ $form->tums_count }}</strong>
+                                            TUMS
+                                        </span>
+
+                                        <span>
+                                            <strong class="text-gray-900">{{ $form->point_count }}</strong>
+                                            TT Points
                                         </span>
 
                                     </div>
 
-                                    <p class="mt-3 text-xs text-slate-500">
+                                    @if($form->instruction)
+                                    <p class="text-gray-400 mt-2">{{ $form->instruction }}</p>
+                                    @else
+                                    <p class="text-gray-300 mt-2">No instruction</p>
+                                    @endif
 
-                                        {{ $form->aspects->count() }}
-                                        Aspect
+                                </td>
 
-                                        &middot;
+                                {{-- Status --}}
+                                <td class="px-6 py-6 text-center">
 
-                                        {{
-                                            $form->aspects->sum(
-                                                fn($aspect) =>
-                                                    $aspect->tums->count()
-                                            )
-                                        }}
-                                        TUMS
+                                    @if($form->status === 'Active')
 
-                                    </p>
+                                    <span class="inline-flex px-3 py-1 rounded-full bg-green-100 text-green-700 text-xs font-semibold">
+                                        Active
+                                    </span>
 
-                                    <div class="mt-4 grid grid-cols-2 gap-2">
+                                    @else
 
-                                        <a
-                                            href="{{ route(
-                                                'admin.pdpc.form.show',
-                                                $form
-                                            ) }}"
-                                            class="rounded-xl bg-sky-100 px-3 py-2 text-center text-sm font-bold text-sky-800 hover:bg-sky-200">
+                                    <span class="inline-flex px-3 py-1 rounded-full bg-gray-100 text-gray-500 text-xs font-semibold">
+                                        Inactive
+                                    </span>
 
-                                            View
+                                    @endif
 
-                                        </a>
+                                </td>
 
-                                        <a
-                                            href="{{ route(
-                                                'admin.pdpc.form.edit',
-                                                $form
-                                            ) }}"
-                                            class="rounded-xl bg-blue-100 px-3 py-2 text-center text-sm font-bold text-blue-800 hover:bg-blue-200">
+                                {{-- Usage --}}
+                                <td class="px-6 py-6 text-center">
 
-                                            Edit
+                                    @if($form->is_used)
 
-                                        </a>
+                                    <span class="inline-flex px-3 py-1 rounded-full bg-amber-100 text-amber-700 text-xs font-semibold">
+                                        Used
+                                    </span>
 
-                                    </div>
+                                    @else
 
-                                </article>
+                                    <span class="inline-flex px-3 py-1 rounded-full bg-blue-100 text-blue-700 text-xs font-semibold">
+                                        Not Used
+                                    </span>
 
-                            @empty
+                                    @endif
 
-                                <div class="text-center py-10 text-slate-400">
-                                    <p>No PDPC forms created yet</p>
-                                </div>
+                                </td>
 
-                            @endforelse
+                                {{-- Action --}}
+                                <td class="px-6 py-6 text-center">
 
-                        </div>
+                                    <button
+                                        type="button"
+                                        data-preview="{{ route('admin.pdpc.form.preview', $form) }}"
+                                        data-edit="{{ route('admin.pdpc.form.edit', $form) }}"
+                                        data-delete="{{ !$form->is_used ? route('admin.pdpc.form.destroy', $form) : '' }}"
+                                        data-version="{{ $form->version_no }}"
+                                        onclick="openActionMenu(this)"
+                                        class="w-10 h-10 inline-flex items-center justify-center rounded-xl text-gray-500 hover:text-gray-800 hover:bg-gray-200 transition">
 
-                    </div>
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                                            <circle cx="12" cy="5" r="1.7"></circle>
+                                            <circle cx="12" cy="12" r="1.7"></circle>
+                                            <circle cx="12" cy="19" r="1.7"></circle>
+                                        </svg>
 
-                </aside>
+                                    </button>
+
+                                </td>
+
+                            </tr>
+
+                            @endforeach
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </div>
+
+            @endif
+
+        </div>
+    </div>
+
+
+    {{-- Floating Action Menu --}}
+    <div id="floatingActionMenu" class="hidden fixed w-44 bg-white border border-gray-200 rounded-xl shadow-xl z-[9999] overflow-hidden">
+
+        {{-- Preview --}}
+        <a
+            id="actionPreview"
+            href="#"
+            class="flex items-center gap-3 px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 transition">
+
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12s3.75-7.5 9.75-7.5 9.75 7.5 9.75 7.5-3.75 7.5-9.75 7.5S2.25 12 2.25 12z" />
+                <circle cx="12" cy="12" r="3" />
+            </svg>
+
+            <span>Preview</span>
+
+        </a>
+
+        {{-- Edit --}}
+        <a
+            id="actionEdit"
+            href="#"
+            class="flex items-center gap-3 px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 border-t border-gray-100 transition">
+
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 3.487a2.1 2.1 0 013 2.97L8.4 17.92 4 19l1.08-4.4L16.862 3.487z" />
+            </svg>
+
+            <span>Edit</span>
+
+        </a>
+
+        {{-- Delete --}}
+        <form id="actionDeleteForm" method="POST" action="">
+            @csrf
+            @method('DELETE')
+
+            <button
+                id="actionDeleteButton"
+                type="submit"
+                class="w-full flex items-center gap-3 px-4 py-3 text-left text-sm text-red-600 hover:bg-red-50 border-t border-gray-100 transition">
+
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6M10 11v5M14 11v5" />
+                </svg>
+
+                <span>Delete</span>
+
+            </button>
+
+        </form>
+
+    </div>
+
+
+    {{-- Sticky Action --}}
+    <div class="fixed bottom-4 left-0 right-0 z-40 px-6 pointer-events-none">
+
+        <div class="max-w-7xl mx-auto">
+
+            <div class="bg-white/95 backdrop-blur-md border border-gray-200 shadow-xl rounded-2xl px-6 py-4 pointer-events-auto">
+
+                <div class="flex items-center justify-between gap-3">
+
+                    <a
+                        href="{{ route('admin.manage.form') }}"
+                        class="px-5 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold text-sm rounded-xl transition">
+                        Back
+                    </a>
+
+                    @if($forms->isNotEmpty() && $activeForm)
+
+                    <form method="POST" action="{{ route('admin.pdpc.form.new-version', $activeForm) }}">
+                        @csrf
+
+                        <button
+                            type="submit"
+                            onclick="return confirm('Create a new version based on Version {{ $activeForm->version_no }}?')"
+                            class="px-6 py-2.5 bg-blue-700 hover:bg-blue-800 text-white font-semibold text-sm rounded-xl transition">
+                            + New Version
+                        </button>
+
+                    </form>
+
+                    @endif
+
+                </div>
 
             </div>
 
@@ -714,223 +337,58 @@
 
     </div>
 
-    {{-- Initial Data --}}
-    <script type="application/json" id="pdpc-initial-aspects">@json($initialAspects)</script>
 
-    {{-- Alpine --}}
     <script>
-        document.addEventListener('alpine:init', () => {
+        function openActionMenu(button) {
+            const menu = document.getElementById('floatingActionMenu');
+            const preview = document.getElementById('actionPreview');
+            const edit = document.getElementById('actionEdit');
+            const deleteForm = document.getElementById('actionDeleteForm');
+            const deleteButton = document.getElementById('actionDeleteButton');
 
-            Alpine.data('pdpcFormBuilder', (isEditing) => ({
+            preview.href = button.dataset.preview;
+            edit.href = button.dataset.edit;
 
-                aspects: [],
-                nextKey: 0,
-                isEditing,
-                originalData: '',
+            if (button.dataset.delete) {
+                deleteForm.action = button.dataset.delete;
+                deleteForm.classList.remove('hidden');
 
-                init() {
-                    const initial = JSON.parse(
-                        document.getElementById(
-                            'pdpc-initial-aspects'
-                        ).textContent
-                    );
+                deleteButton.onclick = function() {
+                    return confirm('Delete Version ' + button.dataset.version + '?');
+                };
+            } else {
+                deleteForm.classList.add('hidden');
+            }
 
-                    this.aspects = initial.map(
-                        aspect =>
-                        this.normaliseAspect(aspect)
-                    );
+            const rect = button.getBoundingClientRect();
+            const width = 176;
+            const height = button.dataset.delete ? 145 : 98;
 
-                    this.originalData =
-                        this.formData();
-                },
+            let left = rect.right - width;
+            let top = rect.bottom + 6;
 
-                get hasChanges() {
-                    return !this.isEditing ||
-                        this.formData() !==
-                        this.originalData;
-                },
+            if (left < 10) left = 10;
+            if (top + height > window.innerHeight - 10) top = rect.top - height - 6;
 
-                formData() {
-                    return JSON.stringify(
-                        this.aspects.map(({
-                            _key,
-                            ...aspect
-                        }) => ({
-                            ...aspect,
+            menu.style.left = left + 'px';
+            menu.style.top = top + 'px';
+            menu.classList.remove('hidden');
+        }
 
-                            tums: aspect.tums.map(({
-                                _key,
-                                ...tum
-                            }) => ({
-                                ...tum,
+        document.addEventListener('click', function(event) {
+            const menu = document.getElementById('floatingActionMenu');
 
-                                tt: tum.tt.map(({
-                                    _key,
-                                    ...tt
-                                }) => ({
-                                    ...tt,
+            if (!event.target.closest('[onclick="openActionMenu(this)"]') && !event.target.closest('#floatingActionMenu')) {
+                menu.classList.add('hidden');
+            }
+        });
 
-                                    points: tt.points.map(({
-                                        _key,
-                                        ...point
-                                    }) => point)
-                                }))
-                            }))
-                        }))
-                    );
-                },
+        window.addEventListener('scroll', function() {
+            document.getElementById('floatingActionMenu').classList.add('hidden');
+        }, true);
 
-                key() {
-                    return ++this.nextKey;
-                },
-
-                normaliseAspect(aspect = {}) {
-
-                    const tums =
-                        aspect.tums?.length
-                            ? aspect.tums
-                            : [{}];
-
-                    return {
-                        _key: this.key(),
-
-                        aspect_code:
-                            aspect.aspect_code ?? '',
-
-                        aspect_name:
-                            aspect.aspect_name ?? '',
-
-                        tums:
-                            tums.map(
-                                tum =>
-                                this.normaliseTum(tum)
-                            )
-                    };
-                },
-
-                normaliseTum(tum = {}) {
-
-                    const tt =
-                        tum.tt?.length
-                            ? tum.tt
-                            : [{}];
-
-                    return {
-                        _key: this.key(),
-
-                        tums_code:
-                            tum.tums_code ?? '',
-
-                        tums_name:
-                            tum.tums_name ?? '',
-
-                        wajaran:
-                            tum.wajaran ?? '',
-
-                        rubrics: {
-                            0: '',
-                            1: '',
-                            2: '',
-                            3: '',
-                            4: '',
-                            ...(tum.rubrics ?? {})
-                        },
-
-                        tt:
-                            tt.map(
-                                item =>
-                                this.normaliseTt(item)
-                            )
-                    };
-                },
-
-                normaliseTt(tt = {}) {
-
-                    const points =
-                        tt.points?.length
-                            ? tt.points
-                            : [{}];
-
-                    return {
-                        _key: this.key(),
-
-                        points:
-                            points.map(
-                                point =>
-                                this.normalisePoint(point)
-                            )
-                    };
-                },
-
-                normalisePoint(point = {}) {
-                    return {
-                        _key: this.key(),
-
-                        point_text:
-                            point.point_text ?? ''
-                    };
-                },
-
-                addAspect() {
-                    this.aspects.push(
-                        this.normaliseAspect()
-                    );
-                },
-
-                removeAspect(i) {
-                    this.aspects.splice(i, 1);
-                },
-
-                addTum(i) {
-                    this.aspects[i]
-                        .tums
-                        .push(
-                            this.normaliseTum()
-                        );
-                },
-
-                removeTum(i, j) {
-                    this.aspects[i]
-                        .tums
-                        .splice(j, 1);
-                },
-
-                addTt(i, j) {
-                    this.aspects[i]
-                        .tums[j]
-                        .tt
-                        .push(
-                            this.normaliseTt()
-                        );
-                },
-
-                removeTt(i, j, k) {
-                    this.aspects[i]
-                        .tums[j]
-                        .tt
-                        .splice(k, 1);
-                },
-
-                addPoint(i, j, k) {
-                    this.aspects[i]
-                        .tums[j]
-                        .tt[k]
-                        .points
-                        .push(
-                            this.normalisePoint()
-                        );
-                },
-
-                removePoint(i, j, k, l) {
-                    this.aspects[i]
-                        .tums[j]
-                        .tt[k]
-                        .points
-                        .splice(l, 1);
-                }
-
-            }));
-
+        window.addEventListener('resize', function() {
+            document.getElementById('floatingActionMenu').classList.add('hidden');
         });
     </script>
 

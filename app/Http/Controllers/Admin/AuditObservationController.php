@@ -3,69 +3,111 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\AuditObservation;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class AuditObservationController extends Controller
 {
-    // Show observation audit records
-    // Show observation audit records
     public function index(Request $request)
     {
-        $audits = AuditObservation::with([
-            'teacher',
-            'guruNew',
-        ])
+        // Get filter values.
+        $search = trim((string) $request->input('search', ''));
+        $role = $request->input('role', '');
+        $stage = $request->input('stage', '');
+        $date = $request->input('date', '');
 
-            // Search by observer or teacher observed
-            ->when($request->search, function ($query, $search) {
+        // Build observation audit query.
+        $auditQuery = DB::table('audit_observation')
+            ->leftJoin(
+                'teacher',
+                'audit_observation.teacherID',
+                '=',
+                'teacher.teacherID'
+            )
+            ->leftJoin(
+                'guru_new',
+                'audit_observation.gn_id',
+                '=',
+                'guru_new.gn_id'
+            )
+            ->select(
+                'audit_observation.*',
+                'teacher.teacher_name',
+                'guru_new.gn_name'
+            );
 
-                $query->where(function ($q) use ($search) {
+        // Apply observer or teacher search.
+        if ($search !== '') {
 
-                    $q->whereHas('teacher', function ($teacherQuery) use ($search) {
-                        $teacherQuery->where(
-                            'teacher_name',
-                            'like',
-                            '%' . $search . '%'
-                        );
-                    })
+            $auditQuery->where(function ($query) use ($search) {
 
-                        ->orWhereHas('guruNew', function ($guruQuery) use ($search) {
-                            $guruQuery->where(
-                                'gn_name',
-                                'like',
-                                '%' . $search . '%'
-                            );
-                        });
-                });
-            })
+                $query
+                    ->where(
+                        'teacher.teacher_name',
+                        'like',
+                        "%{$search}%"
+                    )
+                    ->orWhere(
+                        'guru_new.gn_name',
+                        'like',
+                        "%{$search}%"
+                    )
+                    ->orWhere(
+                        'guru_new.gn_id',
+                        'like',
+                        "%{$search}%"
+                    );
+            });
+        }
 
-            // Filter role
-            ->when($request->role, function ($query, $role) {
-                $query->where('role', $role);
-            })
+        // Apply role filter.
+        if ($role !== '') {
 
-            // Filter stage
-            ->when($request->stage, function ($query, $stage) {
-                $query->where('stage', $stage);
-            })
+            $auditQuery->where(
+                'audit_observation.role',
+                $role
+            );
+        }
 
-            // Filter date
-            ->when($request->date, function ($query, $date) {
-                $query->whereDate('audit_date', $date);
-            })
+        // Apply stage filter.
+        if ($stage !== '') {
 
-            ->orderByDesc('audit_date')
-            ->orderByDesc('audit_time')
+            $auditQuery->where(
+                'audit_observation.stage',
+                $stage
+            );
+        }
 
+        // Apply date filter.
+        if ($date !== '') {
+
+            $auditQuery->whereDate(
+                'audit_observation.audit_date',
+                $date
+            );
+        }
+
+        // Get observation audit records.
+        $audits = $auditQuery
+            ->orderByDesc(
+                'audit_observation.audit_date'
+            )
+            ->orderByDesc(
+                'audit_observation.audit_time'
+            )
             ->paginate(15)
-
             ->withQueryString();
 
-
+        // Return observation audit page.
         return view(
             'admin.audit-observation',
-            compact('audits')
+            compact(
+                'audits',
+                'search',
+                'role',
+                'stage',
+                'date'
+            )
         );
     }
 }

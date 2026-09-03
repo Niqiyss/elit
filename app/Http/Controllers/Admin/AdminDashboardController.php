@@ -3,107 +3,102 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\PreForm;
-use App\Models\PostForm;
-use App\Models\PdpcForm;
-use App\Models\EvaluationDoc;
-use App\Models\AuditObservation;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class AdminDashboardController extends Controller
 {
     public function index()
     {
-        /*
-        |--------------------------------------------------------------------------
-        | FORM STATISTICS
-        |--------------------------------------------------------------------------
-        */
+        // Get logged-in admin/staff.
+        $admin = Auth::guard('admin')->user();
 
-        $preFormCount = PreForm::count();
+        abort_if(!$admin, 403, 'Unauthorized access.');
 
-        $postFormCount = PostForm::count();
+        // Count PRE form versions.
+        $preFormCount = DB::table('pre_form')
+            ->count();
 
-        $pdpcFormCount = PdpcForm::count();
+        // Count PDPC form versions.
+        $pdpcFormCount = DB::table('pdpc_form')
+            ->count();
 
+        // Count Feedback form versions.
+        $postFormCount = DB::table('post_form')
+            ->count();
 
+        // Calculate total form versions.
         $totalForms =
-            $preFormCount +
-            $postFormCount +
-            $pdpcFormCount;
+            $preFormCount
+            + $pdpcFormCount
+            + $postFormCount;
 
+        // Get active PRE form.
+        $activePreForm = DB::table('pre_form')
+            ->where('status', 'Active')
+            ->orderByDesc('formID')
+            ->first();
 
-        /*
-        |--------------------------------------------------------------------------
-        | ACTIVE FORMS
-        |--------------------------------------------------------------------------
-        */
+        // Get active PDPC form.
+        $activePdpcForm = DB::table('pdpc_form')
+            ->where('status', 'Active')
+            ->orderByDesc('formID')
+            ->first();
 
-        $activePreForms = PreForm::where(
-            'status',
-            'Active'
-        )->count();
+        // Get active Feedback form.
+        $activePostForm = DB::table('post_form')
+            ->where('status', 'Active')
+            ->orderByDesc('formID')
+            ->first();
 
-        $activePostForms = PostForm::where(
-            'status',
-            'Active'
-        )->count();
-
-        $activePdpcForms = PdpcForm::where(
-            'status',
-            'Active'
-        )->count();
-
-
+        // Calculate total active forms.
         $activeForms =
-            $activePreForms +
-            $activePostForms +
-            $activePdpcForms;
+            ($activePreForm ? 1 : 0)
+            + ($activePdpcForm ? 1 : 0)
+            + ($activePostForm ? 1 : 0);
 
+        // Count all observation audit records.
+        $totalRecords = DB::table('audit_observation')
+            ->count();
 
-        /*
-        |--------------------------------------------------------------------------
-        | DOCUMENTS
-        |--------------------------------------------------------------------------
-        */
-
-        $totalDocuments = EvaluationDoc::count();
-
-
-        /*
-        |--------------------------------------------------------------------------
-        | OBSERVATION AUDIT
-        |--------------------------------------------------------------------------
-        */
-
-        $totalAudits = AuditObservation::count();
-
-
-        /*
-        |--------------------------------------------------------------------------
-        | RECENT OBSERVATION ACTIVITY
-        |--------------------------------------------------------------------------
-        */
-
-        $recentAudits = AuditObservation::with([
-            'teacher',
-            'guruNew',
-        ])
-            ->orderByDesc('audit_date')
-            ->orderByDesc('audit_time')
+        // Get latest five observation audit records.
+        $recentAudits = DB::table('audit_observation')
+            ->leftJoin(
+                'teacher',
+                'audit_observation.teacherID',
+                '=',
+                'teacher.teacherID'
+            )
+            ->leftJoin(
+                'guru_new',
+                'audit_observation.gn_id',
+                '=',
+                'guru_new.gn_id'
+            )
+            ->select(
+                'audit_observation.*',
+                'teacher.teacher_name',
+                'guru_new.gn_name'
+            )
+            ->orderByDesc('audit_observation.audit_date')
+            ->orderByDesc('audit_observation.audit_time')
             ->take(5)
             ->get();
 
-
+        // Return admin dashboard.
         return view(
             'admin.dashboard',
             compact(
+                'admin',
                 'totalForms',
                 'activeForms',
-                'totalDocuments',
-                'totalAudits',
+                'totalRecords',
                 'preFormCount',
-                'postFormCount',
                 'pdpcFormCount',
+                'postFormCount',
+                'activePreForm',
+                'activePdpcForm',
+                'activePostForm',
                 'recentAudits'
             )
         );

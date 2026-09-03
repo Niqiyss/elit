@@ -3,54 +3,84 @@
 namespace App\Http\Controllers\Principal;
 
 use App\Http\Controllers\Controller;
-use App\Models\GuruNew;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class GNListController extends Controller
 {
+    // Show new teachers from principal's school
     public function index(Request $request)
     {
         $principal = Auth::guard('principal')->user();
 
         $search = $request->search;
 
-        $guruNew = GuruNew::where(
-            'schoolID',
-            $principal->schoolID
-        )
+        // Get teachers together with school information
+        $guruNew = DB::table('guru_new')
+            ->join(
+                'school',
+                'guru_new.schoolID',
+                '=',
+                'school.schoolID'
+            )
+            ->where(
+                'guru_new.schoolID',
+                $principal->schoolID
+            )
             ->when($search, function ($query, $search) {
 
                 $query->where(function ($q) use ($search) {
 
                     $q->where(
-                        'gn_name',
+                        'guru_new.gn_name',
                         'LIKE',
                         '%' . $search . '%'
                     )
                         ->orWhere(
-                            'email',
+                            'guru_new.email',
                             'LIKE',
                             '%' . $search . '%'
                         )
                         ->orWhere(
-                            'phone_number',
+                            'guru_new.phone_number',
+                            'LIKE',
+                            '%' . $search . '%'
+                        )
+                        ->orWhere(
+                            'guru_new.ic_number',
                             'LIKE',
                             '%' . $search . '%'
                         );
                 });
             })
-            ->orderBy('gn_name')
+            ->select(
+                'guru_new.gn_id',
+                'guru_new.ic_number',
+                'guru_new.gn_name',
+                'guru_new.phone_number',
+                'guru_new.email',
+                'guru_new.marital_status',
+                'guru_new.gender',
+                'guru_new.address',
+                'guru_new.race',
+                'guru_new.appointed_date',
+                'guru_new.current_status',
+                'school.school_name'
+            )
+            ->orderBy(
+                'guru_new.gn_name'
+            )
             ->paginate(10)
             ->withQueryString();
 
-
-        $totalTeachers = GuruNew::where(
-            'schoolID',
-            $principal->schoolID
-        )
+        // Count teachers from principal's school
+        $totalTeachers = DB::table('guru_new')
+            ->where(
+                'schoolID',
+                $principal->schoolID
+            )
             ->count();
-
 
         return view(
             'principal.gn-list',

@@ -7,7 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>
-        PDPC Observation_{{ $guru->gn_name }}_{{ $response->observation_date ? $response->observation_date->format('d-m-Y') : 'No Date' }}
+        {{ $form->form_name }}_{{ $guru->gn_name }}_{{ $response->observation_date ? $response->observation_date->format('d-m-Y') : 'No Date' }}
     </title>
 
     <style>
@@ -34,7 +34,7 @@
             padding: 12px 20px;
             background: #0f172a;
             color: white;
-            font-size: 13px; 
+            font-size: 12px;
         }
 
         .toolbar-actions {
@@ -53,16 +53,11 @@
             font-weight: 700;
             text-decoration: none;
             cursor: pointer;
-            font-size: 12px;
         }
 
         .button.secondary {
             background: white;
             color: #334155;
-        }
-
-        .button.print {
-            background: #366be7;
         }
 
         .paper {
@@ -171,8 +166,8 @@
         .rubric-row {
             display: grid;
             grid-template-columns: 55px 1fr;
-            border-bottom: 1px solid #111;
             min-height: 55px;
+            border-bottom: 1px solid #111;
         }
 
         .rubric-row:last-child {
@@ -184,8 +179,6 @@
             align-items: center;
             justify-content: center;
             padding: 5px 3px;
-            background: white;
-            color: black;
             border-right: 1px solid #111;
             text-align: center;
             font-weight: 700;
@@ -195,7 +188,6 @@
             display: flex;
             align-items: center;
             padding: 7px;
-            color: #111;
             white-space: pre-line;
             line-height: 1.35;
         }
@@ -203,35 +195,30 @@
         .summary-label {
             background: #eff6ff;
             vertical-align: middle !important;
-            text-align: left;
             font-weight: 700;
         }
 
         .summary-value {
             background: #f8fafc;
-            vertical-align: middle !important;
             text-align: center;
+            vertical-align: middle !important;
         }
 
         .tums-total-label {
             background: #eff6ff;
-            vertical-align: middle !important;
-            text-align: left;
             font-weight: 700;
         }
 
         .tums-total-value {
             background: #2563eb;
             color: white;
-            vertical-align: middle !important;
             text-align: center;
             font-weight: 700;
         }
 
         .observation-summary {
             display: grid;
-            grid-template-columns:
-                minmax(0, 2fr) minmax(250px, .85fr);
+            grid-template-columns: minmax(0, 2fr) minmax(250px, .85fr);
             gap: 22px;
             align-items: start;
             page-break-inside: avoid;
@@ -266,34 +253,29 @@
             width: 10%;
             background: #e0e7ff;
             text-align: center;
-            vertical-align: middle;
         }
 
         .result-aspect-title {
             width: 31%;
             background: #e0e7ff;
-            vertical-align: middle;
         }
 
         .result-tums {
             width: 13%;
             background: #e0e7ff;
             text-align: center;
-            vertical-align: middle;
         }
 
         .result-weight {
             width: 14%;
             background: #e0e7ff;
             text-align: center;
-            vertical-align: middle;
         }
 
         .result-number {
             width: 16%;
             background: #ecfdf5;
             text-align: center;
-            vertical-align: middle;
         }
 
         .result-total-label {
@@ -309,12 +291,6 @@
             font-weight: 700;
         }
 
-        .grade-label,
-        .grade-range,
-        .grade-check {
-            background: white;
-        }
-
         .grade-range,
         .grade-check {
             text-align: center;
@@ -322,11 +298,6 @@
 
         .grade-active td {
             background: #dbeafe;
-            font-weight: 700;
-        }
-
-        .grade-active .grade-label,
-        .grade-active .grade-range {
             font-weight: 700;
         }
 
@@ -340,7 +311,6 @@
             width: 100%;
             margin-top: 12px;
             border-collapse: collapse;
-            table-layout: fixed;
         }
 
         .result-status td {
@@ -358,16 +328,16 @@
             width: 38%;
             background: #dcfce7;
             color: #166534;
-            font-weight: 700;
             text-align: center;
+            font-weight: 700;
         }
 
         .repeat {
             width: 38%;
             background: #fee2e2;
             color: #991b1b;
-            font-weight: 700;
             text-align: center;
+            font-weight: 700;
         }
 
         tr {
@@ -403,6 +373,7 @@
 
 </head>
 
+
 <body>
 
     {{-- Toolbar --}}
@@ -414,26 +385,12 @@
 
         <div class="toolbar-actions">
 
-            <a
-                class="button secondary"
-                href="{{ route(
-                    $role === 'observer'
-                        ? 'observer.manage'
-                        : 'external.manage',
-                    $guru->gn_id
-                ) }}">
-
+            <a href="{{ route('principal.result.show', $guru->gn_id) }}" class="button secondary">
                 Back
-
             </a>
 
-            <button
-                class="button print"
-                type="button"
-                onclick="window.print()">
-
+            <button class="button" type="button" onclick="window.print()">
                 Print / Save PDF
-
             </button>
 
         </div>
@@ -445,15 +402,11 @@
 
         {{-- Header --}}
         <header class="report-header">
-
-            <h1>
-                STANDARD 4: PEMBELAJARAN DAN PEMUDAHCARAAN
-            </h1>
-
+            <h1>STANDARD 4: PEMBELAJARAN DAN PEMUDAHCARAAN</h1>
         </header>
 
 
-        {{-- Observation Information --}}
+        {{-- Information --}}
         <section class="meta">
 
             <div>
@@ -476,72 +429,54 @@
                 {{ $response->subject_name ?? '-' }}
             </div>
 
+
             <div>
 
                 <strong>Penilai</strong>
 
-                @if($role === 'observer')
+                @if($response->observation_stage === 'EXTERNAL')
 
-                {{
-                        $response->observer?->teacher?->teacher_name
-                        ?? Auth::guard('teacher')->user()->teacher_name
-                    }}
+                {{ $response->externalObserver?->teacher?->teacher_name ?? '-' }}
 
                 @else
 
-                {{
-                        $response->externalObserver?->teacher?->teacher_name
-                        ?? Auth::guard('teacher')->user()->teacher_name
-                    }}
+                {{ $response->observer?->teacher?->teacher_name ?? '-' }}
 
                 @endif
 
             </div>
 
+
             <div>
 
                 <strong>Jenis Penilai</strong>
 
-                {{
-                    $role === 'observer'
-                        ? 'Observer'
-                        : 'External Observer'
-                }}
+                {{ $response->observation_stage === 'EXTERNAL' ? 'External Observer' : 'Observer' }}
 
             </div>
+
 
             <div>
 
                 <strong>Tarikh</strong>
 
-                {{
-                    $response->observation_date
-                        ? $response->observation_date->format('d/m/Y')
-                        : '-'
-                }}
+                {{ $response->observation_date ? $response->observation_date->format('d/m/Y') : '-' }}
 
             </div>
+
 
             <div>
 
                 <strong>Masa</strong>
 
-                {{
-                    $response->observation_time
-                        ? substr(
-                            (string) $response->observation_time,
-                            0,
-                            5
-                        )
-                        : '-'
-                }}
+                {{ $response->observation_time ? substr((string) $response->observation_time, 0, 5) : '-' }}
 
             </div>
 
         </section>
 
 
-        {{-- Aspect --}}
+        {{-- Aspects --}}
         @foreach($form->aspects as $aspect)
 
         @php
@@ -560,7 +495,6 @@
 
         <table class="score-table">
 
-            {{-- 6 real columns --}}
             <colgroup>
                 <col style="width: 9%">
                 <col style="width: 9%">
@@ -574,27 +508,11 @@
             <thead>
 
                 <tr>
-
-                    <th>
-                        ASPEK
-                    </th>
-
-                    <th>
-                        TUMS
-                    </th>
-
-                    <th>
-                        TAHAP TINDAKAN
-                    </th>
-
-                    <th colspan="2">
-                        SKOR
-                    </th>
-
-                    <th>
-                        RUBRIK TAHAP KUALITI (RTK)
-                    </th>
-
+                    <th>ASPEK</th>
+                    <th>TUMS</th>
+                    <th>TAHAP TINDAKAN</th>
+                    <th colspan="2">SKOR</th>
+                    <th>RUBRIK TAHAP KUALITI (RTK)</th>
                 </tr>
 
             </thead>
@@ -609,20 +527,12 @@
                 ->flatMap(fn($tt) => $tt->points)
                 ->values();
 
-                $pointRows = max(
-                1,
-                $points->count()
-                );
+                $pointRows = max(1, $points->count());
+                $tumsRows = $pointRows + 4;
 
-                $tumsRows =
-                $pointRows + 4;
+                $summary = $tumsResults[$tums->tumsID] ?? null;
 
-                $summary =
-                $tumsResults[$tums->tumsID]
-                ?? null;
-
-                $rubrics =
-                $tums->rubrics
+                $rubrics = $tums->rubrics
                 ->sortByDesc('score')
                 ->values();
                 @endphp
@@ -631,10 +541,7 @@
                 @forelse($points as $point)
 
                 @php
-                $score =
-                $scores->get(
-                $point->pointID
-                );
+                $score = $scores->get($point->pointID);
                 @endphp
 
 
@@ -643,9 +550,7 @@
                     {{-- Aspect --}}
                     @if($loop->parent->first && $loop->first)
 
-                    <td
-                        class="aspect-cell"
-                        rowspan="{{ $aspectRows }}">
+                    <td class="aspect-cell" rowspan="{{ $aspectRows }}">
 
                         {{ $aspect->aspect_code }}
 
@@ -661,18 +566,14 @@
                     {{-- TUMS --}}
                     @if($loop->first)
 
-                    <td
-                        class="tums-cell"
-                        rowspan="{{ $tumsRows }}">
-
+                    <td class="tums-cell" rowspan="{{ $tumsRows }}">
                         {{ $tums->tums_code }}
-
                     </td>
 
                     @endif
 
 
-                    {{-- TT --}}
+                    {{-- Point --}}
                     <td class="point-cell">
 
                         @if($loop->first)
@@ -691,40 +592,27 @@
                     </td>
 
 
-                    {{-- Score spans the two calculation columns --}}
-                    <td
-                        colspan="2"
-                        class="score-cell">
-
+                    {{-- Saved Score --}}
+                    <td colspan="2" class="score-cell">
                         {{ $score ?? '-' }}
-
                     </td>
 
 
-                    {{-- RTK --}}
+                    {{-- Rubric --}}
                     @if($loop->first)
 
-                    <td
-                        rowspan="{{ $tumsRows }}"
-                        class="rubric-cell">
+                    <td rowspan="{{ $tumsRows }}" class="rubric-cell">
 
                         @foreach($rubrics as $rubric)
 
                         <div class="rubric-row">
 
                             <div class="rubric-score">
-
                                 RTK {{ $rubric->score }}
-
                             </div>
 
                             <div class="rubric-text">
-
-                                {{
-                                                        $rubric->description
-                                                        ?? '-'
-                                                    }}
-
+                                {{ $rubric->description ?? '-' }}
                             </div>
 
                         </div>
@@ -744,9 +632,7 @@
 
                     @if($loop->first)
 
-                    <td
-                        class="aspect-cell"
-                        rowspan="{{ $aspectRows }}">
+                    <td class="aspect-cell" rowspan="{{ $aspectRows }}">
 
                         {{ $aspect->aspect_code }}
 
@@ -759,37 +645,19 @@
                     @endif
 
 
-                    <td
-                        class="tums-cell"
-                        rowspan="{{ $tumsRows }}">
-
+                    <td class="tums-cell" rowspan="{{ $tumsRows }}">
                         {{ $tums->tums_code }}
-
                     </td>
-
 
                     <td class="point-cell">
-
-                        <strong>
-                            {{ $tums->tums_name }}
-                        </strong>
-
+                        <strong>{{ $tums->tums_name }}</strong>
                     </td>
 
-
-                    <td
-                        colspan="2"
-                        class="score-cell">
-
+                    <td colspan="2" class="score-cell">
                         -
-
                     </td>
 
-
-                    <td
-                        rowspan="{{ $tumsRows }}"
-                        class="rubric-cell">
-                    </td>
+                    <td rowspan="{{ $tumsRows }}" class="rubric-cell"></td>
 
                 </tr>
 
@@ -800,28 +668,15 @@
                 <tr>
 
                     <td class="summary-label">
-
-                        Bilangan Tindakan /
-                        Jumlah Skor Kualiti
-
+                        Bilangan Tindakan / Jumlah Skor Kualiti
                     </td>
 
                     <td class="summary-value">
-
-                        {{
-                                    $summary['action_count']
-                                    ?? 0
-                                }}
-
+                        {{ $summary['action_count'] ?? 0 }}
                     </td>
 
                     <td class="summary-value">
-
-                        {{
-                                    $summary['quality_total']
-                                    ?? 0
-                                }}
-
+                        {{ $summary['quality_total'] ?? 0 }}
                     </td>
 
                 </tr>
@@ -831,32 +686,15 @@
                 <tr>
 
                     <td class="summary-label">
-
-                        Skor Tahap Tindakan /
-                        Min Skor Tahap Kualiti
-
+                        Skor Tahap Tindakan / Min Skor Tahap Kualiti
                     </td>
 
                     <td class="summary-value">
-
-                        {{
-                                    $summary['action_score']
-                                    ?? 0
-                                }}
-
+                        {{ $summary['action_score'] ?? 0 }}
                     </td>
 
                     <td class="summary-value">
-
-                        {{
-                                    isset($summary)
-                                        ? number_format(
-                                            $summary['quality_mean'],
-                                            2
-                                        )
-                                        : '0.00'
-                                }}
-
+                        {{ isset($summary) ? number_format($summary['quality_mean'], 2) : '0.00' }}
                     </td>
 
                 </tr>
@@ -866,63 +704,29 @@
                 <tr>
 
                     <td class="summary-label">
-
-                        Peratus Skor Tahap Tindakan /
-                        Peratus Skor Tahap Kualiti
-
+                        Peratus Skor Tahap Tindakan / Peratus Skor Tahap Kualiti
                     </td>
 
                     <td class="summary-value">
-
-                        {{
-                                    isset($summary)
-                                        ? number_format(
-                                            $summary['action_percentage'],
-                                            2
-                                        )
-                                        : '0.00'
-                                }}%
-
+                        {{ isset($summary) ? number_format($summary['action_percentage'], 2) : '0.00' }}%
                     </td>
 
                     <td class="summary-value">
-
-                        {{
-                                    isset($summary)
-                                        ? number_format(
-                                            $summary['quality_percentage'],
-                                            2
-                                        )
-                                        : '0.00'
-                                }}%
-
+                        {{ isset($summary) ? number_format($summary['quality_percentage'], 2) : '0.00' }}%
                     </td>
 
                 </tr>
 
 
-                {{-- TUMS Total --}}
+                {{-- TUMS --}}
                 <tr>
 
-                    <td
-                        colspan="2"
-                        class="tums-total-label">
-
+                    <td colspan="2" class="tums-total-label">
                         Peratus TUMS
-
                     </td>
 
                     <td class="tums-total-value">
-
-                        {{
-                                    isset($summary)
-                                        ? number_format(
-                                            $summary['tums_percentage'],
-                                            2
-                                        )
-                                        : '0.00'
-                                }}%
-
+                        {{ isset($summary) ? number_format($summary['tums_percentage'], 2) : '0.00' }}%
                     </td>
 
                 </tr>
@@ -936,103 +740,42 @@
         @endforeach
 
 
-        {{-- Overall Summary --}}
+        {{-- Build summary rows --}}
         @php
-
         $summaryRows = [];
-        $overallTotal = 0;
 
         foreach ($form->aspects as $aspect) {
 
         foreach ($aspect->tums as $tums) {
 
-        $result =
-        $tumsResults[$tums->tumsID]
-        ?? null;
-
-        $percentage =
-        $result['tums_percentage']
-        ?? 0;
-
-        $weight =
-        (float) $tums->wajaran;
-
-        $weightedScore =
-        round(
-        ($percentage * $weight) / 100,
-        2
-        );
-
-        $overallTotal +=
-        $weightedScore;
+        $summary = $tumsResults[$tums->tumsID] ?? null;
 
         $summaryRows[] = [
-
-        'aspect_code' =>
-        $aspect->aspect_code,
-
-        'aspect_name' =>
-        $aspect->aspect_name,
-
-        'tums_code' =>
-        $tums->tums_code,
-
-        'weight' =>
-        $weight,
-
-        'percentage' =>
-        $percentage,
-
-        'score' =>
-        $weightedScore,
-
+        'aspect_code' => $aspect->aspect_code,
+        'aspect_name' => $aspect->aspect_name,
+        'tums_code' => $tums->tums_code,
+        'weight' => (float) $tums->wajaran,
+        'percentage' => $summary['tums_percentage'] ?? 0,
+        'score' => $summary['weighted_score'] ?? 0,
         ];
         }
         }
 
-        $overallTotal =
-        round(
-        $overallTotal,
-        2
-        );
+        $groupedRows = collect($summaryRows)->groupBy('aspect_code');
 
-        if ($overallTotal >= 90) {
+        $achievementMap = [
+        'Excellent' => 'CEMERLANG',
+        'Good' => 'BAIK',
+        'Satisfactory' => 'SEDERHANA',
+        'Weak' => 'LEMAH',
+        'Very Weak' => 'SANGAT LEMAH',
+        ];
 
-        $achievementLevel =
-        'CEMERLANG';
-
-        } elseif ($overallTotal >= 80) {
-
-        $achievementLevel =
-        'BAIK';
-
-        } elseif ($overallTotal >= 50) {
-
-        $achievementLevel =
-        'SEDERHANA';
-
-        } elseif ($overallTotal >= 20) {
-
-        $achievementLevel =
-        'LEMAH';
-
-        } else {
-
-        $achievementLevel =
-        'SANGAT LEMAH';
-
-        }
-
-        $groupedRows =
-        collect(
-        $summaryRows
-        )->groupBy(
-        'aspect_code'
-        );
-
+        $achievementLevel = $achievementMap[$response->achievement_level] ?? '-';
         @endphp
 
 
+        {{-- Overall Summary --}}
         <section class="observation-summary">
 
             {{-- Summary --}}
@@ -1042,33 +785,16 @@
                     Rumusan Pencerapan
                 </h2>
 
-
                 <table class="result-table">
 
                     <thead>
 
                         <tr>
-
-                            <th colspan="2">
-                                ASPEK
-                            </th>
-
-                            <th>
-                                TUMS
-                            </th>
-
-                            <th>
-                                WAJARAN
-                            </th>
-
-                            <th>
-                                %
-                            </th>
-
-                            <th>
-                                SKOR
-                            </th>
-
+                            <th colspan="2">ASPEK</th>
+                            <th>TUMS</th>
+                            <th>WAJARAN</th>
+                            <th>%</th>
+                            <th>SKOR</th>
                         </tr>
 
                     </thead>
@@ -1084,66 +810,31 @@
 
                             @if($loop->first)
 
-                            <td
-                                class="result-aspect"
-                                rowspan="{{ $aspectRows->count() }}">
-
+                            <td class="result-aspect" rowspan="{{ $aspectRows->count() }}">
                                 {{ $row['aspect_code'] }}
-
                             </td>
 
-
-                            <td
-                                class="result-aspect-title"
-                                rowspan="{{ $aspectRows->count() }}">
-
+                            <td class="result-aspect-title" rowspan="{{ $aspectRows->count() }}">
                                 {{ $row['aspect_name'] }}
-
                             </td>
 
                             @endif
 
 
                             <td class="result-tums">
-
                                 {{ $row['tums_code'] }}
-
                             </td>
-
 
                             <td class="result-weight">
-
-                                {{
-                                            number_format(
-                                                $row['weight'],
-                                                2
-                                            )
-                                        }}
-
+                                {{ number_format($row['weight'], 2) }}
                             </td>
 
-
                             <td class="result-number">
-
-                                {{
-                                            number_format(
-                                                $row['percentage'],
-                                                2
-                                            )
-                                        }}
-
+                                {{ number_format($row['percentage'], 2) }}
                             </td>
 
-
                             <td class="result-number">
-
-                                {{
-                                            number_format(
-                                                $row['score'],
-                                                2
-                                            )
-                                        }}
-
+                                {{ number_format($row['score'], 2) }}
                             </td>
 
                         </tr>
@@ -1153,25 +844,15 @@
                         @endforeach
 
 
+                        {{-- Final percentage --}}
                         <tr>
 
-                            <td
-                                colspan="5"
-                                class="result-total-label">
-
+                            <td colspan="5" class="result-total-label">
                                 JUMLAH
-
                             </td>
 
                             <td class="result-total-value">
-
-                                {{
-                                    number_format(
-                                        $overallTotal,
-                                        2
-                                    )
-                                }}
-
+                                {{ number_format((float) $response->percentage, 2) }}
                             </td>
 
                         </tr>
@@ -1193,11 +874,13 @@
                 <table class="result-table">
 
                     <thead>
+
                         <tr>
                             <th>TARAF</th>
                             <th>SKOR</th>
                             <th>✓</th>
                         </tr>
+
                     </thead>
 
                     <tbody>
@@ -1212,7 +895,7 @@
 
                         <tr class="{{ $achievementLevel === $level ? 'grade-active' : '' }}">
 
-                            <td class="grade-label">
+                            <td>
                                 {{ $level }}
                             </td>
 
@@ -1221,9 +904,11 @@
                             </td>
 
                             <td class="grade-check">
+
                                 @if($achievementLevel === $level)
                                 ✓
                                 @endif
+
                             </td>
 
                         </tr>
@@ -1235,10 +920,8 @@
                 </table>
 
 
-                {{-- PASS / REPEAT --}}
-                @php
-                $finalDecision = $overallTotal >= 85 ? 'PASS' : 'REPEAT';
-                @endphp
+                {{-- EXTERNAL result only --}}
+                @if($response->observation_stage === 'EXTERNAL' && $response->result)
 
                 <table class="result-status">
 
@@ -1248,13 +931,15 @@
                             Keputusan
                         </td>
 
-                        <td class="{{ $finalDecision === 'PASS' ? 'pass' : 'repeat' }}">
-                            {{ $finalDecision }}
+                        <td class="{{ $response->result === 'PASS' ? 'pass' : 'repeat' }}">
+                            {{ $response->result }}
                         </td>
 
                     </tr>
 
                 </table>
+
+                @endif
 
             </div>
 

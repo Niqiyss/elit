@@ -1,11 +1,9 @@
 <x-app-layout>
 
     <x-slot name="header">
-
         <h2 class="font-semibold text-xl text-gray-800 leading-tight">
             {{ Auth::guard('hr')->user()->hrname }}
         </h2>
-
     </x-slot>
 
 
@@ -13,14 +11,18 @@
 
         <div class="max-w-7xl mx-auto px-6">
 
-            <div class="relative bg-gradient-to-br from-slate-900 via-violet-950 to-purple-900 rounded-3xl p-8 shadow-xl overflow-hidden mb-8">
+            {{-- HEADER --}}
+            <div class="relative bg-gradient-to-br from-slate-900 via-violet-950 to-purple-900
+                        rounded-3xl p-8 shadow-xl overflow-hidden mb-8">
 
-                <div class="absolute right-0 top-0 translate-x-10 -translate-y-10 w-72 h-72 bg-purple-500/10 rounded-full blur-3xl"></div>
+                <div class="absolute right-0 top-0 translate-x-10 -translate-y-10
+                            w-72 h-72 bg-purple-500/10 rounded-full blur-3xl">
+                </div>
 
                 <div class="relative z-10">
 
                     <h1 class="text-3xl font-extrabold text-white">
-                        New Teacher List
+                        List New Teacher
                     </h1>
 
                     <p class="text-violet-300 mt-2">
@@ -32,57 +34,199 @@
             </div>
 
 
+            {{-- MAIN CARD --}}
             <div class="bg-white rounded-3xl shadow-lg overflow-hidden">
 
-                <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-5 px-8 py-6 border-b border-gray-100">
 
-                    <div class="flex items-center gap-3">
+                {{-- SEARCH & FILTER --}}
+                <div class="px-8 py-6 border-b border-gray-100">
 
-                        <form method="GET"
-                            action="{{ route('hr.gurunew.index') }}"
-                            class="flex items-center gap-3">
+                    <form
+                        method="GET"
+                        action="{{ route('hr.gurunew.index') }}"
+                        class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-4 items-end">
+
+                        {{-- SEARCH --}}
+                        <div class="lg:col-span-4">
+
+                            <label
+                                for="search"
+                                class="block text-xs font-bold uppercase tracking-wide text-gray-900 mb-2">
+
+                                Search
+
+                            </label>
 
                             <input
                                 type="text"
+                                id="search"
                                 name="search"
                                 value="{{ request('search') }}"
                                 placeholder="Search teacher..."
-                                class="w-80 rounded-2xl border border-gray-300 px-5 py-3 text-sm
-                                       focus:ring-2 focus:ring-violet-500
+                                class="w-full rounded-xl border-gray-300
                                        focus:border-violet-500
-                                       focus:outline-none">
+                                       focus:ring-violet-500">
+
+                        </div>
+
+
+                        {{-- SCHOOL --}}
+                        <div class="lg:col-span-3">
+
+                            <label
+                                for="schoolID"
+                                class="block text-xs font-bold uppercase tracking-wide text-gray-900 mb-2">
+
+                                School
+
+                            </label>
+
+                            <select
+                                id="schoolID"
+                                name="schoolID"
+                                class="w-full rounded-xl border-gray-300
+                                       focus:border-violet-500
+                                       focus:ring-violet-500">
+
+                                <option value="">
+                                    All Schools
+                                </option>
+
+                                @foreach($schools as $school)
+
+                                <option
+                                    value="{{ $school->schoolID }}"
+                                    {{ request('schoolID') == $school->schoolID ? 'selected' : '' }}>
+
+                                    {{ $school->school_name }}
+
+                                </option>
+
+                                @endforeach
+
+                            </select>
+
+                        </div>
+
+
+                        {{-- STATUS --}}
+                        <div class="lg:col-span-2">
+
+                            <label
+                                for="status"
+                                class="block text-xs font-bold uppercase tracking-wide text-gray-900 mb-2">
+
+                                Status
+
+                            </label>
+
+                            <select
+                                id="status"
+                                name="status"
+                                class="w-full rounded-xl border-gray-300
+                                       focus:border-violet-500
+                                       focus:ring-violet-500">
+
+                                <option value="">
+                                    All Status
+                                </option>
+
+                                <option
+                                    value="Inactive"
+                                    {{ request('status') === 'Inactive' ? 'selected' : '' }}>
+                                    Inactive
+                                </option>
+
+                                <option
+                                    value="Active"
+                                    {{ request('status') === 'Active' ? 'selected' : '' }}>
+                                    Active
+                                </option>
+
+                                <option
+                                    value="Complete"
+                                    {{ request('status') === 'Complete' ? 'selected' : '' }}>
+                                    Complete
+                                </option>
+
+                            </select>
+
+                        </div>
+
+
+                        {{-- APPOINTED DATE --}}
+                        <div class="lg:col-span-2">
+
+                            <label
+                                for="appointed_date"
+                                class="block text-xs font-bold uppercase tracking-wide text-gray-900 mb-2">
+
+                                Appointed Date
+
+                            </label>
+
+                            <input
+                                type="date"
+                                id="appointed_date"
+                                name="appointed_date"
+                                value="{{ request('appointed_date') }}"
+                                class="w-full rounded-xl border-gray-300
+                                       focus:border-violet-500
+                                       focus:ring-violet-500">
+
+                        </div>
+
+
+                        {{-- FILTER --}}
+                        <div class="lg:col-span-1">
 
                             <button
                                 type="submit"
-                                class="bg-violet-700 hover:bg-violet-800 text-white p-3 rounded-xl shadow transition">
+                                class="w-full px-4 py-2.5
+                                       bg-blue-600 hover:bg-blue-700
+                                       text-white font-semibold
+                                       rounded-xl transition">
 
-                                <svg xmlns="http://www.w3.org/2000/svg"
-                                    class="h-5 w-5"
-                                    fill="none"
-                                    viewBox="0 0 24 24"
-                                    stroke="currentColor">
-
-                                    <path stroke-linecap="round"
-                                        stroke-linejoin="round"
-                                        stroke-width="2"
-                                        d="M21 21l-4.35-4.35m1.85-5.15a7 7 0 11-14 0 7 7 0 0114 0z" />
-
-                                </svg>
+                                Filter
 
                             </button>
 
-                        </form>
+                        </div>
 
-                    </div>
+
+                        {{-- CLEAR FILTER --}}
+                        @if(
+                        request('search') ||
+                        request('schoolID') ||
+                        request('status') ||
+                        request('appointed_date')
+                        )
+
+                        <div class="lg:col-span-12">
+
+                            <a
+                                href="{{ route('hr.gurunew.index') }}"
+                                class="text-sm font-semibold text-red-500 hover:text-red-600 transition">
+
+                                Clear Filters
+
+                            </a>
+
+                        </div>
+
+                        @endif
+
+                    </form>
 
                 </div>
 
 
+                {{-- TABLE --}}
                 <div class="overflow-x-auto">
 
                     <table class="w-full text-sm">
 
-                        <thead class="bg-slate-50 text-gray-500 uppercase text-xs">
+                        <thead class="bg-slate-50 text-gray-900 uppercase text-xs">
 
                             <tr>
 
@@ -121,31 +265,39 @@
 
                             <tr class="hover:bg-violet-50/50 transition">
 
+                                {{-- NUMBER --}}
                                 <td class="px-6 py-5 text-gray-600">
-                                    {{ $loop->iteration }}
+
+                                    {{ $guruNews->firstItem() + $loop->index }}
+
                                 </td>
 
 
+                                {{-- TEACHER --}}
                                 <td class="px-6 py-5">
 
                                     <div class="flex items-center gap-4">
 
-                                        <div class="w-11 h-11 rounded-full bg-blue-100 flex items-center justify-center border-2 border-blue-500">
+                                        <div class="w-11 h-11 rounded-full
+                                                        bg-blue-100
+                                                        flex items-center justify-center
+                                                        border-2 border-blue-500">
 
                                             <span class="text-blue-700 font-bold text-sm">
+
                                                 {{ strtoupper(substr($guru->gn_name, 0, 1)) }}
+
                                             </span>
 
                                         </div>
 
+
                                         <div>
 
-                                            <p class="font-bold text-gray-800 uppercase">
-                                                {{ $guru->gn_name }}
-                                            </p>
+                                            <p class="font-bold text-gray-900 uppercase">
 
-                                            <p class="text-xs text-gray-400 mt-1">
-                                                {{ $guru->gn_id }}
+                                                {{ $guru->gn_name }}
+
                                             </p>
 
                                         </div>
@@ -155,21 +307,30 @@
                                 </td>
 
 
+                                {{-- EMAIL --}}
                                 <td class="px-6 py-5 text-gray-600">
+
                                     {{ $guru->email }}
+
                                 </td>
 
 
+                                {{-- SCHOOL --}}
                                 <td class="px-6 py-5 text-gray-600 max-w-xs">
+
                                     {{ $guru->school?->school_name ?? '-' }}
+
                                 </td>
 
 
+                                {{-- STATUS --}}
                                 <td class="px-6 py-5">
 
                                     @if($guru->current_status === 'Active')
 
-                                    <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-700">
+                                    <span class="inline-flex items-center px-3 py-1
+                                                         rounded-full text-xs font-semibold
+                                                         bg-green-100 text-green-700">
 
                                         Active
 
@@ -177,14 +338,22 @@
 
                                     @elseif($guru->current_status === 'Complete')
 
-                                    <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-blue-100 text-blue-700">
+                                    <span class="inline-flex items-center px-3 py-1
+                                                         rounded-full text-xs font-semibold
+                                                         bg-blue-100 text-blue-700">
+
                                         Complete
+
                                     </span>
 
                                     @else
 
-                                    <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-red-100 text-red-700">
+                                    <span class="inline-flex items-center px-3 py-1
+                                                         rounded-full text-xs font-semibold
+                                                         bg-red-100 text-red-700">
+
                                         Inactive
+
                                     </span>
 
                                     @endif
@@ -192,23 +361,20 @@
                                 </td>
 
 
+                                {{-- MANAGE --}}
                                 <td class="px-6 py-5 text-center">
-                                    @if($guru->current_status !== 'Complete')
 
                                     <button
                                         type="button"
                                         onclick="openModal('{{ $guru->gn_id }}')"
-                                        class="bg-blue-600 hover:bg-vlue-700 text-white px-5 py-2 rounded-xl font-semibold text-sm shadow transition">
+                                        class="bg-blue-600 hover:bg-blue-700
+                                                   text-white px-5 py-2
+                                                   rounded-xl font-semibold text-sm
+                                                   shadow transition">
+
                                         Manage
+
                                     </button>
-
-                                    @else
-
-                                    <span class="text-gray-400">
-                                        -
-                                    </span>
-
-                                    @endif
 
                                 </td>
 
@@ -218,9 +384,12 @@
 
                             <tr>
 
-                                <td colspan="6"
+                                <td
+                                    colspan="6"
                                     class="text-center py-12 text-gray-400">
+
                                     No new teachers found
+
                                 </td>
 
                             </tr>
@@ -234,7 +403,8 @@
                 </div>
 
 
-                @if(method_exists($guruNews, 'links'))
+                {{-- PAGINATION --}}
+                @if($guruNews->hasPages())
 
                 <div class="px-8 py-6 border-t border-gray-100">
 
@@ -251,14 +421,21 @@
     </div>
 
 
-    {{-- MODALS --}}
+    {{-- MANAGE TEACHER MODALS --}}
+
     @foreach($guruNews as $guru)
 
-    <div id="modal-{{ $guru->gn_id }}"
-        class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50 px-6">
+    <div
+        id="modal-{{ $guru->gn_id }}"
+        class="fixed inset-0 bg-black/50 hidden
+                   items-center justify-center z-50 px-6">
 
-        <div class="bg-white rounded-3xl shadow-2xl w-full max-w-5xl p-8 max-h-[90vh] overflow-y-auto">
+        <div class="bg-white rounded-3xl shadow-2xl
+                        w-full max-w-5xl p-8
+                        max-h-[90vh] overflow-y-auto">
 
+
+            {{-- MODAL HEADER --}}
             <div class="flex justify-between items-center mb-7">
 
                 <div>
@@ -273,6 +450,7 @@
 
                 </div>
 
+
                 <button
                     type="button"
                     onclick="closeModal('{{ $guru->gn_id }}')"
@@ -285,7 +463,9 @@
             </div>
 
 
-            <form method="POST"
+            {{-- FORM --}}
+            <form
+                method="POST"
                 action="{{ route('hr.gurunew.update', $guru->gn_id) }}">
 
                 @csrf
@@ -298,6 +478,8 @@
                     {{-- LEFT COLUMN --}}
                     <div class="space-y-5">
 
+
+                        {{-- IC --}}
                         <div>
 
                             <label class="block text-sm font-semibold text-gray-700 mb-2">
@@ -308,16 +490,22 @@
                                 type="text"
                                 value="{{ $guru->ic_number }}"
                                 readonly
-                                class="w-full bg-gray-100 border border-gray-300 rounded-xl px-4 py-3">
+                                class="w-full bg-gray-100
+                                           border border-gray-300
+                                           rounded-xl px-4 py-3">
 
                         </div>
 
 
+                        {{-- PHONE --}}
                         <div>
 
-                            <label for="phone_number_{{ $guru->gn_id }}"
+                            <label
+                                for="phone_number_{{ $guru->gn_id }}"
                                 class="block text-sm font-semibold text-gray-700 mb-2">
+
                                 Phone Number
+
                             </label>
 
                             <input
@@ -326,11 +514,15 @@
                                 name="phone_number"
                                 value="{{ $guru->phone_number }}"
                                 required
-                                class="w-full border border-gray-300 rounded-xl px-4 py-3
-                                       focus:border-violet-500 focus:ring-violet-500">
+                                class="w-full border border-gray-300
+                                           rounded-xl px-4 py-3
+                                           focus:border-violet-500
+                                           focus:ring-violet-500">
 
                         </div>
 
+
+                        {{-- GENDER --}}
                         <div>
 
                             <label class="block text-sm font-semibold text-gray-700 mb-2">
@@ -341,16 +533,22 @@
                                 type="text"
                                 value="{{ $guru->gender }}"
                                 readonly
-                                class="w-full bg-gray-100 border border-gray-300 rounded-xl px-4 py-3">
+                                class="w-full bg-gray-100
+                                           border border-gray-300
+                                           rounded-xl px-4 py-3">
 
                         </div>
 
 
+                        {{-- APPOINTED DATE --}}
                         <div>
 
-                            <label for="appointed_date_{{ $guru->gn_id }}"
+                            <label
+                                for="appointed_date_{{ $guru->gn_id }}"
                                 class="block text-sm font-semibold text-gray-700 mb-2">
+
                                 Appointed Date
+
                             </label>
 
                             <input
@@ -359,8 +557,10 @@
                                 name="appointed_date"
                                 value="{{ $guru->appointed_date }}"
                                 required
-                                class="w-full border border-gray-300 rounded-xl px-4 py-3
-                                       focus:border-violet-500 focus:ring-violet-500">
+                                class="w-full border border-gray-300
+                                           rounded-xl px-4 py-3
+                                           focus:border-violet-500
+                                           focus:ring-violet-500">
 
                         </div>
 
@@ -370,6 +570,8 @@
                     {{-- RIGHT COLUMN --}}
                     <div class="space-y-5">
 
+
+                        {{-- NAME --}}
                         <div>
 
                             <label class="block text-sm font-semibold text-gray-700 mb-2">
@@ -380,16 +582,22 @@
                                 type="text"
                                 value="{{ $guru->gn_name }}"
                                 readonly
-                                class="w-full bg-gray-100 border border-gray-300 rounded-xl px-4 py-3">
+                                class="w-full bg-gray-100
+                                           border border-gray-300
+                                           rounded-xl px-4 py-3">
 
                         </div>
 
 
+                        {{-- EMAIL --}}
                         <div>
 
-                            <label for="email_{{ $guru->gn_id }}"
+                            <label
+                                for="email_{{ $guru->gn_id }}"
                                 class="block text-sm font-semibold text-gray-700 mb-2">
+
                                 Email
+
                             </label>
 
                             <input
@@ -398,25 +606,33 @@
                                 name="email"
                                 value="{{ $guru->email }}"
                                 required
-                                class="w-full border border-gray-300 rounded-xl px-4 py-3
-                                       focus:border-violet-500 focus:ring-violet-500">
+                                class="w-full border border-gray-300
+                                           rounded-xl px-4 py-3
+                                           focus:border-violet-500
+                                           focus:ring-violet-500">
 
                         </div>
 
 
+                        {{-- SCHOOL --}}
                         <div>
 
-                            <label for="schoolID_{{ $guru->gn_id }}"
+                            <label
+                                for="schoolID_{{ $guru->gn_id }}"
                                 class="block text-sm font-semibold text-gray-700 mb-2">
+
                                 School
+
                             </label>
 
                             <select
                                 id="schoolID_{{ $guru->gn_id }}"
                                 name="schoolID"
                                 required
-                                class="w-full border border-gray-300 rounded-xl px-4 py-3
-                                       focus:border-violet-500 focus:ring-violet-500">
+                                class="w-full border border-gray-300
+                                           rounded-xl px-4 py-3
+                                           focus:border-violet-500
+                                           focus:ring-violet-500">
 
                                 @foreach($schools as $school)
 
@@ -434,29 +650,49 @@
 
                         </div>
 
-                        {{-- STATUS --}}
-                        <div class="mt-6">
 
-                            <label for="current_status_{{ $guru->gn_id }}"
+                        {{-- CURRENT STATUS --}}
+                        <div>
+
+                            <label
+                                for="current_status_{{ $guru->gn_id }}"
                                 class="block text-sm font-semibold text-gray-700 mb-2">
+
                                 Current Status
+
                             </label>
 
                             <select
                                 id="current_status_{{ $guru->gn_id }}"
                                 name="current_status"
                                 required
-                                class="w-full border border-gray-300 rounded-xl px-4 py-3
-                               focus:border-violet-500 focus:ring-violet-500">
+                                class="w-full border border-gray-300
+                                           rounded-xl px-4 py-3
+                                           focus:border-violet-500
+                                           focus:ring-violet-500">
 
-                                <option value="Inactive"
+                                <option
+                                    value="Inactive"
                                     {{ $guru->current_status === 'Inactive' ? 'selected' : '' }}>
+
                                     Inactive
+
                                 </option>
 
-                                <option value="Active"
+                                <option
+                                    value="Active"
                                     {{ $guru->current_status === 'Active' ? 'selected' : '' }}>
+
                                     Active
+
+                                </option>
+
+                                <option
+                                    value="Complete"
+                                    {{ $guru->current_status === 'Complete' ? 'selected' : '' }}>
+
+                                    Complete
+
                                 </option>
 
                             </select>
@@ -468,21 +704,31 @@
                 </div>
 
 
+                {{-- BUTTONS --}}
                 <div class="flex justify-center gap-3 mt-8">
 
                     <button
                         type="button"
                         onclick="closeModal('{{ $guru->gn_id }}')"
-                        class="px-5 py-2 bg-gray-200 hover:bg-gray-300
-                               text-gray-700 rounded-xl font-semibold transition">
+                        class="px-5 py-2
+                                   bg-gray-200 hover:bg-gray-300
+                                   text-gray-700 rounded-xl
+                                   font-semibold transition">
+
                         Cancel
+
                     </button>
+
 
                     <button
                         type="submit"
-                        class="px-5 py-2 bg-blue-700 hover:bg-blue-800
-                               text-white rounded-xl font-semibold shadow transition">
+                        class="px-5 py-2
+                                   bg-blue-700 hover:bg-blue-800
+                                   text-white rounded-xl
+                                   font-semibold shadow transition">
+
                         Save
+
                     </button>
 
                 </div>
@@ -496,16 +742,15 @@
     @endforeach
 
 
+    {{-- MODAL SCRIPT --}}
     <script>
         function openModal(id) {
 
             const modal = document.getElementById('modal-' + id);
 
             if (modal) {
-
                 modal.classList.remove('hidden');
                 modal.classList.add('flex');
-
             }
 
         }
@@ -516,10 +761,8 @@
             const modal = document.getElementById('modal-' + id);
 
             if (modal) {
-
                 modal.classList.remove('flex');
                 modal.classList.add('hidden');
-
             }
 
         }

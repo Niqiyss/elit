@@ -53,7 +53,7 @@
 
                     <table class="w-full text-sm">
 
-                        <thead class="bg-slate-50 text-gray-500 uppercase text-xs">
+                        <thead class="bg-slate-50 text-gray-900 uppercase text-xs">
 
                             <tr>
 
@@ -121,7 +121,7 @@
                                 <td class="px-6 py-5">
 
                                     <p class="font-bold text-gray-800">
-                                        External Observation Form
+                                        {{ $pdpcForm?->form_name ?? 'PDPC Observation Form' }}
                                     </p>
 
                                 </td>
@@ -351,7 +351,7 @@
 
                     <table class="w-full text-sm">
 
-                        <thead class="bg-slate-50 text-gray-500 uppercase text-xs">
+                        <thead class="bg-slate-50 text-gray-900 uppercase text-xs">
 
                             <tr>
 

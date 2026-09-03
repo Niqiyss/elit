@@ -22,6 +22,7 @@ class PdpcResponse extends Model
         'observation_time',
         'total_score',
         'percentage',
+        'achievement_level',
         'result',
         'status',
     ];

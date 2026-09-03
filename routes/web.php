@@ -27,6 +27,8 @@ use App\Http\Controllers\Observer\PreObservationController;
 use App\Http\Controllers\Admin\AuditObservationController;
 use App\Http\Controllers\Admin\PdpcFormController;
 use App\Http\Controllers\PdpcObservationController;
+use App\Http\Controllers\NewTeacher\ResultController;
+use App\Http\Controllers\Principal\PResultController;
 
 
 /*Home*/
@@ -52,45 +54,49 @@ Route::middleware('auth:admin')->prefix('admin')->group(function () {
     // PRE FORM
     Route::get('/pre-form', [PreFormController::class, 'index'])->name('admin.pre.form');
     Route::post('/pre-form', [PreFormController::class, 'storeForm'])->name('admin.pre.form.store');
-    Route::put('/pre-form/{formID}', [PreFormController::class, 'updateForm'])->name('admin.pre.form.update');
+    Route::get('/pre-form/{preForm}/edit', [PreFormController::class, 'edit'])->name('admin.pre.form.edit');
+    Route::get('/pre-form/{preForm}/preview', [PreFormController::class, 'preview'])->name('admin.pre.form.preview');
+    Route::put('/pre-form/{preForm}', [PreFormController::class, 'updateForm'])->name('admin.pre.form.update');
+    Route::delete('/pre-form/{preForm}', [PreFormController::class, 'destroyForm'])->name('admin.pre.form.delete');
+    Route::post('/pre-form/{preForm}/new-version', [PreFormController::class, 'createNewVersion'])->name('admin.pre.form.new-version');
 
     // PRE SECTION
-    Route::post('/pre-form/section', [PreFormController::class, 'storeSection'])->name('admin.pre.section.store');
-    Route::put('/pre-form/section/{sectionID}', [PreFormController::class, 'updateSection'])->name('admin.pre.section.update');
-    Route::delete('/pre-form/section/{sectionID}', [PreFormController::class, 'destroySection'])->name('admin.pre.section.delete');
+    Route::post('/pre-section', [PreFormController::class, 'storeSection'])->name('admin.pre.section.store');
+    Route::put('/pre-section/{sectionID}', [PreFormController::class, 'updateSection'])->name('admin.pre.section.update');
+    Route::delete('/pre-section/{sectionID}', [PreFormController::class, 'destroySection'])->name('admin.pre.section.delete');
 
     // PRE CRITERIA
-    Route::post('/pre-form/criteria', [PreFormController::class, 'storeCriteria'])->name('admin.pre.criteria.store');
-    Route::put('/pre-form/criteria/{criteriaID}', [PreFormController::class, 'updateCriteria'])->name('admin.pre.criteria.update');
-    Route::delete('/pre-form/criteria/{criteriaID}', [PreFormController::class, 'destroyCriteria'])->name('admin.pre.criteria.delete');
+    Route::post('/pre-criteria', [PreFormController::class, 'storeCriteria'])->name('admin.pre.criteria.store');
+    Route::put('/pre-criteria/{criteriaID}', [PreFormController::class, 'updateCriteria'])->name('admin.pre.criteria.update');
+    Route::delete('/pre-criteria/{criteriaID}', [PreFormController::class, 'destroyCriteria'])->name('admin.pre.criteria.delete');
 
-    // EXTERNAL FORM
+    // PDPC FORM
     Route::get('/pdpc-form', [PdpcFormController::class, 'index'])->name('admin.pdpc.form');
     Route::post('/pdpc-form', [PdpcFormController::class, 'store'])->name('admin.pdpc.form.store');
-    Route::get('/pdpc-form/{pdpcForm}', [PdpcFormController::class, 'show'])->name('admin.pdpc.form.show');
     Route::get('/pdpc-form/{pdpcForm}/edit', [PdpcFormController::class, 'edit'])->name('admin.pdpc.form.edit');
+    Route::get('/pdpc-form/{pdpcForm}/preview', [PdpcFormController::class, 'preview'])->name('admin.pdpc.form.preview');
     Route::put('/pdpc-form/{pdpcForm}', [PdpcFormController::class, 'update'])->name('admin.pdpc.form.update');
     Route::delete('/pdpc-form/{pdpcForm}', [PdpcFormController::class, 'destroy'])->name('admin.pdpc.form.destroy');
+    Route::post('/pdpc-form/{pdpcForm}/new-version', [PdpcFormController::class, 'createNewVersion'])->name('admin.pdpc.form.new-version');
 
     // POST FORM
     Route::get('/post-form', [PostFormController::class, 'index'])->name('admin.post.form');
-
-    Route::put('/post-form/sections/reorder', [PostFormController::class, 'reorderSections'])->name('admin.post.sections.reorder');
-    Route::put('/post-form/fields/reorder', [PostFormController::class, 'reorderFields'])->name('admin.post.fields.reorder');
-
-    // FORM
     Route::post('/post-form', [PostFormController::class, 'storeForm'])->name('admin.post.form.store');
-    Route::put('/post-form/{formID}', [PostFormController::class, 'updateForm'])->name('admin.post.form.update');
+    Route::get('/post-form/{postForm}', [PostFormController::class, 'show'])->name('admin.post.form.show');
+    Route::get('/post-form/{postForm}/edit', [PostFormController::class, 'edit'])->name('admin.post.form.edit');
+    Route::put('/post-form/{postForm}', [PostFormController::class, 'updateForm'])->name('admin.post.form.update');
+    Route::delete('/post-form/{postForm}', [PostFormController::class, 'destroyForm'])->name('admin.post.form.delete');
+    Route::post('/post-form/{postForm}/new-version', [PostFormController::class, 'createNewVersion'])->name('admin.post.form.new-version');
 
     // SECTION
-    Route::post('/post-form/section', [PostFormController::class, 'storeSection'])->name('admin.post.section.store');
-    Route::put('/post-form/section/{sectionID}', [PostFormController::class, 'updateSection'])->name('admin.post.section.update');
-    Route::delete('/post-form/section/{sectionID}', [PostFormController::class, 'destroySection'])->name('admin.post.section.delete');
+    Route::post('/post-section', [PostFormController::class, 'storeSection'])->name('admin.post.section.store');
+    Route::put('/post-section/{sectionID}', [PostFormController::class, 'updateSection'])->name('admin.post.section.update');
+    Route::delete('/post-section/{sectionID}', [PostFormController::class, 'destroySection'])->name('admin.post.section.delete');
 
     // FIELD
-    Route::post('/post-form/field', [PostFormController::class, 'storeField'])->name('admin.post.field.store');
-    Route::put('/post-form/field/{fieldID}', [PostFormController::class, 'updateField'])->name('admin.post.field.update');
-    Route::delete('/post-form/field/{fieldID}', [PostFormController::class, 'destroyField'])->name('admin.post.field.delete');
+    Route::post('/post-field', [PostFormController::class, 'storeField'])->name('admin.post.field.store');
+    Route::put('/post-field/{fieldID}', [PostFormController::class, 'updateField'])->name('admin.post.field.update');
+    Route::delete('/post-field/{fieldID}', [PostFormController::class, 'destroyField'])->name('admin.post.field.delete');
 });
 
 
@@ -112,6 +118,11 @@ Route::middleware('auth:hr')->prefix('hr')->group(function () {
 Route::middleware('auth:new_teacher')->prefix('new-teacher')->group(function () {
 
     Route::get('/dashboard', [NewTeacherDashboardController::class, 'index'])->name('new_teacher.dashboard');
+    // Evaluation results
+    Route::get('/result', [ResultController::class, 'index'])->name('new_teacher.result');
+    Route::get('/result/pre/{responseID}', [ResultController::class, 'pre'])->name('new_teacher.result.pre');
+    Route::get('/result/pdpc/{responseID}', [ResultController::class, 'pdpc'])->name('new_teacher.result.pdpc');
+    Route::get('/result/post/{responseID}', [ResultController::class, 'post'])->name('new_teacher.result.post');
     Route::get('/profile', [GuruNewProfileController::class, 'edit'])->name('new_teacher.profile');
     Route::put('/profile', [GuruNewProfileController::class, 'update'])->name('new_teacher.profile.update');
     Route::put('/profile/password', [GuruNewProfileController::class, 'updatePassword'])->name('new_teacher.profile.password');
@@ -121,12 +132,26 @@ Route::middleware('auth:new_teacher')->prefix('new-teacher')->group(function () 
 /*Principal*/
 Route::middleware('auth:principal')->prefix('principal')->group(function () {
 
+    // Dashboard
     Route::get('/dashboard', [PrincipalDashboardController::class, 'index'])->name('principal.dashboard');
 
+    // Profile
     Route::get('/profile', [PrincipalProfileController::class, 'index'])->name('principal.profile');
     Route::put('/profile/password', [PrincipalProfileController::class, 'updatePassword'])->name('principal.profile.password');
 
+    // New Teacher List
     Route::get('/list-teacher', [GNListController::class, 'index'])->name('principal.gn.list');
+
+    // Evaluation Results
+    Route::get('/result', [PResultController::class, 'index'])->name('principal.result');
+
+    // Individual Evaluation Forms
+    Route::get('/result/pre/{responseID}', [PResultController::class, 'pre'])->name('principal.result.pre');
+    Route::get('/result/pdpc/{responseID}', [PResultController::class, 'pdpc'])->name('principal.result.pdpc');
+    Route::get('/result/post/{responseID}', [PResultController::class, 'post'])->name('principal.result.post');
+
+    // Teacher Evaluation Result
+    Route::get('/result/{gn_id}', [PResultController::class, 'show'])->name('principal.result.show');
 });
 
 

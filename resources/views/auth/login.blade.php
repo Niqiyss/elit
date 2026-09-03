@@ -3,53 +3,62 @@
 
 <head>
     <meta charset="UTF-8">
-
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Login TEMS</title>
+    <title>Login TEMS-ELIT</title>
 
     <script src="https://cdn.tailwindcss.com"></script>
-
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 
+<body class="min-h-screen bg-slate-100 flex items-center justify-center p-6">
 
-<body class="min-h-screen bg-gray-100 flex items-center justify-center p-6">
+    <div class="w-full max-w-5xl bg-white rounded-[36px] shadow-2xl overflow-hidden grid grid-cols-1 md:grid-cols-2">
 
-    <div class="w-full max-w-6xl bg-white rounded-[40px] shadow-2xl overflow-hidden grid grid-cols-1 md:grid-cols-2">
+        {{-- Left Side --}}
+        <div class="relative bg-gradient-to-br from-slate-900 via-violet-950 to-purple-900 text-white px-14 py-16 flex flex-col justify-center overflow-hidden">
 
-        {{-- LEFT SIDE --}}
-        <div class="bg-gradient-to-br from-violet-700 to-purple-800 text-white p-16 flex flex-col justify-center">
+            <div class="absolute right-0 top-0 translate-x-10 -translate-y-10 w-72 h-72 bg-purple-500/10 rounded-full blur-3xl"></div>
 
-            <h1 class="text-5xl font-extrabold mb-10">
-                AL AMIN
-                <br>
-                EDU OASIS
-            </h1>
+            <div class="relative z-10">
 
-            <h2 class="text-3xl font-semibold leading-relaxed">
-                EduOasis Learning &
-                <br>
-                Insight Tracking System
-                <br>
-                (ELIT)
-            </h2>
+                <h1 class="text-4xl font-extrabold mb-8 leading-tight">
+                    AL AMIN
+                    <br>
+                    EDU OASIS
+                </h1>
+
+                <h2 class="text-2xl font-semibold leading-relaxed text-violet-100">
+                    EduOasis Learning &
+                    <br>
+                    Insight Tracking System
+                    <br>
+                    (ELIT)
+                </h2>
+
+            </div>
 
         </div>
 
-        {{-- RIGHT SIDE --}}
-        <div class="p-14 flex flex-col justify-center">
 
-            <h2 class="text-3xl font-bold text-gray-800 mb-10 text-center">
-                LOGIN
+        {{-- Right Side --}}
+        <div class="px-14 py-14 flex flex-col justify-center">
+
+            <h2 class="text-2xl font-bold text-slate-900 mb-8 text-center">
+                USER LOGIN
             </h2>
+
 
             <form method="POST" action="{{ route('login') }}">
                 @csrf
 
-                <div class="mb-6">
-                    <label for="email"
-                        class="block text-gray-700 font-semibold mb-3">
+
+                {{-- Email --}}
+                <div class="mb-5">
+
+                    <label
+                        for="email"
+                        class="block text-slate-700 font-semibold mb-2">
                         Email
                     </label>
 
@@ -61,39 +70,56 @@
                         required
                         autofocus
                         autocomplete="email"
-                        class="w-full rounded-2xl border border-gray-300 px-5 py-3
-                               focus:outline-none focus:ring-2 focus:ring-purple-300
-                               focus:border-purple-400">
+                        class="w-full h-12 rounded-xl
+                               border border-slate-300
+                               px-4 text-slate-700
+                               focus:outline-none
+                               focus:border-violet-700
+                               focus:ring-2
+                               focus:ring-violet-200
+                               transition duration-200">
+
                 </div>
 
-                <div class="mb-5">
-                    <label for="password"
-                        class="block text-gray-700 font-semibold mb-3">
+
+                {{-- Password --}}
+                <div class="mb-7">
+
+                    <label
+                        for="password"
+                        class="block text-slate-700 font-semibold mb-2">
                         Password
                     </label>
 
+
                     <div class="relative">
+
                         <input
                             type="password"
                             id="password"
                             name="password"
                             required
                             autocomplete="current-password"
-                            class="w-full rounded-2xl border border-gray-300
-                                   px-5 py-3 pr-12
-                                   focus:outline-none focus:ring-2
-                                   focus:ring-purple-300
-                                   focus:border-purple-400">
+                            class="w-full h-12 rounded-xl
+                                   border border-slate-300
+                                   px-4 pr-12 text-slate-700
+                                   focus:outline-none
+                                   focus:border-violet-700
+                                   focus:ring-2
+                                   focus:ring-violet-200
+                                   transition duration-200">
 
+
+                        {{-- Password Eye --}}
                         <button
                             type="button"
                             onclick="togglePassword()"
-                            class="absolute inset-y-0 right-4 flex items-center
-                                   text-gray-400 hover:text-violet-700">
+                            class="absolute inset-y-0 right-4 flex items-center text-slate-400">
 
+                            {{-- Open Eye --}}
                             <svg
+                                id="eyeOpen"
                                 xmlns="http://www.w3.org/2000/svg"
-                                id="eyeIcon"
                                 class="h-5 w-5"
                                 fill="none"
                                 viewBox="0 0 24 24"
@@ -110,46 +136,56 @@
                                     stroke-linejoin="round"
                                     stroke-width="2"
                                     d="M2.458 12C3.732 7.943 7.523 5 12 5
-                                    c4.477 0 8.268 2.943 9.542 7
-                                    -1.274 4.057-5.065 7-9.542 7
-                                    -4.477 0-8.268-2.943-9.542-7z" />
+                                       c4.477 0 8.268 2.943 9.542 7
+                                       -1.274 4.057-5.065 7-9.542 7
+                                       -4.477 0-8.268-2.943-9.542-7z" />
+
                             </svg>
+
+
+                            {{-- Closed Eye --}}
+                            <svg
+                                id="eyeClosed"
+                                xmlns="http://www.w3.org/2000/svg"
+                                class="h-5 w-5 hidden"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                stroke="currentColor">
+
+                                <path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    stroke-width="2"
+                                    d="M3 3l18 18
+                                       M10.6 10.6a2 2 0 002.8 2.8
+                                       M9.9 4.24A9.77 9.77 0 0112 4
+                                       c4.477 0 8.268 2.943 9.542 8
+                                       a11.05 11.05 0 01-2.1 3.8
+                                       M6.6 6.6A11.08 11.08 0 002.458 12
+                                       C3.732 16.057 7.523 19 12 19
+                                       a9.77 9.77 0 004.1-.9" />
+
+                            </svg>
+
                         </button>
+
                     </div>
-                </div>
-
-               
-                <div class="flex items-center mb-8">
-
-                    <input
-                        type="checkbox"
-                        id="remember"
-                        name="remember"
-                        {{ old('remember') ? 'checked' : '' }}
-                        class="rounded border-gray-300 text-purple-600
-                               focus:ring-purple-500">
-
-                    <label for="remember"
-                        class="ml-2 text-gray-600 cursor-pointer">
-                        Remember Me
-                    </label>
 
                 </div>
 
 
+                {{-- Login Button --}}
                 <button
                     type="submit"
-                    class="w-full bg-purple-700 hover:bg-purple-800
-                           text-white font-bold py-4 rounded-2xl
-                           transition duration-300 shadow-lg">
+                    class="w-full h-12
+                           bg-gradient-to-r
+                           from-slate-900 via-violet-950 to-purple-900
+                           hover:from-slate-800 hover:via-violet-900 hover:to-purple-800
+                           text-white font-bold rounded-xl
+                           shadow-md hover:shadow-lg
+                           transition duration-300">
                     LOGIN
                 </button>
-
-
-                {{--
-                    REGISTER LINK WILL BE ADDED LATER
-                    WHEN APPLICANT REGISTRATION IS IMPLEMENTED
-                --}}
 
             </form>
 
@@ -158,19 +194,26 @@
     </div>
 
 
+    {{-- Toggle Password --}}
     <script>
         function togglePassword() {
-            const password = document.getElementById('password');
-            if (password.type === 'password') {
-                password.type = 'text';
-            } else {
 
-                password.type = 'password';
-            }
+            const password = document.getElementById('password');
+            const eyeOpen = document.getElementById('eyeOpen');
+            const eyeClosed = document.getElementById('eyeClosed');
+
+            password.type =
+                password.type === 'password' ?
+                'text' :
+                'password';
+
+            eyeOpen.classList.toggle('hidden');
+            eyeClosed.classList.toggle('hidden');
         }
     </script>
 
-    {{-- SUCCESS MESSAGE --}}
+
+    {{-- Success Message --}}
     @if(session('success'))
     <script>
         Swal.fire({
@@ -182,7 +225,8 @@
     </script>
     @endif
 
-    {{-- ERROR MESSAGE --}}
+
+    {{-- Error Message --}}
     @if($errors->any())
     <script>
         Swal.fire({
@@ -193,10 +237,11 @@
                         <div>{{ $error }}</div>
                     @endforeach
                 `,
-            confirmButtonColor: '#7c3aed'
+            confirmButtonColor: '#4c1d95'
         });
     </script>
     @endif
 
 </body>
+
 </html>

@@ -5,28 +5,35 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\PreForm;
 use App\Models\PostForm;
+use App\Models\PdpcForm;
 use App\Models\EvaluationDoc;
 
 class ManageFormController extends Controller
 {
     public function index()
     {
-        // Get PRE form
-        $preForm = PreForm::orderBy('formID')
+        // Get latest PRE form
+        $preForm = PreForm::orderByDesc('formID')
             ->first();
 
-        // Get POST / Feedback form
-        $postForm = PostForm::orderBy('formID')
+        // Get latest PDPC form
+        $pdpcForm = PdpcForm::orderByDesc('formID')
+            ->first();
+
+        // Get latest POST / Feedback form
+        $postForm = PostForm::orderByDesc('formID')
             ->first();
 
         // Get uploaded evaluation documents
         $documents = EvaluationDoc::latest('doc_id')
             ->get();
 
+        // Show manage form page
         return view(
             'admin.manage-form',
             compact(
                 'preForm',
+                'pdpcForm',
                 'postForm',
                 'documents'
             )

@@ -14,41 +14,64 @@ class GuruNewController extends Controller
 {
     public function index(Request $request)
     {
-        $search = $request->search;
+        // Get filter values
+        $search = trim((string) $request->search);
+        $schoolID = $request->schoolID;
+        $status = $request->status;
+        $appointedDate = $request->appointed_date;
 
+        // Get new teachers
         $guruNews = GuruNew::with('school')
+
+            // Search teacher
             ->when($search, function ($query, $search) {
 
                 $query->where(function ($q) use ($search) {
 
                     $q->where('gn_name', 'like', '%' . $search . '%')
+                        ->orWhere('gn_id', 'like', '%' . $search . '%')
                         ->orWhere('email', 'like', '%' . $search . '%')
-                        ->orWhereHas('school', function ($schoolQuery) use ($search) {
-
-                            $schoolQuery->where(
-                                'school_name',
-                                'like',
-                                '%' . $search . '%'
-                            );
-                        });
+                        ->orWhere('ic_number', 'like', '%' . $search . '%');
                 });
             })
+
+            // Filter school
+            ->when($schoolID, function ($query, $schoolID) {
+                $query->where('schoolID', $schoolID);
+            })
+
+            // Filter status
+            ->when($status, function ($query, $status) {
+                $query->where('current_status', $status);
+            })
+
+            // Filter appointed date
+            ->when($appointedDate, function ($query, $appointedDate) {
+                $query->whereDate('appointed_date', $appointedDate);
+            })
+
             ->orderBy('gn_name')
             ->paginate(10)
             ->withQueryString();
 
+        // Get schools for filter and manage modal
         $schools = School::orderBy('school_name')->get();
 
         return view(
             'hr.gurunew.index',
-            compact('guruNews', 'schools')
+            compact(
+                'guruNews',
+                'schools'
+            )
         );
     }
 
 
     public function create()
     {
-        $schools = School::orderBy('school_name')->get();
+        $schools = School::where('vacancy', '>', 0)
+            ->orderBy('school_name')
+            ->get();
 
         return view('hr.gurunew.create', compact('schools'));
     }
@@ -148,7 +171,7 @@ class GuruNewController extends Controller
 
             'current_status' => [
                 'required',
-                'in:Inactive,Active',
+                'in:Inactive,Active,Complete',
             ],
         ]);
 
@@ -164,6 +187,6 @@ class GuruNewController extends Controller
 
         return redirect()
             ->route('hr.gurunew.index')
-            ->with('success', 'New Teacher details updated successfully.');
+            ->with('success', 'New Teacher details updated successfully');
     }
 }

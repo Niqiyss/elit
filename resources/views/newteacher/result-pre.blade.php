@@ -6,7 +6,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>{{ $form->form_name }}_{{ $guru->gn_name }}_{{ $response->observation_date ? \Carbon\Carbon::parse($response->observation_date)->format('d-m-Y') : 'No Date' }}</title>
+    <title>
+    {{ $form->form_name }}_{{ $guru->gn_name }}_{{ $response->observation_date ? \Carbon\Carbon::parse($response->observation_date)->format('d-m-Y') : 'No Date' }}
+    </title>
 
     <style>
         * {
@@ -21,7 +23,6 @@
             font-size: 11px;
         }
 
-        /* Toolbar */
         .toolbar {
             position: sticky;
             top: 0;
@@ -59,7 +60,6 @@
             color: #334155;
         }
 
-        /* Paper */
         .paper {
             width: 210mm;
             margin: 18px auto;
@@ -74,7 +74,6 @@
             background: white;
         }
 
-        /* Header */
         .report-header {
             margin: 0 0 14px;
             text-align: center;
@@ -92,7 +91,6 @@
             font-weight: 700;
         }
 
-        /* Teacher information */
         .meta-table {
             width: 100%;
             margin-bottom: 12px;
@@ -118,7 +116,6 @@
             border-bottom: 1px solid #111;
         }
 
-        /* Evaluation table */
         .score-table {
             width: 100%;
             border-collapse: collapse;
@@ -172,7 +169,6 @@
             line-height: 1.4;
         }
 
-        /* Score */
         .score-grid {
             display: grid;
             grid-template-columns: repeat(5, 1fr);
@@ -194,7 +190,6 @@
             font-weight: 700;
         }
 
-        /* Summary */
         .summary-row td {
             vertical-align: middle;
             font-weight: 700;
@@ -204,13 +199,11 @@
             text-align: right;
         }
 
-        /* Page 2 */
         .page-two {
             page-break-before: always;
             break-before: page;
         }
 
-        /* Other comment */
         .other-comment {
             page-break-inside: avoid;
             break-inside: avoid;
@@ -229,7 +222,6 @@
             white-space: pre-line;
         }
 
-        /* Achievement */
         .achievement-section {
             margin-top: 22px;
             page-break-inside: avoid;
@@ -272,7 +264,6 @@
             font-weight: 700;
         }
 
-        /* Signature */
         .signature-section {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -355,7 +346,7 @@
         <div class="toolbar-actions">
 
             <a
-                href="{{ route('observer.manage', $response->gn_id) }}"
+                href="{{ route('new_teacher.result') }}"
                 class="button secondary">
                 Back
             </a>
@@ -439,13 +430,11 @@
                     </td>
 
                     <td class="meta-value">
-
                         {{
                             $response->observation_date
                                 ? \Carbon\Carbon::parse($response->observation_date)->format('l, d/m/Y')
                                 : '-'
                         }}
-
                     </td>
 
                 </tr>
@@ -461,12 +450,7 @@
                     </td>
 
                     <td class="meta-value">
-
-                        {{
-                            $response->observer?->teacher?->teacher_name
-                            ?? '-'
-                        }}
-
+                        {{ $response->observer?->teacher?->teacher_name ?? '-' }}
                     </td>
 
                 </tr>
@@ -509,13 +493,10 @@
 
                     <tr>
 
-                        {{-- Number --}}
                         <td class="bil-col">
                             {{ $loop->iteration }}
                         </td>
 
-
-                        {{-- Section and Criteria --}}
                         <td class="item-col">
 
                             <div class="section-title">
@@ -525,19 +506,14 @@
                             @foreach($section->criteria as $criteria)
 
                             <div class="criteria-line">
-
                                 {{ chr(96 + $loop->iteration) }}.
-
                                 {{ $criteria->criteria_label }}
-
                             </div>
 
                             @endforeach
 
                         </td>
 
-
-                        {{-- Score --}}
                         <td class="score-col">
 
                             @foreach($section->criteria as $criteria)
@@ -562,15 +538,8 @@
 
                         </td>
 
-
-                        {{-- Comment --}}
                         <td class="comment-col">
-
-                            {{
-                                        $sectionComments[$section->sectionID]
-                                        ?? '-'
-                                    }}
-
+                            {{ $sectionComments[$section->sectionID] ?? '-' }}
                         </td>
 
                     </tr>
@@ -647,27 +616,11 @@
                     <thead>
 
                         <tr>
-
-                            <th>
-                                LEMAH
-                            </th>
-
-                            <th>
-                                MEMUASKAN
-                            </th>
-
-                            <th>
-                                BAIK
-                            </th>
-
-                            <th>
-                                SANGAT BAIK
-                            </th>
-
-                            <th>
-                                CEMERLANG
-                            </th>
-
+                            <th>LEMAH</th>
+                            <th>MEMUASKAN</th>
+                            <th>BAIK</th>
+                            <th>SANGAT BAIK</th>
+                            <th>CEMERLANG</th>
                         </tr>
 
                     </thead>
@@ -701,43 +654,23 @@
                         <tr>
 
                             <td class="check">
-
-                                @if($response->achievement_level === 'Weak')
-                                ✓
-                                @endif
-
+                                @if($response->achievement_level === 'Weak') ✓ @endif
                             </td>
 
                             <td class="check">
-
-                                @if($response->achievement_level === 'Satisfactory')
-                                ✓
-                                @endif
-
+                                @if($response->achievement_level === 'Satisfactory') ✓ @endif
                             </td>
 
                             <td class="check">
-
-                                @if($response->achievement_level === 'Good')
-                                ✓
-                                @endif
-
+                                @if($response->achievement_level === 'Good') ✓ @endif
                             </td>
 
                             <td class="check">
-
-                                @if($response->achievement_level === 'Very Good')
-                                ✓
-                                @endif
-
+                                @if($response->achievement_level === 'Very Good') ✓ @endif
                             </td>
 
                             <td class="check">
-
-                                @if($response->achievement_level === 'Excellent')
-                                ✓
-                                @endif
-
+                                @if($response->achievement_level === 'Excellent') ✓ @endif
                             </td>
 
                         </tr>
@@ -759,16 +692,10 @@
                     </div>
 
                     <div class="signature-line">
-
-                        ( {{
-                            $response->observer?->teacher?->teacher_name
-                            ?? '-'
-                        }} )
-
+                        ( {{ $response->observer?->teacher?->teacher_name ?? '-' }} )
                     </div>
 
                 </div>
-
 
                 <div class="signature-box">
 

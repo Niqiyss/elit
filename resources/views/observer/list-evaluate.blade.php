@@ -1,28 +1,19 @@
 <x-app-layout>
 
+    <x-slot name="header">
+        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+            {{ Auth::guard('teacher')->user()->teacher_name }}
+        </h2>
+    </x-slot>
+
     <div class="min-h-screen bg-slate-100 py-8 px-6">
 
         <div class="max-w-7xl mx-auto">
 
             {{-- Header --}}
-            <div class="relative bg-gradient-to-br
-                        from-slate-900
-                        via-violet-950
-                        to-purple-900
-                        rounded-3xl
-                        p-8
-                        shadow-xl
-                        overflow-hidden
-                        mb-8">
+            <div class="relative bg-gradient-to-br from-slate-900 via-violet-950 to-purple-900 rounded-3xl p-8 shadow-xl overflow-hidden mb-8">
 
-                <div class="absolute right-0 top-0
-                            translate-x-10
-                            -translate-y-10
-                            w-72 h-72
-                            bg-purple-500/10
-                            rounded-full
-                            blur-3xl">
-                </div>
+                <div class="absolute right-0 top-0 translate-x-10 -translate-y-10 w-72 h-72 bg-purple-500/10 rounded-full blur-3xl"></div>
 
                 <div class="relative z-10">
 
@@ -43,65 +34,24 @@
             <div class="flex flex-wrap gap-3 mb-8">
 
                 <a
-                    href="{{ route(
-                        $listRoute,
-                        ['status' => 'active']
-                    ) }}"
-                    class="{{ $status === 'active'
-                        ? 'bg-blue-600 text-white'
-                        : 'bg-white text-slate-700 border border-slate-200'
-                    }}
-                    px-5 py-2.5
-                    rounded-xl
-                    font-semibold
-                    shadow-sm
-                    transition">
-
+                    href="{{ route($listRoute, ['status' => 'active']) }}"
+                    class="{{ $status === 'active' ? 'bg-blue-600 text-white' : 'bg-white text-slate-700 border border-slate-200' }} px-5 py-2.5 rounded-xl font-semibold shadow-sm transition">
                     Latest Evaluation
-
                 </a>
-
 
                 <a
-                    href="{{ route(
-                        $listRoute,
-                        ['status' => 'completed']
-                    ) }}"
-                    class="{{ $status === 'completed'
-                        ? 'bg-emerald-600 text-white'
-                        : 'bg-white text-slate-700 border border-slate-200'
-                    }}
-                    px-5 py-2.5
-                    rounded-xl
-                    font-semibold
-                    shadow-sm
-                    transition">
-
+                    href="{{ route($listRoute, ['status' => 'completed']) }}"
+                    class="{{ $status === 'completed' ? 'bg-emerald-600 text-white' : 'bg-white text-slate-700 border border-slate-200' }} px-5 py-2.5 rounded-xl font-semibold shadow-sm transition">
                     Completed Evaluation
-
                 </a>
-
 
                 @if(!$isObserver)
 
-                    <a
-                        href="{{ route(
-                            $listRoute,
-                            ['status' => 'repeat']
-                        ) }}"
-                        class="{{ $status === 'repeat'
-                            ? 'bg-red-500 text-white'
-                            : 'bg-white text-slate-700 border border-slate-200'
-                        }}
-                        px-5 py-2.5
-                        rounded-xl
-                        font-semibold
-                        shadow-sm
-                        transition">
-
-                        Repeat Evaluation
-
-                    </a>
+                <a
+                    href="{{ route($listRoute, ['status' => 'repeat']) }}"
+                    class="{{ $status === 'repeat' ? 'bg-red-500 text-white' : 'bg-white text-slate-700 border border-slate-200' }} px-5 py-2.5 rounded-xl font-semibold shadow-sm transition">
+                    Repeat Evaluation
+                </a>
 
                 @endif
 
@@ -111,25 +61,21 @@
             {{-- Main Card --}}
             <div class="bg-white rounded-3xl shadow-lg overflow-hidden">
 
-                {{-- Card Header --}}
                 <div class="px-8 py-6 border-b border-slate-100">
 
                     <h2 class="text-xl font-bold text-slate-900">
 
                         @if($status === 'completed')
 
-                            Completed Evaluation List
+                        Completed Evaluation List
 
-                        @elseif(
-                            !$isObserver &&
-                            $status === 'repeat'
-                        )
+                        @elseif(!$isObserver && $status === 'repeat')
 
-                            Repeat Evaluation List
+                        Repeat Evaluation List
 
                         @else
 
-                            Latest Evaluation List
+                        Latest Evaluation List
 
                         @endif
 
@@ -148,11 +94,7 @@
 
                         <thead>
 
-                            <tr class="bg-slate-50
-                                       text-slate-500
-                                       text-xs
-                                       uppercase
-                                       tracking-wider">
+                            <tr class="bg-slate-50 text-slate-900 text-xs uppercase tracking-wider">
 
                                 <th class="px-8 py-4 text-left">
                                     No
@@ -187,66 +129,53 @@
 
                             @forelse($assignments as $assignment)
 
-                                <tr class="hover:bg-slate-50 transition">
+                            <tr class="hover:bg-slate-50 transition">
 
-                                    {{-- No --}}
-                                    <td class="px-8 py-6 text-slate-500">
-
-                                        {{
-                                            $assignments->firstItem()
-                                            +
-                                            $loop->index
-                                        }}
-
-                                    </td>
+                                {{-- No --}}
+                                <td class="px-8 py-6 text-slate-500">
+                                    {{ $assignments->firstItem() + $loop->index }}
+                                </td>
 
 
-                                    {{-- Teacher --}}
-                                    <td class="px-8 py-6">
+                                {{-- Teacher --}}
+                                <td class="px-8 py-6">
 
-                                        <p class="font-bold
-                                                  text-slate-900
-                                                  uppercase">
+                                    <p class="font-bold text-slate-900 uppercase">
+                                        {{ $assignment->gn_name }}
+                                    </p>
 
-                                            {{ $assignment->gn_name }}
+                                    {{-- External Attempt --}}
+                                    @if(!$isObserver && isset($assignment->attempt_no))
 
-                                        </p>
+                                    <p class="text-xs text-slate-600 mt-1">
+                                        Attempt {{ $assignment->attempt_no }}
+                                    </p>
 
-                                    </td>
+                                    @endif
 
-
-                                    {{-- School --}}
-                                    <td class="px-8 py-6 text-slate-600">
-
-                                        {{
-                                            $assignment->school_name
-                                            ?? '-'
-                                        }}
-
-                                    </td>
+                                </td>
 
 
-                                    {{-- Completion --}}
-                                    <td class="px-8 py-6">
+                                {{-- School --}}
+                                <td class="px-8 py-6 text-slate-600">
+                                    {{ $assignment->school_name ?? '-' }}
+                                </td>
 
-                                        @if($isObserver)
 
-                                            {{-- Observer: PRE + PDPC + Feedback --}}
-                                            <div class="flex
-                                                        items-center
-                                                        justify-center
-                                                        gap-5">
+                                {{-- Completion --}}
+                                <td class="px-8 py-6">
 
-                                                {{-- PRE --}}
-                                                <div class="flex
-                                                            flex-col
-                                                            items-center
-                                                            gap-1.5">
+                                    @if($isObserver)
 
-                                                    <span
-                                                        title="Pre-Observation Form"
-                                                        class="w-3 h-3 rounded-full
-                                                        {{
+                                    {{-- OBSERVER --}}
+                                    <div class="flex items-center justify-center gap-5">
+
+                                        {{-- PRE --}}
+                                        <div class="flex flex-col items-center gap-1.5">
+
+                                            <span
+                                                title="Pre-Observation Form"
+                                                class="w-3 h-3 rounded-full {{
                                                             $assignment->pre_status === 'Completed'
                                                                 ? 'bg-emerald-500'
                                                                 : (
@@ -255,30 +184,21 @@
                                                                         : 'bg-slate-300'
                                                                 )
                                                         }}">
-                                                    </span>
+                                            </span>
 
-                                                    <span class="text-[10px]
-                                                                 font-semibold
-                                                                 text-slate-400
-                                                                 uppercase">
+                                            <span class="text-[10px] font-semibold text-slate-600 uppercase">
+                                                PRE
+                                            </span>
 
-                                                        PRE
-
-                                                    </span>
-
-                                                </div>
+                                        </div>
 
 
-                                                {{-- PDPC --}}
-                                                <div class="flex
-                                                            flex-col
-                                                            items-center
-                                                            gap-1.5">
+                                        {{-- PDPC --}}
+                                        <div class="flex flex-col items-center gap-1.5">
 
-                                                    <span
-                                                        title="PDPC Observation Form"
-                                                        class="w-3 h-3 rounded-full
-                                                        {{
+                                            <span
+                                                title="PDPC Observation Form"
+                                                class="w-3 h-3 rounded-full {{
                                                             $assignment->pdpc_status === 'Completed'
                                                                 ? 'bg-emerald-500'
                                                                 : (
@@ -287,30 +207,21 @@
                                                                         : 'bg-slate-300'
                                                                 )
                                                         }}">
-                                                    </span>
+                                            </span>
 
-                                                    <span class="text-[10px]
-                                                                 font-semibold
-                                                                 text-slate-400
-                                                                 uppercase">
+                                            <span class="text-[10px] font-semibold text-slate-600 uppercase">
+                                                PDPC
+                                            </span>
 
-                                                        PDPC
-
-                                                    </span>
-
-                                                </div>
+                                        </div>
 
 
-                                                {{-- Feedback --}}
-                                                <div class="flex
-                                                            flex-col
-                                                            items-center
-                                                            gap-1.5">
+                                        {{-- Feedback --}}
+                                        <div class="flex flex-col items-center gap-1.5">
 
-                                                    <span
-                                                        title="Feedback Observation Form"
-                                                        class="w-3 h-3 rounded-full
-                                                        {{
+                                            <span
+                                                title="Feedback Observation Form"
+                                                class="w-3 h-3 rounded-full {{
                                                             $assignment->feedback_status === 'Completed'
                                                                 ? 'bg-emerald-500'
                                                                 : (
@@ -319,321 +230,207 @@
                                                                         : 'bg-slate-300'
                                                                 )
                                                         }}">
-                                                    </span>
+                                            </span>
 
-                                                    <span class="text-[10px]
-                                                                 font-semibold
-                                                                 text-slate-400
-                                                                 uppercase">
+                                            <span class="text-[10px] font-semibold text-slate-600 uppercase">
+                                                FEEDBACK
+                                            </span>
 
-                                                        FEEDBACK
+                                        </div>
 
-                                                    </span>
+                                    </div>
 
-                                                </div>
+                                    @else
+
+                                    {{-- EXTERNAL --}}
+                                    <div class="flex flex-col items-center gap-2">
+
+                                        @if(isset($assignment->attempt_no))
+
+                                        <span class="px-2.5 py-1 rounded-lg bg-slate-100 text-slate-500 text-[10px] font-bold uppercase">
+                                            Attempt {{ $assignment->attempt_no }}
+                                        </span>
+
+                                        @endif
+
+
+                                        <div class="flex items-center justify-center gap-6">
+
+                                            {{-- PDPC --}}
+                                            <div class="flex flex-col items-center gap-1.5">
+
+                                                <span
+                                                    title="PDPC Observation Form"
+                                                    class="w-3 h-3 rounded-full {{
+                                                                $assignment->is_repeat
+                                                                    ? 'bg-red-500'
+                                                                    : (
+                                                                        $assignment->pdpc_status === 'Completed'
+                                                                            ? 'bg-emerald-500'
+                                                                            : (
+                                                                                $assignment->pdpc_status === 'Draft'
+                                                                                    ? 'bg-amber-400'
+                                                                                    : 'bg-slate-300'
+                                                                            )
+                                                                    )
+                                                            }}">
+                                                </span>
+
+                                                <span class="text-[10px] font-semibold text-slate-600 uppercase">
+                                                    PDPC
+                                                </span>
 
                                             </div>
 
 
-                                        @else
+                                            {{-- Feedback --}}
+                                            <div class="flex flex-col items-center gap-1.5">
 
-                                            {{-- External: PDPC + Feedback --}}
-                                            <div class="flex
-                                                        items-center
-                                                        justify-center
-                                                        gap-5">
+                                                <span
+                                                    title="Feedback Observation Form"
+                                                    class="w-3 h-3 rounded-full {{
+                                                                $assignment->feedback_status === 'Completed'
+                                                                    ? 'bg-emerald-500'
+                                                                    : (
+                                                                        $assignment->feedback_status === 'Draft'
+                                                                            ? 'bg-amber-400'
+                                                                            : 'bg-slate-300'
+                                                                    )
+                                                            }}">
+                                                </span>
 
-                                                {{-- PDPC --}}
-                                                <div class="flex
-                                                            flex-col
-                                                            items-center
-                                                            gap-1.5">
-
-                                                    <span
-                                                        title="PDPC Observation Form"
-                                                        class="w-3 h-3 rounded-full
-                                                        {{
-                                                            $assignment->is_repeat
-                                                                ? 'bg-red-500'
-                                                                : (
-                                                                    $assignment->pdpc_status === 'Completed'
-                                                                        ? 'bg-emerald-500'
-                                                                        : (
-                                                                            $assignment->pdpc_status === 'Draft'
-                                                                                ? 'bg-amber-400'
-                                                                                : 'bg-slate-300'
-                                                                        )
-                                                                )
-                                                        }}">
-                                                    </span>
-
-                                                    <span class="text-[10px]
-                                                                 font-semibold
-                                                                 text-slate-400
-                                                                 uppercase">
-
-                                                        PDPC
-
-                                                    </span>
-
-                                                </div>
-
-
-                                                {{-- Feedback --}}
-                                                <div class="flex
-                                                            flex-col
-                                                            items-center
-                                                            gap-1.5">
-
-                                                    <span
-                                                        title="Feedback Observation Form"
-                                                        class="w-3 h-3 rounded-full
-                                                        {{
-                                                            $assignment->feedback_status === 'Completed'
-                                                                ? 'bg-emerald-500'
-                                                                : (
-                                                                    $assignment->feedback_status === 'Draft'
-                                                                        ? 'bg-amber-400'
-                                                                        : 'bg-slate-300'
-                                                                )
-                                                        }}">
-                                                    </span>
-
-                                                    <span class="text-[10px]
-                                                                 font-semibold
-                                                                 text-slate-400
-                                                                 uppercase">
-
-                                                        FEEDBACK
-
-                                                    </span>
-
-                                                </div>
+                                                <span class="text-[10px] font-semibold text-slate-600 uppercase">
+                                                    FEEDBACK
+                                                </span>
 
                                             </div>
 
-                                        @endif
+                                        </div>
 
-                                    </td>
+                                    </div>
 
+                                    @endif
 
-                                    {{-- Status --}}
-                                    <td class="px-8 py-6 text-center">
-
-                                        {{-- Repeat --}}
-                                        @if(
-                                            !$isObserver &&
-                                            $assignment->is_repeat
-                                        )
-
-                                            <span class="inline-flex
-                                                         items-center
-                                                         gap-2
-                                                         px-3 py-1.5
-                                                         rounded-full
-                                                         bg-red-100
-                                                         text-red-700
-                                                         text-xs
-                                                         font-bold">
-
-                                                <span class="w-2 h-2
-                                                             rounded-full
-                                                             bg-red-500">
-                                                </span>
-
-                                                Repeat Required
-
-                                            </span>
+                                </td>
 
 
-                                        {{-- Fully Completed --}}
-                                        @elseif(
-                                            $assignment->is_fully_completed
-                                        )
+                                {{-- Status --}}
+                                <td class="px-8 py-6 text-center">
 
-                                            <span class="inline-flex
-                                                         items-center
-                                                         gap-2
-                                                         px-3 py-1.5
-                                                         rounded-full
-                                                         bg-emerald-100
-                                                         text-emerald-700
-                                                         text-xs
-                                                         font-bold">
+                                    @if(
+                                    !$isObserver &&
+                                    $assignment->is_repeat
+                                    )
 
-                                                <span class="w-2 h-2
-                                                             rounded-full
-                                                             bg-emerald-500">
-                                                </span>
+                                    <span class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-red-100 text-red-700 text-xs font-bold">
 
-                                                {{
-                                                    $assignment->completed_count
-                                                }}/{{ $assignment->total_forms }}
-                                                Completed
+                                        <span class="w-2 h-2 rounded-full bg-red-500"></span>
 
-                                            </span>
+                                        Repeat Required
 
+                                    </span>
 
-                                        {{-- Draft Exists --}}
-                                        @elseif(
-                                            $assignment->has_draft
-                                        )
+                                    @elseif($assignment->is_fully_completed)
 
-                                            <span class="inline-flex
-                                                         items-center
-                                                         gap-2
-                                                         px-3 py-1.5
-                                                         rounded-full
-                                                         bg-amber-100
-                                                         text-amber-700
-                                                         text-xs
-                                                         font-bold">
+                                    <span class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-100 text-emerald-700 text-xs font-bold">
 
-                                                <span class="w-2 h-2
-                                                             rounded-full
-                                                             bg-amber-400">
-                                                </span>
+                                        <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
 
-                                                {{
-                                                    $assignment->completed_count
-                                                }}/{{ $assignment->total_forms }}
-                                                Completed
+                                        {{ $assignment->completed_count }}/{{ $assignment->total_forms }}
+                                        Completed
 
-                                            </span>
+                                    </span>
+
+                                    @elseif($assignment->has_draft)
+
+                                    <span class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-amber-100 text-amber-700 text-xs font-bold">
+
+                                        <span class="w-2 h-2 rounded-full bg-amber-400"></span>
+
+                                        {{ $assignment->completed_count }}/{{ $assignment->total_forms }}
+                                        Completed
+
+                                    </span>
+
+                                    @else
+
+                                    <span class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-blue-100 text-blue-700 text-xs font-bold">
+
+                                        <span class="w-2 h-2 rounded-full bg-blue-500"></span>
+
+                                        {{ $assignment->completed_count }}/{{ $assignment->total_forms }}
+                                        Completed
+
+                                    </span>
+
+                                    @endif
+
+                                </td>
 
 
-                                        {{-- Pending / In Progress --}}
-                                        @else
+                                {{-- Action --}}
+                                <td class="px-8 py-6 text-center">
 
-                                            <span class="inline-flex
-                                                         items-center
-                                                         gap-2
-                                                         px-3 py-1.5
-                                                         rounded-full
-                                                         bg-blue-100
-                                                         text-blue-700
-                                                         text-xs
-                                                         font-bold">
-
-                                                <span class="w-2 h-2
-                                                             rounded-full
-                                                             bg-blue-500">
-                                                </span>
-
-                                                {{
-                                                    $assignment->completed_count
-                                                }}/{{ $assignment->total_forms }}
-                                                Completed
-
-                                            </span>
-
-                                        @endif
-
-                                    </td>
-
-
-                                    {{-- Action --}}
-                                    <td class="px-8 py-6 text-center">
-
-                                        <a
-                                            href="{{ route(
+                                    <a
+                                        href="{{ route(
                                                 $isObserver
                                                     ? 'observer.manage'
                                                     : 'external.manage',
                                                 $assignment->gn_id
                                             ) }}"
-                                            class="inline-flex
-                                                   items-center
-                                                   justify-center
-                                                   bg-blue-600
-                                                   hover:bg-blue-700
-                                                   text-white
-                                                   px-4 py-2
-                                                   rounded-xl
-                                                   font-semibold
-                                                   transition
-                                                   shadow-md">
+                                        class="inline-flex items-center justify-center bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded-xl font-semibold transition shadow-md">
 
-                                            Manage
+                                        Manage
 
-                                        </a>
+                                    </a>
 
-                                    </td>
+                                </td>
 
-                                </tr>
-
+                            </tr>
 
                             @empty
 
-                                <tr>
+                            <tr>
 
-                                    <td
-                                        colspan="6"
-                                        class="py-16 text-center">
+                                <td colspan="6" class="py-16 text-center">
 
-                                        <div class="flex flex-col items-center">
+                                    <div class="flex flex-col items-center">
 
-                                            <div class="w-16 h-16
-                                                        rounded-full
-                                                        bg-slate-100
-                                                        flex
-                                                        items-center
-                                                        justify-center
-                                                        mb-4">
+                                        <div class="w-16 h-16 rounded-full bg-slate-100 flex items-center justify-center mb-4">
 
-                                                <svg
-                                                    class="w-8 h-8 text-slate-400"
-                                                    fill="none"
-                                                    stroke="currentColor"
-                                                    stroke-width="2"
-                                                    viewBox="0 0 24 24">
-
-                                                    <path
-                                                        stroke-linecap="round"
-                                                        stroke-linejoin="round"
-                                                        d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z">
-                                                    </path>
-
-                                                </svg>
-
-                                            </div>
-
-
-                                            <h3 class="font-bold text-slate-700">
-
-                                                No Evaluation Found
-
-                                            </h3>
-
-
-                                            <p class="text-slate-400 text-sm mt-1">
-
-                                                @if(
-                                                    !$isObserver &&
-                                                    $status === 'repeat'
-                                                )
-
-                                                    There are currently no repeat evaluations.
-
-                                                @elseif(
-                                                    $status === 'completed'
-                                                )
-
-                                                    There are currently no completed evaluations.
-
-                                                @else
-
-                                                    There are currently no active evaluation assignments.
-
-                                                @endif
-
-                                            </p>
+                                            <svg class="w-8 h-8 text-slate-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                            </svg>
 
                                         </div>
 
-                                    </td>
+                                        <h3 class="font-bold text-slate-700">
+                                            No Evaluation Found
+                                        </h3>
 
-                                </tr>
+                                        <p class="text-slate-400 text-sm mt-1">
+
+                                            @if(!$isObserver && $status === 'repeat')
+
+                                            There are currently no repeat evaluations.
+
+                                            @elseif($status === 'completed')
+
+                                            There are currently no completed evaluations.
+
+                                            @else
+
+                                            There are currently no active evaluation assignments.
+
+                                            @endif
+
+                                        </p>
+
+                                    </div>
+
+                                </td>
+
+                            </tr>
 
                             @endforelse
 
@@ -645,21 +442,11 @@
                     {{-- Pagination --}}
                     @if($assignments->hasPages())
 
-                        <div class="px-6 py-4
-                                    border-t
-                                    border-slate-100
-                                    flex
-                                    justify-end">
+                    <div class="px-6 py-4 border-t border-slate-100 flex justify-end">
 
-                            {{
-                                $assignments
-                                    ->appends(
-                                        request()->query()
-                                    )
-                                    ->links()
-                            }}
+                        {{ $assignments->appends(request()->query())->links() }}
 
-                        </div>
+                    </div>
 
                     @endif
 

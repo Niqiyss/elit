@@ -6,7 +6,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>{{ $form->form_name }}_{{ $guru->gn_name }}_{{ $response->observation_date ? \Carbon\Carbon::parse($response->observation_date)->format('d-m-Y') : 'No Date' }}</title>
+    <title>
+        {{ $form->form_name }}_{{ $guru->gn_name }}_{{ $response->observation_date ? \Carbon\Carbon::parse($response->observation_date)->format('d-m-Y') : 'No Date' }}
+    </title>
 
     <style>
         * {
@@ -39,6 +41,7 @@
             padding: 10px 20px;
             background: #0f172a;
             color: white;
+            font-size: 12px;
         }
 
         .toolbar-title {
@@ -71,7 +74,7 @@
         }
 
 
-        /* A4 paper */
+        /* A4 */
         .paper {
             width: 210mm;
             min-height: 297mm;
@@ -82,7 +85,7 @@
         }
 
 
-        /* Report header */
+        /* Header */
         .report-header {
             margin: 0 0 2.2mm;
             text-align: center;
@@ -171,8 +174,8 @@
 
         /* Display fields */
         .display-table td {
+            vertical-align: top;
             text-align: left;
-            vertical-align: top !important;
             line-height: 1.15;
         }
 
@@ -281,26 +284,26 @@
                 box-shadow: none;
             }
 
-            /* Sections may continue to next page */
+            /* Section may continue to next page */
             .print-section {
                 page-break-inside: auto;
                 break-inside: auto;
             }
 
-            /* Keep each row together where possible */
+            /* But keep each individual row together where possible */
             .answer-table tr,
             .display-table tr {
                 page-break-inside: avoid;
                 break-inside: avoid;
             }
 
-            /* Repeat section title if table continues */
+            /* Repeat section heading when table continues */
             .display-table thead,
             .answer-table thead {
                 display: table-header-group;
             }
 
-            /* Keep signature block together */
+            /* Keep signature together */
             .signature-section {
                 page-break-inside: avoid;
                 break-inside: avoid;
@@ -324,12 +327,7 @@
         <div class="toolbar-actions">
 
             <a
-                href="{{ route(
-                    $role === 'observer'
-                        ? 'observer.manage'
-                        : 'external.manage',
-                    $guru->gn_id
-                ) }}"
+                href="{{ route('new_teacher.result') }}"
                 class="button secondary">
 
                 Back
@@ -350,7 +348,6 @@
     </div>
 
 
-    {{-- Printable page --}}
     <main class="paper">
 
         {{-- Header --}}
@@ -461,13 +458,7 @@
             <div class="meta-row">
 
                 <div class="meta-label">
-
-                    {{
-                        $role === 'observer'
-                            ? 'Observer'
-                            : 'External Observer'
-                    }}
-
+                    {{ $response->evaluator_role }}
                 </div>
 
                 <div class="meta-colon">
@@ -475,11 +466,7 @@
                 </div>
 
                 <div class="meta-value">
-
-                    {{ strtoupper(
-                        Auth::guard('teacher')->user()->teacher_name
-                    ) }}
-
+                    {{ strtoupper($response->evaluator_name ?? '-') }}
                 </div>
 
             </div>
@@ -496,9 +483,7 @@
                 </div>
 
                 <div class="meta-value">
-
                     {{ $guru->school?->school_name ?? '-' }}
-
                 </div>
 
             </div>
@@ -511,13 +496,11 @@
 
         @php
 
-        $displayFields =
-        $section->fields
+        $displayFields = $section->fields
         ->where('field_type', 'display')
         ->values();
 
-        $inputFields =
-        $section->fields
+        $inputFields = $section->fields
         ->where('field_type', '!=', 'display')
         ->values();
 
@@ -546,6 +529,7 @@
                     </tr>
 
                 </thead>
+
 
                 <tbody>
 
@@ -604,6 +588,7 @@
                     </tr>
 
                 </thead>
+
 
                 <tbody>
 
@@ -675,23 +660,19 @@
                 <div class="signature-title">
 
                     {{
-                        $role === 'observer'
-                            ? 'Observer,'
-                            : 'External Observer,'
+                        $response->observation_stage === 'EXTERNAL'
+                            ? 'External Observer,'
+                            : 'Observer,'
                     }}
 
                 </div>
 
-
                 <div class="signature-line"></div>
-
 
                 <div class="signature-name">
 
                     (
-                    {{ strtoupper(
-                        Auth::guard('teacher')->user()->teacher_name
-                    ) }}
+                    {{ strtoupper($response->evaluator_name ?? '-') }}
                     )
 
                 </div>
@@ -705,9 +686,7 @@
                     Teacher Observed,
                 </div>
 
-
                 <div class="signature-line"></div>
-
 
                 <div class="signature-name">
 
