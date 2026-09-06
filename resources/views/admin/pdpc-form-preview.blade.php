@@ -10,7 +10,6 @@
 
         <div class="max-w-7xl mx-auto px-6">
 
-            {{-- HEADER --}}
             <div class="relative bg-gradient-to-br from-slate-900 via-violet-950 to-purple-900 rounded-3xl px-8 py-6 shadow-xl overflow-hidden mb-8">
 
                 <div class="absolute right-0 top-0 translate-x-10 -translate-y-10 w-72 h-72 bg-purple-500/10 rounded-full blur-3xl"></div>
@@ -33,7 +32,6 @@
 
                     <div class="flex items-stretch gap-3">
 
-                        {{-- VERSION --}}
                         <div class="min-w-[110px] bg-white/10 border border-white/10 rounded-2xl px-5 py-3">
 
                             <p class="text-xs uppercase tracking-wider text-violet-200 font-semibold">
@@ -47,7 +45,6 @@
                         </div>
 
 
-                        {{-- PREVIEW NOTICE --}}
                         <div class="bg-blue-400/10 border border-blue-300/20 rounded-2xl px-5 py-3 flex items-center gap-3">
 
                             <div class="w-9 h-9 rounded-xl bg-blue-300/20 flex items-center justify-center">
@@ -92,13 +89,10 @@
             </div>
 
 
-            {{-- ASPECTS --}}
-
             @forelse($form->aspects as $aspect)
 
             <div class="mb-8">
 
-                {{-- ASPECT HEADER --}}
                 <div class="bg-blue-900 rounded-t-2xl px-6 py-4 text-white">
 
                     <p class="text-xs uppercase tracking-wider text-blue-200 font-semibold">
@@ -111,8 +105,6 @@
 
                 </div>
 
-
-                {{-- TUMS --}}
                 @foreach($aspect->tums as $tums)
 
                 @php
@@ -123,7 +115,7 @@
 
                 <div class="bg-white border-x border-b border-slate-200 last:rounded-b-2xl overflow-hidden">
 
-                    {{-- TUMS HEADER --}}
+
                     <div class="px-6 py-4 bg-slate-50 border-b border-slate-200">
 
                         <div class="flex items-center justify-between gap-4">
@@ -150,7 +142,6 @@
                     </div>
 
 
-                    {{-- EVALUATION TABLE --}}
                     <div class="overflow-x-auto">
 
                         <table class="w-full table-fixed text-sm">
@@ -196,7 +187,6 @@
                                     </td>
 
 
-                                    {{-- SCORE PREVIEW --}}
                                     <td class="px-5 py-4 border-l border-slate-200 text-center">
 
                                         <input
@@ -262,7 +252,6 @@
                             </tbody>
 
 
-                            {{-- CALCULATION PREVIEW --}}
                             <tfoot class="bg-blue-50/70 text-sm">
 
                                 <tr class="border-t border-blue-200">
@@ -397,8 +386,6 @@
             @endforelse
 
 
-            {{-- OBSERVATION SUMMARY --}}
-
             <div class="bg-white rounded-3xl shadow-lg overflow-hidden mb-24">
 
                 <div class="px-6 py-5 border-b border-slate-200">
@@ -416,7 +403,6 @@
 
                 <div class="grid grid-cols-1 xl:grid-cols-[minmax(0,2.1fr)_minmax(330px,1fr)] gap-6 p-5">
 
-                    {{-- SUMMARY TABLE --}}
                     <div class="overflow-hidden rounded-2xl border border-slate-200 self-start">
 
                         <table class="w-full table-fixed text-sm">
@@ -523,8 +509,6 @@
 
                     </div>
 
-
-                    {{-- ACHIEVEMENT --}}
                     <div class="overflow-hidden rounded-2xl border border-slate-200 self-start">
 
                         <table class="w-full table-fixed text-sm">
@@ -597,8 +581,6 @@
     </div>
 
 
-    {{-- STICKY ACTION --}}
-
     <div class="fixed bottom-4 left-0 right-0 z-40 px-6 pointer-events-none">
 
         <div class="max-w-7xl mx-auto">
@@ -614,7 +596,7 @@
                     </a>
 
                     <a
-                        href="{{ route('admin.pdpc.form.edit', $form) }}"
+                        href="{{ route('admin.pdpc.form.edit', $form->formID) }}"
                         class="px-5 py-2.5 bg-amber-400 hover:bg-amber-500 text-amber-950 font-semibold text-sm rounded-xl transition">
                         Edit
                     </a>

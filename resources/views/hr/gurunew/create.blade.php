@@ -6,12 +6,10 @@
         </h2>
     </x-slot>
 
-
     <div class="py-10 bg-gray-100 min-h-screen">
 
         <div class="max-w-7xl mx-auto px-6">
 
-            {{-- HEADER --}}
             <div class="relative bg-gradient-to-br from-slate-900 via-violet-950 to-purple-900
                         rounded-3xl p-8 shadow-xl overflow-hidden mb-8">
 
@@ -33,8 +31,6 @@
 
             </div>
 
-
-            {{-- FORM --}}
             <div class="bg-white rounded-3xl shadow-lg p-8">
 
                 <form method="POST"
@@ -45,15 +41,9 @@
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
 
-
-                        {{-- ================================================= --}}
                         {{-- LEFT COLUMN --}}
-                        {{-- ================================================= --}}
-
                         <div class="space-y-6">
 
-
-                            {{-- IC NUMBER --}}
                             <div>
 
                                 <label for="ic_number"
@@ -80,8 +70,6 @@
 
                             </div>
 
-
-                            {{-- GENDER --}}
                             <div>
 
                                 <label for="gender"
@@ -99,7 +87,6 @@
                             </div>
 
 
-                            {{-- FULL NAME --}}
                             <div>
 
                                 <label for="gn_name"
@@ -126,7 +113,6 @@
                             </div>
 
 
-                            {{-- EMAIL --}}
                             <div>
 
                                 <label for="email"
@@ -153,7 +139,6 @@
                             </div>
 
 
-                            {{-- PHONE NUMBER --}}
                             <div>
 
                                 <label for="phone_number"
@@ -183,15 +168,9 @@
 
                         </div>
 
-
-                        {{-- ================================================= --}}
                         {{-- RIGHT COLUMN --}}
-                        {{-- ================================================= --}}
-
                         <div class="space-y-6">
 
-
-                            {{-- SCHOOL --}}
                             <div>
 
                                 <label for="schoolID"
@@ -233,8 +212,6 @@
 
                             </div>
 
-
-                            {{-- APPOINTED DATE --}}
                             <div>
 
                                 <label for="appointed_date"
@@ -261,7 +238,6 @@
                             </div>
 
 
-                            {{-- TEMPORARY PASSWORD --}}
                             <div>
 
                                 <label for="password"
@@ -282,7 +258,6 @@
                                                focus:ring-purple-500">
 
 
-                                    {{-- SHOW / HIDE PASSWORD --}}
                                     <button
                                         type="button"
                                         onclick="togglePassword('password', this)"
@@ -292,7 +267,6 @@
                                                hover:text-purple-700">
 
 
-                                        {{-- EYE OFF --}}
                                         <svg
                                             class="eye-off h-5 w-5"
                                             xmlns="http://www.w3.org/2000/svg"
@@ -316,7 +290,6 @@
                                         </svg>
 
 
-                                        {{-- EYE ON --}}
                                         <svg
                                             class="eye-on h-5 w-5 hidden"
                                             xmlns="http://www.w3.org/2000/svg"
@@ -381,7 +354,6 @@
                                                hover:text-purple-700">
 
 
-                                        {{-- EYE OFF --}}
                                         <svg
                                             class="eye-off h-5 w-5"
                                             xmlns="http://www.w3.org/2000/svg"
@@ -405,7 +377,6 @@
                                         </svg>
 
 
-                                        {{-- EYE ON --}}
                                         <svg
                                             class="eye-on h-5 w-5 hidden"
                                             xmlns="http://www.w3.org/2000/svg"
@@ -436,7 +407,6 @@
 
                                 </div>
 
-                                {{-- PASSWORD REQUIREMENTS --}}
                                 <ul class="mt-3 space-y-1 text-sm">
 
                                     <li

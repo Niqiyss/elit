@@ -7,7 +7,6 @@
     <div class="py-10 bg-gray-100 min-h-screen">
         <div class="max-w-7xl mx-auto px-6">
 
-            {{-- Header --}}
             <div class="relative bg-gradient-to-br from-slate-900 via-violet-950 to-purple-900 rounded-3xl px-8 py-7 shadow-xl overflow-hidden mb-8">
                 <div class="absolute right-0 top-0 translate-x-10 -translate-y-10 w-72 h-72 bg-purple-500/10 rounded-full blur-3xl"></div>
 
@@ -17,17 +16,15 @@
                 </div>
             </div>
 
-            {{-- Success --}}
             @if(session('success'))
             <div class="mb-6 px-5 py-4 bg-green-100 border border-green-200 text-green-700 rounded-xl">{{ session('success') }}</div>
             @endif
 
-            {{-- Error --}}
+
             @if(session('error'))
             <div class="mb-6 px-5 py-4 bg-red-100 border border-red-200 text-red-700 rounded-xl">{{ session('error') }}</div>
             @endif
 
-            {{-- Validation --}}
             @if($errors->any())
             <div class="mb-6 px-5 py-4 bg-red-100 border border-red-200 text-red-700 rounded-xl">
                 <ul class="list-disc list-inside text-sm">
@@ -40,12 +37,10 @@
 
             @if($forms->isEmpty())
 
-            {{-- Create First Version --}}
             <div class="bg-white rounded-3xl shadow-sm border border-gray-200 overflow-hidden mb-24">
 
                 <div class="px-6 py-5 border-b border-gray-100">
                     <h2 class="text-lg font-bold text-gray-900">Create External Observation Form</h2>
-                    <p class="text-sm text-gray-400 mt-1">Create the first version before adding Aspect, TUMS, TT and RTK content</p>
                 </div>
 
                 <div class="p-6">
@@ -97,7 +92,6 @@
 
             @php $activeForm = $forms->firstWhere('status', 'Active'); @endphp
 
-            {{-- Version Table --}}
             <div class="bg-white border border-gray-200 rounded-3xl shadow-sm mb-24">
 
                 <div class="overflow-x-auto rounded-3xl">
@@ -122,7 +116,6 @@
 
                             <tr class="{{ $form->status === 'Active' ? 'bg-blue-50/40' : 'bg-white' }} hover:bg-slate-50 transition">
 
-                                {{-- Version --}}
                                 <td class="px-6 py-6">
 
                                     <div class="w-14 h-14 rounded-2xl bg-blue-600 text-white flex items-center justify-center text-lg font-bold">
@@ -131,7 +124,6 @@
 
                                 </td>
 
-                                {{-- Content --}}
                                 <td class="px-6 py-6">
 
                                     <p class="font-bold text-slate-900 text-base mb-2">
@@ -165,7 +157,7 @@
 
                                 </td>
 
-                                {{-- Status --}}
+
                                 <td class="px-6 py-6 text-center">
 
                                     @if($form->status === 'Active')
@@ -184,7 +176,7 @@
 
                                 </td>
 
-                                {{-- Usage --}}
+
                                 <td class="px-6 py-6 text-center">
 
                                     @if($form->is_used)
@@ -203,22 +195,27 @@
 
                                 </td>
 
-                                {{-- Action --}}
                                 <td class="px-6 py-6 text-center">
 
                                     <button
                                         type="button"
-                                        data-preview="{{ route('admin.pdpc.form.preview', $form) }}"
-                                        data-edit="{{ route('admin.pdpc.form.edit', $form) }}"
-                                        data-delete="{{ !$form->is_used ? route('admin.pdpc.form.destroy', $form) : '' }}"
+                                        data-preview="{{ route('admin.pdpc.form.preview', $form->formID) }}"
+                                        data-edit="{{ route('admin.pdpc.form.edit', $form->formID) }}"
+                                        data-delete="{{ !$form->is_used ? route('admin.pdpc.form.destroy', $form->formID) : '' }}"
                                         data-version="{{ $form->version_no }}"
                                         onclick="openActionMenu(this)"
                                         class="w-10 h-10 inline-flex items-center justify-center rounded-xl text-gray-500 hover:text-gray-800 hover:bg-gray-200 transition">
 
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                                        <svg
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            class="w-5 h-5"
+                                            fill="currentColor"
+                                            viewBox="0 0 24 24">
+
                                             <circle cx="12" cy="5" r="1.7"></circle>
                                             <circle cx="12" cy="12" r="1.7"></circle>
                                             <circle cx="12" cy="19" r="1.7"></circle>
+
                                         </svg>
 
                                     </button>
@@ -243,10 +240,8 @@
     </div>
 
 
-    {{-- Floating Action Menu --}}
     <div id="floatingActionMenu" class="hidden fixed w-44 bg-white border border-gray-200 rounded-xl shadow-xl z-[9999] overflow-hidden">
 
-        {{-- Preview --}}
         <a
             id="actionPreview"
             href="#"
@@ -261,7 +256,7 @@
 
         </a>
 
-        {{-- Edit --}}
+
         <a
             id="actionEdit"
             href="#"
@@ -275,7 +270,7 @@
 
         </a>
 
-        {{-- Delete --}}
+
         <form id="actionDeleteForm" method="POST" action="">
             @csrf
             @method('DELETE')
@@ -298,7 +293,6 @@
     </div>
 
 
-    {{-- Sticky Action --}}
     <div class="fixed bottom-4 left-0 right-0 z-40 px-6 pointer-events-none">
 
         <div class="max-w-7xl mx-auto">
@@ -315,7 +309,7 @@
 
                     @if($forms->isNotEmpty() && $activeForm)
 
-                    <form method="POST" action="{{ route('admin.pdpc.form.new-version', $activeForm) }}">
+                    <form method="POST" action="{{ route('admin.pdpc.form.new-version', $activeForm->formID) }}">
                         @csrf
 
                         <button

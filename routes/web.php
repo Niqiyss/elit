@@ -1,44 +1,50 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+
+
 use App\Http\Controllers\Admin\AdminDashboardController;
-use App\Http\Controllers\HR\HRDashboardController;
-use App\Http\Controllers\NewTeacher\NewTeacherDashboardController;
-use App\Http\Controllers\Principal\PrincipalDashboardController;
-use App\Http\Controllers\HR\GuruNewController;
-use App\Http\Controllers\NewTeacher\GuruNewProfileController;
-use App\Http\Controllers\Observer\OBDashboardController;
-use App\Http\Controllers\ExternalObserver\ExtDashboardController;
-use App\Http\Controllers\Admin\ManageFormController;
-use App\Http\Controllers\HR\HRProfileController;
 use App\Http\Controllers\Admin\AdminProfileController;
-use App\Http\Controllers\Principal\PrincipalProfileController;
-use App\Http\Controllers\Principal\GNListController;
-use App\Http\Controllers\Observer\OBProfile;
-use App\Http\Controllers\ExternalObserver\EXTProfile;
+use App\Http\Controllers\Admin\ManageFormController;
 use App\Http\Controllers\Admin\EvaluationDocController;
-use App\Http\Controllers\EvaluationDocDownloadController;
 use App\Http\Controllers\Admin\PostFormController;
-use App\Http\Controllers\PostObservationController;
-use App\Http\Controllers\Observer\ListEvaluateController;
-use App\Http\Controllers\Observer\ManageEvaluateController;
 use App\Http\Controllers\Admin\PreFormController;
-use App\Http\Controllers\Observer\PreObservationController;
 use App\Http\Controllers\Admin\AuditObservationController;
 use App\Http\Controllers\Admin\PdpcFormController;
-use App\Http\Controllers\PdpcObservationController;
+
+use App\Http\Controllers\HR\HRDashboardController;
+use App\Http\Controllers\HR\HRProfileController;
+use App\Http\Controllers\HR\GuruNewController;
+
+use App\Http\Controllers\Observer\OBDashboardController;
+use App\Http\Controllers\Observer\OBProfile;
+use App\Http\Controllers\Observer\ListEvaluateController;
+use App\Http\Controllers\Observer\ManageEvaluateController;
+use App\Http\Controllers\Observer\PreObservationController;
+
+use App\Http\Controllers\ExternalObserver\ExtDashboardController;
+use App\Http\Controllers\ExternalObserver\EXTProfile;
+
+use App\Http\Controllers\NewTeacher\NewTeacherDashboardController;
+use App\Http\Controllers\NewTeacher\GuruNewProfileController;
 use App\Http\Controllers\NewTeacher\ResultController;
+
+use App\Http\Controllers\Principal\PrincipalDashboardController;
+use App\Http\Controllers\Principal\PrincipalProfileController;
+use App\Http\Controllers\Principal\GNListController;
 use App\Http\Controllers\Principal\PResultController;
 
+use App\Http\Controllers\EvaluationDocDownloadController;
+use App\Http\Controllers\PostObservationController;
+use App\Http\Controllers\PdpcObservationController;
 
-/*Home*/
 
 Route::get('/', function () {
     return redirect()->route('login');
 });
 
 
-/*Admin */
+/* Admin */
 Route::middleware('auth:admin')->prefix('admin')->group(function () {
 
     Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('admin.dashboard');
@@ -100,7 +106,7 @@ Route::middleware('auth:admin')->prefix('admin')->group(function () {
 });
 
 
-/*HR*/
+/* HR */
 Route::middleware('auth:hr')->prefix('hr')->group(function () {
 
     Route::get('/dashboard', [HRDashboardController::class, 'index'])->name('hr.dashboard');
@@ -114,48 +120,7 @@ Route::middleware('auth:hr')->prefix('hr')->group(function () {
 });
 
 
-/*GN*/
-Route::middleware('auth:new_teacher')->prefix('new-teacher')->group(function () {
-
-    Route::get('/dashboard', [NewTeacherDashboardController::class, 'index'])->name('new_teacher.dashboard');
-    // Evaluation results
-    Route::get('/result', [ResultController::class, 'index'])->name('new_teacher.result');
-    Route::get('/result/pre/{responseID}', [ResultController::class, 'pre'])->name('new_teacher.result.pre');
-    Route::get('/result/pdpc/{responseID}', [ResultController::class, 'pdpc'])->name('new_teacher.result.pdpc');
-    Route::get('/result/post/{responseID}', [ResultController::class, 'post'])->name('new_teacher.result.post');
-    Route::get('/profile', [GuruNewProfileController::class, 'edit'])->name('new_teacher.profile');
-    Route::put('/profile', [GuruNewProfileController::class, 'update'])->name('new_teacher.profile.update');
-    Route::put('/profile/password', [GuruNewProfileController::class, 'updatePassword'])->name('new_teacher.profile.password');
-});
-
-
-/*Principal*/
-Route::middleware('auth:principal')->prefix('principal')->group(function () {
-
-    // Dashboard
-    Route::get('/dashboard', [PrincipalDashboardController::class, 'index'])->name('principal.dashboard');
-
-    // Profile
-    Route::get('/profile', [PrincipalProfileController::class, 'index'])->name('principal.profile');
-    Route::put('/profile/password', [PrincipalProfileController::class, 'updatePassword'])->name('principal.profile.password');
-
-    // New Teacher List
-    Route::get('/list-teacher', [GNListController::class, 'index'])->name('principal.gn.list');
-
-    // Evaluation Results
-    Route::get('/result', [PResultController::class, 'index'])->name('principal.result');
-
-    // Individual Evaluation Forms
-    Route::get('/result/pre/{responseID}', [PResultController::class, 'pre'])->name('principal.result.pre');
-    Route::get('/result/pdpc/{responseID}', [PResultController::class, 'pdpc'])->name('principal.result.pdpc');
-    Route::get('/result/post/{responseID}', [PResultController::class, 'post'])->name('principal.result.post');
-
-    // Teacher Evaluation Result
-    Route::get('/result/{gn_id}', [PResultController::class, 'show'])->name('principal.result.show');
-});
-
-
-/*Observer*/
+/* Observer */
 Route::middleware('auth:teacher')->prefix('observer')->group(function () {
 
     Route::get('/dashboard', [OBDashboardController::class, 'index'])->name('observer.dashboard');
@@ -189,7 +154,7 @@ Route::middleware('auth:teacher')->prefix('observer')->group(function () {
 });
 
 
-/*ExternalOB*/
+/* External */
 Route::middleware('auth:teacher')->prefix('external-observer')->group(function () {
 
     Route::get('/dashboard', [ExtDashboardController::class, 'index'])->name('external.dashboard');
@@ -216,11 +181,49 @@ Route::middleware('auth:teacher')->prefix('external-observer')->group(function (
 });
 
 
-/*Shared evaluation document download*/
+/* GN */
+Route::middleware('auth:new_teacher')->prefix('new-teacher')->group(function () {
+
+    Route::get('/dashboard', [NewTeacherDashboardController::class, 'index'])->name('new_teacher.dashboard');
+    Route::get('/profile', [GuruNewProfileController::class, 'edit'])->name('new_teacher.profile');
+    Route::put('/profile', [GuruNewProfileController::class, 'update'])->name('new_teacher.profile.update');
+    Route::put('/profile/password', [GuruNewProfileController::class, 'updatePassword'])->name('new_teacher.profile.password');
+
+    // Evaluation results
+    Route::get('/result', [ResultController::class, 'index'])->name('new_teacher.result');
+    Route::get('/result/pre/{responseID}', [ResultController::class, 'pre'])->name('new_teacher.result.pre');
+    Route::get('/result/pdpc/{responseID}', [ResultController::class, 'pdpc'])->name('new_teacher.result.pdpc');
+    Route::get('/result/post/{responseID}', [ResultController::class, 'post'])->name('new_teacher.result.post');
+});
+
+
+/* Principal */
+Route::middleware('auth:principal')->prefix('principal')->group(function () {
+
+
+    Route::get('/dashboard', [PrincipalDashboardController::class, 'index'])->name('principal.dashboard');
+    Route::get('/profile', [PrincipalProfileController::class, 'index'])->name('principal.profile');
+    Route::put('/profile/password', [PrincipalProfileController::class, 'updatePassword'])->name('principal.profile.password');
+
+    // New Teacher List
+    Route::get('/list-teacher', [GNListController::class, 'index'])->name('principal.gn.list');
+
+    // Evaluation Results
+    Route::get('/result', [PResultController::class, 'index'])->name('principal.result');
+
+    Route::get('/result/pre/{responseID}', [PResultController::class, 'pre'])->name('principal.result.pre');
+    Route::get('/result/pdpc/{responseID}', [PResultController::class, 'pdpc'])->name('principal.result.pdpc');
+    Route::get('/result/post/{responseID}', [PResultController::class, 'post'])->name('principal.result.post');
+
+    Route::get('/result/{gn_id}', [PResultController::class, 'show'])->name('principal.result.show');
+});
+
+
+/* Shared evaluation document download */
 Route::get('/evaluation-doc/{doc_id}/download', [EvaluationDocDownloadController::class, 'download'])
     ->middleware('auth:teacher')
     ->name('evaluation.doc.download');
 
 
-/*Authentication Routes*/
+/* Authentication Routes */
 require __DIR__ . '/auth.php';

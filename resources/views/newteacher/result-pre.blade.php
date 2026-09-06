@@ -7,7 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>
-    {{ $form->form_name }}_{{ $guru->gn_name }}_{{ $response->observation_date ? \Carbon\Carbon::parse($response->observation_date)->format('d-m-Y') : 'No Date' }}
+        {{ $form->form_name }}_{{ $guru->gn_name }}_{{ $response->observation_date ? \Carbon\Carbon::parse($response->observation_date)->format('d-m-Y') : 'No Date' }}
     </title>
 
     <style>
@@ -170,13 +170,15 @@
         }
 
         .score-grid {
-            display: grid;
-            grid-template-columns: repeat(5, 1fr);
+            display: flex;
+            width: 100%;
             gap: 2px;
             margin-bottom: 3px;
         }
 
         .score-box {
+            flex: 1;
+            min-width: 0;
             min-height: 24px;
             display: flex;
             align-items: center;

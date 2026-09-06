@@ -209,7 +209,7 @@ class OBDashboardController extends Controller
             ->values();
 
 
-        // Build PRE observation result query
+        // Build PRE observation result
         $preResultQuery = DB::table('pre_response')
             ->join(
                 'guru_new',

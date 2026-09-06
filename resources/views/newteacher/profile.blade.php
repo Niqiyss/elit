@@ -45,7 +45,6 @@
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
 
-                        {{-- LEFT COLUMN --}}
                         <div class="space-y-6">
 
                             <div>
@@ -142,7 +141,7 @@
 
                         </div>
 
-                        {{-- RIGHT COLUMN --}}
+
                         <div class="space-y-6">
 
                             <div>

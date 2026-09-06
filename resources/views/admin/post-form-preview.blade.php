@@ -10,7 +10,6 @@
 
         <div class="max-w-7xl mx-auto">
 
-            {{-- Header --}}
             <div class="relative bg-gradient-to-br from-slate-900 via-violet-950 to-purple-900 rounded-3xl p-8 shadow-xl overflow-hidden mb-8">
 
                 <div class="absolute right-0 top-0 translate-x-10 -translate-y-10 w-72 h-72 bg-purple-500/10 rounded-full blur-3xl"></div>
@@ -89,7 +88,6 @@
             </div>
 
             
-            {{-- Dynamic sections --}}
             @foreach($form->sections as $section)
 
                 @php
@@ -102,7 +100,6 @@
                         ->values();
                 @endphp
 
-                {{-- Display fields --}}
                 @if($displayFields->isNotEmpty())
 
                     <div class="bg-white rounded-3xl shadow-lg overflow-hidden mb-6">
@@ -159,7 +156,6 @@
 
                 @endif
 
-                {{-- Input fields --}}
                 @if($inputFields->isNotEmpty())
 
                     <div class="bg-white rounded-3xl shadow-lg overflow-hidden mb-8">
@@ -176,7 +172,6 @@
 
                             @foreach($inputFields as $field)
 
-                                {{-- Textarea --}}
                                 @if($field->field_type === 'textarea')
 
                                     <div class="px-6 py-4">
@@ -210,7 +205,6 @@
 
                                     </div>
 
-                                {{-- Checkbox --}}
                                 @elseif($field->field_type === 'checkbox')
 
                                     <div class="px-6 py-4">
@@ -260,7 +254,7 @@
 
                                     </div>
 
-                                {{-- Radio --}}
+
                                 @elseif($field->field_type === 'radio')
 
                                     <div class="px-6 py-4">
@@ -310,7 +304,7 @@
 
                                     </div>
 
-                                {{-- Text --}}
+
                                 @else
 
                                     <div class="px-6 py-4">
@@ -358,7 +352,7 @@
 
     </div>
 
-    {{-- Sticky action bar --}}
+
     <div class="fixed bottom-4 left-0 right-0 z-40 px-6 pointer-events-none">
 
         <div class="max-w-7xl mx-auto">
@@ -376,7 +370,7 @@
                     </a>
 
                     <a
-                        href="{{ route('admin.post.form.edit', $form) }}"
+                        href="{{ route('admin.post.form.edit', $form->formID) }}"
                         class="px-5 py-2 bg-amber-400 hover:bg-amber-500 text-amber-950 font-semibold text-sm rounded-xl transition">
 
                         Edit

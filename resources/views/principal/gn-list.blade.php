@@ -10,7 +10,6 @@
 
         <div class="max-w-7xl mx-auto px-6">
 
-            {{-- Header --}}
             <div class="relative bg-gradient-to-br from-slate-900 via-violet-950 to-purple-900 rounded-3xl p-8 shadow-xl overflow-hidden mb-8">
 
                 <div class="absolute right-0 top-0 translate-x-10 -translate-y-10 w-72 h-72 bg-purple-500/10 rounded-full blur-3xl"></div>
@@ -46,10 +45,8 @@
             </div>
 
 
-            {{-- Teacher List --}}
             <div class="bg-white rounded-3xl shadow-lg overflow-hidden">
 
-                {{-- Search --}}
                 <div class="px-8 py-6 border-b border-gray-100">
 
                     <div class="flex justify-end">
@@ -104,7 +101,6 @@
                 </div>
 
 
-                {{-- Table --}}
                 <div class="overflow-x-auto">
 
                     <table class="w-full text-sm">
@@ -152,13 +148,11 @@
 
                             <tr class="hover:bg-violet-50/50 transition">
 
-                                {{-- No --}}
                                 <td class="px-6 py-5 text-gray-600">
                                     {{ $guruNew->firstItem() + $loop->index }}
                                 </td>
 
 
-                                {{-- Teacher --}}
                                 <td class="px-6 py-5">
 
                                     <div class="flex items-center gap-3">
@@ -176,19 +170,16 @@
                                 </td>
 
 
-                                {{-- Email --}}
                                 <td class="px-6 py-5 text-gray-600">
                                     {{ $guru->email ?? '-' }}
                                 </td>
 
 
-                                {{-- Phone --}}
                                 <td class="px-6 py-5 text-gray-600">
                                     {{ $guru->phone_number ?? '-' }}
                                 </td>
 
 
-                                {{-- Appointed Date --}}
                                 <td class="px-6 py-5 text-gray-600">
 
                                     {{ $guru->appointed_date
@@ -198,7 +189,6 @@
                                 </td>
 
 
-                                {{-- Status --}}
                                 <td class="px-6 py-5 text-center">
 
                                     @if($guru->current_status === 'Active')
@@ -224,7 +214,6 @@
                                 </td>
 
 
-                                {{-- Action --}}
                                 <td class="px-6 py-5 text-center">
 
                                     <button
@@ -262,9 +251,7 @@
                                 <td
                                     colspan="7"
                                     class="text-center py-12 text-gray-500">
-
                                     No teachers found..
-
                                 </td>
 
                             </tr>
@@ -278,7 +265,6 @@
                 </div>
 
 
-                {{-- Pagination --}}
                 @if($guruNew->hasPages())
 
                 <div class="px-8 py-6 border-t border-gray-100">
@@ -310,7 +296,6 @@
 
             <div class="relative bg-white w-full max-w-5xl rounded-3xl shadow-2xl overflow-hidden">
 
-                {{-- Header --}}
                 <div class="px-9 pt-8 pb-6 border-b border-gray-100">
 
                     <div class="flex items-start justify-between">
@@ -354,15 +339,12 @@
                 </div>
 
 
-                {{-- Content --}}
                 <div class="px-9 py-8">
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-x-16 gap-y-5">
 
-                        {{-- LEFT COLUMN --}}
                         <div class="space-y-5">
 
-                            {{-- School --}}
                             <div>
 
                                 <p class="text-sm font-semibold text-slate-500 mb-1">
@@ -377,7 +359,6 @@
                             </div>
 
 
-                            {{-- IC Number --}}
                             <div>
 
                                 <p class="text-sm font-semibold text-slate-500 mb-1">
@@ -392,7 +373,6 @@
                             </div>
 
 
-                            {{-- Full Name --}}
                             <div>
 
                                 <p class="text-sm font-semibold text-slate-500 mb-1">
@@ -407,7 +387,6 @@
                             </div>
 
 
-                            {{-- Email --}}
                             <div>
 
                                 <p class="text-sm font-semibold text-slate-500 mb-1">
@@ -422,7 +401,6 @@
                             </div>
 
 
-                            {{-- Phone Number --}}
                             <div>
 
                                 <p class="text-sm font-semibold text-slate-500 mb-1">
@@ -442,7 +420,6 @@
                         {{-- RIGHT COLUMN --}}
                         <div class="space-y-5">
 
-                            {{-- Appointed Date --}}
                             <div>
 
                                 <p class="text-sm font-semibold text-slate-500 mb-1">
@@ -456,8 +433,6 @@
 
                             </div>
 
-
-                            {{-- Current Status --}}
                             <div>
 
                                 <p class="text-sm font-semibold text-slate-500 mb-2">
@@ -472,7 +447,6 @@
                             </div>
 
 
-                            {{-- Marital Status --}}
                             <div>
 
                                 <p class="text-sm font-semibold text-slate-500 mb-1">
@@ -487,7 +461,6 @@
                             </div>
 
 
-                            {{-- Race --}}
                             <div>
 
                                 <p class="text-sm font-semibold text-slate-500 mb-1">
@@ -501,7 +474,7 @@
 
                             </div>
 
-                            {{-- Gender --}}
+
                             <div>
 
                                 <p class="text-sm font-semibold text-slate-500 mb-1">
@@ -519,7 +492,6 @@
                         </div>
 
 
-                        {{-- Address --}}
                         <div class="md:col-span-2 pt-3">
 
                             <div class="border-t border-slate-100 pt-5">

@@ -10,13 +10,13 @@ class AuditObservationController extends Controller
 {
     public function index(Request $request)
     {
-        // Get filter values.
+        // Get filter values
         $search = trim((string) $request->input('search', ''));
         $role = $request->input('role', '');
         $stage = $request->input('stage', '');
         $date = $request->input('date', '');
 
-        // Build observation audit query.
+        // Build observation audit query
         $auditQuery = DB::table('audit_observation')
             ->leftJoin(
                 'teacher',
@@ -36,7 +36,7 @@ class AuditObservationController extends Controller
                 'guru_new.gn_name'
             );
 
-        // Apply observer or teacher search.
+        // search
         if ($search !== '') {
 
             $auditQuery->where(function ($query) use ($search) {
@@ -60,7 +60,7 @@ class AuditObservationController extends Controller
             });
         }
 
-        // Apply role filter.
+        //role 
         if ($role !== '') {
 
             $auditQuery->where(
@@ -69,7 +69,7 @@ class AuditObservationController extends Controller
             );
         }
 
-        // Apply stage filter.
+        //stage 
         if ($stage !== '') {
 
             $auditQuery->where(
@@ -78,7 +78,7 @@ class AuditObservationController extends Controller
             );
         }
 
-        // Apply date filter.
+        // date
         if ($date !== '') {
 
             $auditQuery->whereDate(
@@ -87,7 +87,7 @@ class AuditObservationController extends Controller
             );
         }
 
-        // Get observation audit records.
+        // Get audit records
         $audits = $auditQuery
             ->orderByDesc(
                 'audit_observation.audit_date'
@@ -98,7 +98,7 @@ class AuditObservationController extends Controller
             ->paginate(15)
             ->withQueryString();
 
-        // Return observation audit page.
+            
         return view(
             'admin.audit-observation',
             compact(

@@ -18,7 +18,7 @@ class NewTeacherDashboardController extends Controller
         abort_if(
             !$guru,
             403,
-            'Unauthorized access.'
+            'Unauthorized access'
         );
 
         $gnId = $guru->gn_id;

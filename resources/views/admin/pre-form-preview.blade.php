@@ -8,7 +8,7 @@
 
         <div class="max-w-7xl mx-auto">
 
-            {{-- Header --}}
+
             <div class="relative bg-gradient-to-br from-slate-900 via-violet-950 to-purple-900 rounded-3xl p-8 shadow-xl overflow-hidden mb-8">
 
                 <div class="absolute right-0 top-0 translate-x-10 -translate-y-10 w-72 h-72 bg-purple-500/10 rounded-full blur-3xl"></div>
@@ -56,7 +56,7 @@
 
             </div>
 
-            {{-- Evaluation --}}
+
             <div class="bg-white rounded-3xl shadow-lg overflow-hidden mb-8">
 
                 <div class="overflow-x-auto">
@@ -160,7 +160,7 @@
 
             </div>
 
-            {{-- Other Comment --}}
+
             <div class="bg-white rounded-3xl shadow-lg p-6 mb-8">
 
                 <h2 class="text-lg font-bold text-slate-900 mb-2">Other Comment</h2>
@@ -169,7 +169,7 @@
 
             </div>
 
-            {{-- Achievement Level --}}
+
             <div class="bg-white rounded-3xl shadow-lg px-6 py-5 mb-24">
 
                 <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-5">
@@ -213,7 +213,7 @@
 
     </div>
 
-    {{-- Sticky Action --}}
+
     <div class="fixed bottom-4 left-0 right-0 z-40 px-6 pointer-events-none">
 
         <div class="max-w-7xl mx-auto">
@@ -222,9 +222,15 @@
 
                 <div class="flex items-center justify-between">
 
-                    <a href="{{ route('admin.pre.form') }}" class="px-5 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold text-sm rounded-xl">Back</a>
+                    <a href="{{ route('admin.pre.form') }}"
+                        class="px-5 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold text-sm rounded-xl">
+                        Back
+                    </a>
 
-                    <a href="{{ route('admin.pre.form.edit', $form) }}" class="px-5 py-2.5 bg-amber-400 hover:bg-amber-500 text-amber-950 font-semibold text-sm rounded-xl">Edit</a>
+                    <a href="{{ route('admin.pre.form.edit', $form->formID) }}"
+                        class="px-5 py-2.5 bg-amber-400 hover:bg-amber-500 text-amber-950 font-semibold text-sm rounded-xl">
+                        Edit
+                    </a>
 
                 </div>
 

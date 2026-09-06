@@ -174,13 +174,15 @@
 
         /* Score */
         .score-grid {
-            display: grid;
-            grid-template-columns: repeat(5, 1fr);
+            display: flex;
+            width: 100%;
             gap: 2px;
             margin-bottom: 3px;
         }
 
         .score-box {
+            flex: 1;
+            min-width: 0;
             min-height: 24px;
             display: flex;
             align-items: center;
@@ -354,16 +356,11 @@
 
         <div class="toolbar-actions">
 
-            <a
-                href="{{ route('observer.manage', $response->gn_id) }}"
-                class="button secondary">
+            <a href="{{ route('observer.manage', $response->gn_id) }}" class="button secondary">
                 Back
             </a>
 
-            <button
-                type="button"
-                class="button"
-                onclick="window.print()">
+            <button type="button" class="button" onclick="window.print()">
                 Print / Save PDF
             </button>
 
@@ -395,80 +392,44 @@
             <table class="meta-table">
 
                 <tr>
-
-                    <td class="meta-label">
-                        NAMA GURU
-                    </td>
-
-                    <td class="meta-colon">
-                        :
-                    </td>
-
+                    <td class="meta-label">NAMA GURU</td>
+                    <td class="meta-colon">:</td>
                     <td class="meta-value">
                         {{ $guru->gn_name }}
                     </td>
-
                 </tr>
 
                 <tr>
-
-                    <td class="meta-label">
-                        MATA PELAJARAN & KELAS
-                    </td>
-
-                    <td class="meta-colon">
-                        :
-                    </td>
-
+                    <td class="meta-label">MATA PELAJARAN & KELAS</td>
+                    <td class="meta-colon">:</td>
                     <td class="meta-value">
                         {{ $response->subject_name ?? '-' }}
                         /
                         {{ $response->class_name ?? '-' }}
                     </td>
-
                 </tr>
 
                 <tr>
-
-                    <td class="meta-label">
-                        HARI & TARIKH
-                    </td>
-
-                    <td class="meta-colon">
-                        :
-                    </td>
-
+                    <td class="meta-label">HARI & TARIKH</td>
+                    <td class="meta-colon">:</td>
                     <td class="meta-value">
-
                         {{
                             $response->observation_date
                                 ? \Carbon\Carbon::parse($response->observation_date)->format('l, d/m/Y')
                                 : '-'
                         }}
-
                     </td>
-
                 </tr>
 
                 <tr>
-
-                    <td class="meta-label">
-                        PENYELIA
-                    </td>
-
-                    <td class="meta-colon">
-                        :
-                    </td>
-
+                    <td class="meta-label">PENYELIA</td>
+                    <td class="meta-colon">:</td>
                     <td class="meta-value">
-
                         {{
                             $response->observer?->teacher?->teacher_name
                             ?? '-'
                         }}
-
                     </td>
-
                 </tr>
 
             </table>
@@ -480,23 +441,10 @@
                 <thead>
 
                     <tr>
-
-                        <th class="bil-col">
-                            BIL
-                        </th>
-
-                        <th class="item-col">
-                            PERKARA
-                        </th>
-
-                        <th class="score-col">
-                            SKOR
-                        </th>
-
-                        <th class="comment-col">
-                            ULASAN
-                        </th>
-
+                        <th class="bil-col">BIL</th>
+                        <th class="item-col">PERKARA</th>
+                        <th class="score-col">SKOR</th>
+                        <th class="comment-col">ULASAN</th>
                     </tr>
 
                 </thead>
@@ -525,11 +473,8 @@
                             @foreach($section->criteria as $criteria)
 
                             <div class="criteria-line">
-
                                 {{ chr(96 + $loop->iteration) }}.
-
                                 {{ $criteria->criteria_label }}
-
                             </div>
 
                             @endforeach
@@ -565,12 +510,10 @@
 
                         {{-- Comment --}}
                         <td class="comment-col">
-
                             {{
                                         $sectionComments[$section->sectionID]
                                         ?? '-'
                                     }}
-
                         </td>
 
                     </tr>
@@ -647,27 +590,11 @@
                     <thead>
 
                         <tr>
-
-                            <th>
-                                LEMAH
-                            </th>
-
-                            <th>
-                                MEMUASKAN
-                            </th>
-
-                            <th>
-                                BAIK
-                            </th>
-
-                            <th>
-                                SANGAT BAIK
-                            </th>
-
-                            <th>
-                                CEMERLANG
-                            </th>
-
+                            <th>LEMAH</th>
+                            <th>MEMUASKAN</th>
+                            <th>BAIK</th>
+                            <th>SANGAT BAIK</th>
+                            <th>CEMERLANG</th>
                         </tr>
 
                     </thead>
@@ -701,43 +628,33 @@
                         <tr>
 
                             <td class="check">
-
                                 @if($response->achievement_level === 'Weak')
                                 ✓
                                 @endif
-
                             </td>
 
                             <td class="check">
-
                                 @if($response->achievement_level === 'Satisfactory')
                                 ✓
                                 @endif
-
                             </td>
 
                             <td class="check">
-
                                 @if($response->achievement_level === 'Good')
                                 ✓
                                 @endif
-
                             </td>
 
                             <td class="check">
-
                                 @if($response->achievement_level === 'Very Good')
                                 ✓
                                 @endif
-
                             </td>
 
                             <td class="check">
-
                                 @if($response->achievement_level === 'Excellent')
                                 ✓
                                 @endif
-
                             </td>
 
                         </tr>
@@ -759,12 +676,12 @@
                     </div>
 
                     <div class="signature-line">
-
-                        ( {{
+                        (
+                        {{
                             $response->observer?->teacher?->teacher_name
                             ?? '-'
-                        }} )
-
+                        }}
+                        )
                     </div>
 
                 </div>

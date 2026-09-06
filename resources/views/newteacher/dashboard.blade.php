@@ -6,20 +6,16 @@
         </h2>
     </x-slot>
 
-
     <div class="min-h-screen bg-slate-100 py-8 px-6">
 
         <div class="max-w-7xl mx-auto">
 
-
-            {{-- Header --}}
             <div class="relative overflow-hidden rounded-3xl bg-gradient-to-br from-slate-900 via-violet-950 to-purple-900 p-7 shadow-xl mb-7">
 
                 <div class="absolute right-0 top-0 translate-x-10 -translate-y-10 w-72 h-72 rounded-full bg-purple-500/10 blur-3xl"></div>
 
                 <div class="relative z-10 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
 
-                    {{-- Welcome --}}
                     <div>
 
                         <p class="text-xs font-bold uppercase tracking-widest text-violet-300 mb-2">
@@ -33,7 +29,6 @@
                     </div>
 
 
-                    {{-- Evaluation Progress --}}
                     <div class="w-full lg:w-[320px] bg-white/10 border border-white/10 rounded-2xl px-5 py-4 backdrop-blur-sm">
 
                         <div class="flex items-center justify-between gap-4">
@@ -55,7 +50,6 @@
                             </div>
 
 
-                            {{-- Compact visual --}}
                             <div class="flex items-center gap-1.5">
 
                                 @for($i = 1; $i <= $totalForms; $i++)
@@ -81,21 +75,9 @@
         </div>
 
 
+        <div class="bg-white rounded-3xl border border-slate-100 shadow-lg overflow-hidden">
 
-        {{-- Evaluation Timeline --}}
-        <div class="bg-white
-                        rounded-3xl
-                        border border-slate-100
-                        shadow-lg
-                        overflow-hidden">
-
-            {{-- Header --}}
-            <div class="px-7 py-5
-                            border-b border-slate-100
-                            flex flex-col sm:flex-row
-                            sm:items-center
-                            sm:justify-between
-                            gap-4">
+            <div class="px-7 py-5 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
 
                 <div>
 
@@ -117,18 +99,14 @@
                                bg-blue-600 hover:bg-blue-700
                                text-white text-sm font-semibold
                                rounded-xl transition">
-
                     View Results
-
                 </a>
 
             </div>
 
 
-
             <div class="px-6 md:px-8 py-7">
 
-                {{-- Horizontal Timeline --}}
                 <div class="relative mb-8">
 
                     <div class="hidden md:block
@@ -142,7 +120,6 @@
 
                     <div class="relative grid grid-cols-1 md:grid-cols-3 gap-5">
 
-                        {{-- PRE --}}
                         <div class="relative">
 
                             <div class="flex md:flex-col md:items-center gap-4">
@@ -189,7 +166,6 @@
                         </div>
 
 
-                        {{-- EXTERNAL --}}
                         <div class="relative">
 
                             <div class="flex md:flex-col md:items-center gap-4">
@@ -246,7 +222,6 @@
                         </div>
 
 
-                        {{-- POST --}}
                         <div class="relative">
 
                             <div class="flex md:flex-col md:items-center gap-4">
@@ -301,12 +276,9 @@
                 </div>
 
 
-
-                {{-- Stage Cards --}}
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-5">
 
 
-                    {{-- PRE --}}
                     <div class="border border-slate-200 rounded-2xl p-5">
 
                         <div class="flex items-center justify-between gap-3 mb-4">
@@ -363,8 +335,6 @@
                     </div>
 
 
-
-                    {{-- EXTERNAL --}}
                     <div class="border rounded-2xl p-5
                             {{
                                 $externalStatus === 'repeat'
@@ -377,7 +347,6 @@
                             <h3 class="font-bold text-slate-900">
                                 External Observation
                             </h3>
-
 
                             <span class="px-3 py-1 rounded-full text-xs font-bold
                                     {{
@@ -409,7 +378,6 @@
                         </div>
 
 
-                        {{-- Current PDPC --}}
                         <div class="flex items-center justify-between gap-4
                                         bg-white
                                         border border-slate-200
@@ -438,7 +406,6 @@
                         </div>
 
 
-                        {{-- Current Feedback --}}
                         <div class="flex items-center justify-between gap-4
                                         bg-white
                                         border border-slate-200
@@ -461,7 +428,6 @@
                         </div>
 
 
-                        {{-- Previous Evaluations --}}
                         @if($externalAttempts->count() > 1)
 
                         <div class="mt-4 pt-4 border-t border-slate-200">
@@ -527,8 +493,6 @@
                     </div>
 
 
-
-                    {{-- POST --}}
                     <div class="border border-slate-200 rounded-2xl p-5">
 
                         <div class="flex items-center justify-between gap-3 mb-4">
@@ -562,7 +526,6 @@
                         </div>
 
 
-                        {{-- POST PDPC --}}
                         <div class="flex items-center justify-between gap-4
                                         bg-slate-50
                                         rounded-xl
@@ -590,7 +553,6 @@
                         </div>
 
 
-                        {{-- POST Feedback --}}
                         <div class="flex items-center justify-between gap-4
                                         bg-slate-50
                                         rounded-xl
@@ -618,8 +580,6 @@
             </div>
 
         </div>
-
-    </div>
 
     </div>
 

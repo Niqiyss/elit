@@ -8,7 +8,7 @@
 
                 <a href="{{ route('principal.dashboard') }}"
                     class="text-2xl font-extrabold text-violet-700 tracking-wide">
-                    ELIT
+                    TEMS-ELIT
                 </a>
             </div>
 

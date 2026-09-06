@@ -11,20 +11,11 @@
 
                 <div class="relative z-10">
 
-                    <p class="text-xs uppercase tracking-[0.2em] font-bold text-violet-300">
-                        {{ $stage }} Observation
-                    </p>
-
-                    <h1 class="text-3xl font-extrabold text-white mt-2">
-                        {{ $form->form_name }}
-                    </h1>
+                    <p class="text-xs uppercase tracking-[0.2em] font-bold text-violet-300">{{ $stage }} Observation</p>
+                    <h1 class="text-3xl font-extrabold text-white mt-2">{{ $form->form_name }}</h1>
 
                     @if($form->instruction)
-
-                    <p class="text-violet-200 mt-2">
-                        {{ $form->instruction }}
-                    </p>
-
+                    <p class="text-violet-200 mt-2">{{ $form->instruction }}</p>
                     @endif
 
                 </div>
@@ -34,99 +25,49 @@
 
             {{-- Errors --}}
             @if($errors->any())
-
             <div class="mb-6 bg-red-50 border border-red-200 text-red-700 rounded-xl px-5 py-4">
-
                 <ul class="list-disc list-inside text-sm">
-
                     @foreach($errors->all() as $error)
                     <li>{{ $error }}</li>
                     @endforeach
-
                 </ul>
-
             </div>
-
             @endif
 
 
             <form
                 method="POST"
-                x-data="{ formComplete: false }"
-                x-init="$nextTick(() => {
-                const checkForm = () => {
-                const className = $el.querySelector('[name=class_name]').value.trim();
-                const subjectName = $el.querySelector('[name=subject_name]').value.trim();
-                const date = $el.querySelector('[name=observation_date]').value;
-                const time = $el.querySelector('[name=observation_time]').value;
-                const scores = [...$el.querySelectorAll('[data-tums]')];
-
-                formComplete =
-                className !== '' &&
-                subjectName !== '' &&
-                date !== '' &&
-                time !== '' &&
-                scores.length > 0 &&
-                scores.every(input => input.value !== '');
-                    };
-
-                    checkForm();
-                    $el.addEventListener('input', checkForm);
-                    $el.addEventListener('change', checkForm);
-                })"
+                id="pdpcForm"
                 action="{{ $role === 'observer'
-                ? route('observer.pdpc.store', $gn_id)
-                : route('external.pdpc.store', $gn_id)
-                }}">
+                    ? route('observer.pdpc.store', $gn_id)
+                    : route('external.pdpc.store', $gn_id) }}">
 
                 @csrf
+
 
                 {{-- Observation Information --}}
                 <div class="bg-white rounded-3xl shadow-lg px-6 py-5 mb-8">
 
-                    <h2 class="text-lg font-bold text-slate-900 mb-4">
-                        Observation Information
-                    </h2>
-
+                    <h2 class="text-lg font-bold text-slate-900 mb-4">Observation Information</h2>
 
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-5 pb-5 mb-5 border-b border-slate-200">
 
                         <div>
-
-                            <p class="text-xs font-semibold uppercase tracking-wider text-slate-400">
-                                Teacher
-                            </p>
-
-                            <p class="font-bold text-slate-800 uppercase mt-1">
-                                {{ $guru->gn_name }}
-                            </p>
-
+                            <p class="text-xs font-semibold uppercase tracking-wider text-slate-400">Teacher</p>
+                            <p class="font-bold text-slate-800 uppercase mt-1">{{ $guru->gn_name }}</p>
                         </div>
 
-
                         <div>
-
-                            <p class="text-xs font-semibold uppercase tracking-wider text-slate-400">
-                                School
-                            </p>
-
-                            <p class="font-bold text-slate-800 mt-1">
-                                {{ $guru->school?->school_name ?? '-' }}
-                            </p>
-
+                            <p class="text-xs font-semibold uppercase tracking-wider text-slate-400">School</p>
+                            <p class="font-bold text-slate-800 mt-1">{{ $guru->school?->school_name ?? '-' }}</p>
                         </div>
 
-
                         <div>
-
                             <p class="text-xs font-semibold uppercase tracking-wider text-slate-400">
                                 {{ $role === 'observer' ? 'Observer' : 'External Observer' }}
                             </p>
 
-                            <p class="font-bold text-slate-800 uppercase mt-1">
-                                {{ Auth::guard('teacher')->user()->teacher_name }}
-                            </p>
-
+                            <p class="font-bold text-slate-800 uppercase mt-1">{{ Auth::guard('teacher')->user()->teacher_name }}</p>
                         </div>
 
                     </div>
@@ -135,10 +76,7 @@
                     <div class="grid grid-cols-1 md:grid-cols-4 gap-5">
 
                         <div>
-
-                            <label class="block text-sm font-semibold text-slate-700 mb-2">
-                                Class
-                            </label>
+                            <label class="block text-sm font-semibold text-slate-700 mb-2">Class</label>
 
                             <input
                                 type="text"
@@ -146,15 +84,11 @@
                                 value="{{ old('class_name') }}"
                                 placeholder="Enter class"
                                 class="w-full rounded-xl border-slate-300 focus:border-purple-500 focus:ring-purple-500">
-
                         </div>
 
 
                         <div>
-
-                            <label class="block text-sm font-semibold text-slate-700 mb-2">
-                                Subject
-                            </label>
+                            <label class="block text-sm font-semibold text-slate-700 mb-2">Subject</label>
 
                             <input
                                 type="text"
@@ -162,37 +96,28 @@
                                 value="{{ old('subject_name') }}"
                                 placeholder="Enter subject"
                                 class="w-full rounded-xl border-slate-300 focus:border-purple-500 focus:ring-purple-500">
-
                         </div>
 
 
                         <div>
-
-                            <label class="block text-sm font-semibold text-slate-700 mb-2">
-                                Date
-                            </label>
+                            <label class="block text-sm font-semibold text-slate-700 mb-2">Date</label>
 
                             <input
                                 type="date"
                                 name="observation_date"
                                 value="{{ old('observation_date') }}"
                                 class="w-full rounded-xl border-slate-300 focus:border-purple-500 focus:ring-purple-500">
-
                         </div>
 
 
                         <div>
-
-                            <label class="block text-sm font-semibold text-slate-700 mb-2">
-                                Time
-                            </label>
+                            <label class="block text-sm font-semibold text-slate-700 mb-2">Time</label>
 
                             <input
                                 type="time"
                                 name="observation_time"
                                 value="{{ old('observation_time') }}"
                                 class="w-full rounded-xl border-slate-300 focus:border-purple-500 focus:ring-purple-500">
-
                         </div>
 
                     </div>
@@ -212,9 +137,7 @@
                             Aspect {{ $aspect->aspect_code }}
                         </p>
 
-                        <h2 class="text-lg font-bold mt-1">
-                            {{ $aspect->aspect_name }}
-                        </h2>
+                        <h2 class="text-lg font-bold mt-1">{{ $aspect->aspect_name }}</h2>
 
                     </div>
 
@@ -240,23 +163,12 @@
                             <div class="flex items-center justify-between gap-4">
 
                                 <div>
-
-                                    <p class="text-xs font-bold uppercase tracking-wider text-blue-700">
-                                        TUMS {{ $tums->tums_code }}
-                                    </p>
-
-                                    <p class="font-bold text-black mt-1">
-                                        {{ $tums->tums_name }}
-                                    </p>
-
+                                    <p class="text-xs font-bold uppercase tracking-wider text-blue-700">TUMS {{ $tums->tums_code }}</p>
+                                    <p class="font-bold text-black mt-1">{{ $tums->tums_name }}</p>
                                 </div>
 
-
                                 <span class="inline-flex items-center justify-center px-4 py-2 rounded-full border border-blue-200 bg-blue-50 text-blue-700 text-sm font-semibold whitespace-nowrap">
-
-                                    Wajaran:
-                                    {{ number_format($tums->wajaran, 2) }}
-
+                                    Wajaran: {{ number_format($tums->wajaran, 2) }}
                                 </span>
 
                             </div>
@@ -270,27 +182,12 @@
                             <table class="w-full table-fixed text-sm">
 
                                 <thead>
-
                                     <tr class="bg-slate-100 text-slate-600 uppercase text-xs">
-
-                                        <th class="w-14 px-4 py-3 text-center">
-                                            No
-                                        </th>
-
-                                        <th class="w-[42%] px-5 py-3 text-left">
-                                            Tahap Tindakan (TT)
-                                        </th>
-
-                                        <th class="w-28 px-5 py-3 text-center">
-                                            Skor
-                                        </th>
-
-                                        <th class="px-5 py-3 text-left">
-                                            Rubrik Tahap Kualiti (RTK)
-                                        </th>
-
+                                        <th class="w-14 px-4 py-3 text-center">No</th>
+                                        <th class="w-[42%] px-5 py-3 text-left">Tahap Tindakan (TT)</th>
+                                        <th class="w-28 px-5 py-3 text-center">Skor</th>
+                                        <th class="px-5 py-3 text-left">Rubrik Tahap Kualiti (RTK)</th>
                                     </tr>
-
                                 </thead>
 
 
@@ -300,17 +197,11 @@
 
                                     <tr class="align-top">
 
-                                        <td class="px-4 py-4 text-center text-black">
-                                            {{ $loop->iteration }}.
-                                        </td>
-
+                                        <td class="px-4 py-4 text-center text-black">{{ $loop->iteration }}.</td>
 
                                         <td class="px-5 py-4 border-l border-slate-200 text-black leading-6">
-
                                             {{ $point->point_text }}
-
                                         </td>
-
 
                                         <td class="px-5 py-4 border-l border-slate-200 text-center">
 
@@ -330,9 +221,7 @@
 
                                         @if($loop->first)
 
-                                        <td
-                                            rowspan="{{ $totalPoints }}"
-                                            class="px-5 py-4 border-l border-slate-200 align-top">
+                                        <td rowspan="{{ $totalPoints }}" class="px-5 py-4 border-l border-slate-200 align-top">
 
                                             <div class="space-y-3">
 
@@ -343,16 +232,11 @@
                                                 <div class="flex items-start gap-3">
 
                                                     <span class="inline-flex items-center justify-center min-w-[60px] px-2 py-2 rounded-lg bg-blue-500 text-white text-xs font-bold whitespace-nowrap">
-
                                                         RTK {{ $score }}
-
                                                     </span>
 
-
                                                     <div class="flex-1 px-3 py-2 rounded-xl border border-violet-200 bg-white text-xs text-black leading-5">
-
                                                         {{ $rubric?->description ?? '-' }}
-
                                                     </div>
 
                                                 </div>
@@ -380,33 +264,16 @@
                                         <td></td>
 
                                         <td class="px-5 py-2.5 text-left text-slate-900 border-l border-blue-200">
-
                                             Bilangan Tindakan / Jumlah Skor Kualiti
-
                                         </td>
 
-                                        <td
-                                            id="action-count-{{ $tums->tumsID }}"
-                                            class="px-3 py-2.5 text-center text-slate-900 border-l border-blue-200">
-
-                                            0
-
-                                        </td>
+                                        <td id="action-count-{{ $tums->tumsID }}" class="px-3 py-2.5 text-center text-slate-900 border-l border-blue-200">0</td>
 
                                         <td class="p-0 border-l border-blue-200">
 
                                             <div class="grid grid-cols-2 h-full">
-
-                                                <div
-                                                    id="quality-total-{{ $tums->tumsID }}"
-                                                    class="px-3 py-2.5 text-center text-slate-900 border-r border-blue-200">
-
-                                                    0
-
-                                                </div>
-
+                                                <div id="quality-total-{{ $tums->tumsID }}" class="px-3 py-2.5 text-center text-slate-900 border-r border-blue-200">0</div>
                                                 <div></div>
-
                                             </div>
 
                                         </td>
@@ -419,33 +286,16 @@
                                         <td></td>
 
                                         <td class="px-5 py-2.5 text-left text-slate-900 border-l border-blue-200">
-
                                             Skor Tahap Tindakan / Min Skor Tahap Kualiti
-
                                         </td>
 
-                                        <td
-                                            id="action-score-{{ $tums->tumsID }}"
-                                            class="px-3 py-2.5 text-center text-slate-900 border-l border-blue-200">
-
-                                            0
-
-                                        </td>
+                                        <td id="action-score-{{ $tums->tumsID }}" class="px-3 py-2.5 text-center text-slate-900 border-l border-blue-200">0</td>
 
                                         <td class="p-0 border-l border-blue-200">
 
                                             <div class="grid grid-cols-2 h-full">
-
-                                                <div
-                                                    id="quality-mean-{{ $tums->tumsID }}"
-                                                    class="px-3 py-2.5 text-center text-slate-900 border-r border-blue-200">
-
-                                                    0.00
-
-                                                </div>
-
+                                                <div id="quality-mean-{{ $tums->tumsID }}" class="px-3 py-2.5 text-center text-slate-900 border-r border-blue-200">0.00</div>
                                                 <div></div>
-
                                             </div>
 
                                         </td>
@@ -458,33 +308,16 @@
                                         <td></td>
 
                                         <td class="px-5 py-2.5 text-left text-slate-900 border-l border-blue-200">
-
                                             Peratus Skor Tahap Tindakan / Peratus Skor Tahap Kualiti
-
                                         </td>
 
-                                        <td
-                                            id="action-percentage-{{ $tums->tumsID }}"
-                                            class="px-3 py-2.5 text-center text-slate-900 border-l border-blue-200">
-
-                                            0.00
-
-                                        </td>
+                                        <td id="action-percentage-{{ $tums->tumsID }}" class="px-3 py-2.5 text-center text-slate-900 border-l border-blue-200">0.00</td>
 
                                         <td class="p-0 border-l border-blue-200">
 
                                             <div class="grid grid-cols-2 h-full">
-
-                                                <div
-                                                    id="quality-percentage-{{ $tums->tumsID }}"
-                                                    class="px-3 py-2.5 text-center text-slate-900 border-r border-blue-200">
-
-                                                    0.00
-
-                                                </div>
-
+                                                <div id="quality-percentage-{{ $tums->tumsID }}" class="px-3 py-2.5 text-center text-slate-900 border-r border-blue-200">0.00</div>
                                                 <div></div>
-
                                             </div>
 
                                         </td>
@@ -496,28 +329,15 @@
 
                                         <td></td>
 
-                                        <td
-                                            colspan="2"
-                                            class="px-5 py-2.5 text-left font-semibold text-slate-900 border-l border-blue-200">
-
+                                        <td colspan="2" class="px-5 py-2.5 text-left font-semibold text-slate-900 border-l border-blue-200">
                                             Peratus TUMS
-
                                         </td>
 
                                         <td class="p-0 border-l border-blue-200">
 
                                             <div class="grid grid-cols-2 h-full">
-
-                                                <div
-                                                    id="tums-percentage-{{ $tums->tumsID }}"
-                                                    class="px-3 py-2.5 text-center bg-blue-600 text-white font-bold">
-
-                                                    0.00
-
-                                                </div>
-
+                                                <div id="tums-percentage-{{ $tums->tumsID }}" class="px-3 py-2.5 text-center bg-blue-600 text-white font-bold">0.00</div>
                                                 <div></div>
-
                                             </div>
 
                                         </td>
@@ -542,17 +362,9 @@
                 {{-- Overall Summary --}}
                 <div class="bg-white rounded-3xl shadow-lg overflow-hidden mb-8">
 
-                    {{-- Header --}}
                     <div class="px-6 py-5 border-b border-slate-200">
-
-                        <h2 class="text-lg font-bold text-slate-900">
-                            Observation Summary
-                        </h2>
-
-                        <p class="text-sm text-slate-400 mt-1">
-                            Overall result based on TUMS percentage and weight
-                        </p>
-
+                        <h2 class="text-lg font-bold text-slate-900">Observation Summary</h2>
+                        <p class="text-sm text-slate-400 mt-1">Overall result based on TUMS percentage and weight</p>
                     </div>
 
 
@@ -564,35 +376,14 @@
                             <table class="w-full table-fixed text-sm">
 
                                 <thead>
-
                                     <tr class="bg-blue-900 text-white uppercase text-xs">
-
-                                        <th class="w-[10%] px-3 py-3 text-center border-r border-blue-700">
-                                            Aspect
-                                        </th>
-
-                                        <th class="w-[32%] px-3 py-3 text-left border-r border-blue-700">
-                                            Aspect Name
-                                        </th>
-
-                                        <th class="w-[13%] px-3 py-3 text-center border-r border-blue-700">
-                                            TUMS
-                                        </th>
-
-                                        <th class="w-[14%] px-3 py-3 text-center border-r border-blue-700">
-                                            Wajaran
-                                        </th>
-
-                                        <th class="w-[14%] px-3 py-3 text-center border-r border-blue-700">
-                                            %
-                                        </th>
-
-                                        <th class="w-[17%] px-3 py-3 text-center">
-                                            Skor
-                                        </th>
-
+                                        <th class="w-[10%] px-3 py-3 text-center border-r border-blue-700">Aspect</th>
+                                        <th class="w-[32%] px-3 py-3 text-left border-r border-blue-700">Aspect Name</th>
+                                        <th class="w-[13%] px-3 py-3 text-center border-r border-blue-700">TUMS</th>
+                                        <th class="w-[14%] px-3 py-3 text-center border-r border-blue-700">Wajaran</th>
+                                        <th class="w-[14%] px-3 py-3 text-center border-r border-blue-700">%</th>
+                                        <th class="w-[17%] px-3 py-3 text-center">Skor</th>
                                     </tr>
-
                                 </thead>
 
 
@@ -604,37 +395,17 @@
 
                                     <tr class="hover:bg-slate-50">
 
-                                        <td class="px-3 py-2.5 text-center text-slate-700 border-r border-slate-200">
-                                            {{ $aspect->aspect_code }}
-                                        </td>
+                                        <td class="px-3 py-2.5 text-center text-slate-700 border-r border-slate-200">{{ $aspect->aspect_code }}</td>
 
-                                        <td class="px-3 py-2.5 text-slate-700 border-r border-slate-200">
-                                            {{ $aspect->aspect_name }}
-                                        </td>
+                                        <td class="px-3 py-2.5 text-slate-700 border-r border-slate-200">{{ $aspect->aspect_name }}</td>
 
-                                        <td class="px-3 py-2.5 text-center text-slate-700 border-r border-slate-200">
-                                            {{ $tums->tums_code }}
-                                        </td>
+                                        <td class="px-3 py-2.5 text-center text-slate-700 border-r border-slate-200">{{ $tums->tums_code }}</td>
 
-                                        <td class="px-3 py-2.5 text-center text-slate-700 border-r border-slate-200">
-                                            {{ number_format($tums->wajaran, 2) }}
-                                        </td>
+                                        <td class="px-3 py-2.5 text-center text-slate-700 border-r border-slate-200">{{ number_format($tums->wajaran, 2) }}</td>
 
-                                        <td
-                                            id="summary-percentage-{{ $tums->tumsID }}"
-                                            class="px-3 py-2.5 text-center text-slate-700 border-r border-slate-200">
+                                        <td id="summary-percentage-{{ $tums->tumsID }}" class="px-3 py-2.5 text-center text-slate-700 border-r border-slate-200">0.00</td>
 
-                                            0.00
-
-                                        </td>
-
-                                        <td
-                                            id="summary-score-{{ $tums->tumsID }}"
-                                            class="px-3 py-2.5 text-center text-slate-900">
-
-                                            0.00
-
-                                        </td>
+                                        <td id="summary-score-{{ $tums->tumsID }}" class="px-3 py-2.5 text-center text-slate-900">0.00</td>
 
                                     </tr>
 
@@ -649,21 +420,11 @@
 
                                     <tr class="bg-blue-50 border-t-2 border-blue-200">
 
-                                        <td
-                                            colspan="5"
-                                            class="px-3 py-3 text-right font-bold text-slate-900 border-r border-blue-200">
-
+                                        <td colspan="5" class="px-3 py-3 text-right font-bold text-slate-900 border-r border-blue-200">
                                             JUMLAH
-
                                         </td>
 
-                                        <td
-                                            id="overall-weighted-score"
-                                            class="px-3 py-3 text-center bg-blue-600 text-white font-bold">
-
-                                            0.00
-
-                                        </td>
+                                        <td id="overall-weighted-score" class="px-3 py-3 text-center bg-blue-600 text-white font-bold">0.00</td>
 
                                     </tr>
 
@@ -680,120 +441,44 @@
                             <table class="w-full table-fixed text-sm">
 
                                 <thead>
-
                                     <tr class="bg-blue-900 text-white uppercase text-xs">
-
-                                        <th class="w-[45%] px-3 py-3 text-left border-r border-blue-700">
-                                            Taraf
-                                        </th>
-
-                                        <th class="w-[38%] px-3 py-3 text-center border-r border-blue-700">
-                                            Skor
-                                        </th>
-
-                                        <th class="w-[17%] px-3 py-3 text-center">
-                                            ✓
-                                        </th>
-
+                                        <th class="w-[45%] px-3 py-3 text-left border-r border-blue-700">Taraf</th>
+                                        <th class="w-[38%] px-3 py-3 text-center border-r border-blue-700">Skor</th>
+                                        <th class="w-[17%] px-3 py-3 text-center">✓</th>
                                     </tr>
-
                                 </thead>
 
 
                                 <tbody class="divide-y divide-slate-200">
 
-                                    {{-- Cemerlang --}}
                                     <tr>
-
-                                        <td class="px-3 py-3 text-slate-700 border-r border-slate-200">
-                                            Cemerlang
-                                        </td>
-
-                                        <td class="px-3 py-3 text-center text-slate-700 border-r border-slate-200">
-                                            90 - 100
-                                        </td>
-
-                                        <td
-                                            id="achievement-cemerlang"
-                                            class="px-3 py-3 text-center text-green-600 text-lg font-bold">
-                                        </td>
-
+                                        <td class="px-3 py-3 text-slate-700 border-r border-slate-200">Cemerlang</td>
+                                        <td class="px-3 py-3 text-center text-slate-700 border-r border-slate-200">90 - 100</td>
+                                        <td id="achievement-cemerlang" class="px-3 py-3 text-center text-green-600 text-lg font-bold"></td>
                                     </tr>
 
-
-                                    {{-- Baik --}}
                                     <tr>
-
-                                        <td class="px-3 py-3 text-slate-700 border-r border-slate-200">
-                                            Baik
-                                        </td>
-
-                                        <td class="px-3 py-3 text-center text-slate-700 border-r border-slate-200">
-                                            80 - 89.99
-                                        </td>
-
-                                        <td
-                                            id="achievement-baik"
-                                            class="px-3 py-3 text-center text-blue-600 text-lg font-bold">
-                                        </td>
-
+                                        <td class="px-3 py-3 text-slate-700 border-r border-slate-200">Baik</td>
+                                        <td class="px-3 py-3 text-center text-slate-700 border-r border-slate-200">80 - 89.99</td>
+                                        <td id="achievement-baik" class="px-3 py-3 text-center text-blue-600 text-lg font-bold"></td>
                                     </tr>
 
-
-                                    {{-- Sederhana --}}
                                     <tr>
-
-                                        <td class="px-3 py-3 text-slate-700 border-r border-slate-200">
-                                            Sederhana
-                                        </td>
-
-                                        <td class="px-3 py-3 text-center text-slate-700 border-r border-slate-200">
-                                            50 - 79.99
-                                        </td>
-
-                                        <td
-                                            id="achievement-sederhana"
-                                            class="px-3 py-3 text-center text-amber-500 text-lg font-bold">
-                                        </td>
-
+                                        <td class="px-3 py-3 text-slate-700 border-r border-slate-200">Sederhana</td>
+                                        <td class="px-3 py-3 text-center text-slate-700 border-r border-slate-200">50 - 79.99</td>
+                                        <td id="achievement-sederhana" class="px-3 py-3 text-center text-amber-500 text-lg font-bold"></td>
                                     </tr>
 
-
-                                    {{-- Lemah --}}
                                     <tr>
-
-                                        <td class="px-3 py-3 text-slate-700 border-r border-slate-200">
-                                            Lemah
-                                        </td>
-
-                                        <td class="px-3 py-3 text-center text-slate-700 border-r border-slate-200">
-                                            20 - 49.99
-                                        </td>
-
-                                        <td
-                                            id="achievement-lemah"
-                                            class="px-3 py-3 text-center text-orange-500 text-lg font-bold">
-                                        </td>
-
+                                        <td class="px-3 py-3 text-slate-700 border-r border-slate-200">Lemah</td>
+                                        <td class="px-3 py-3 text-center text-slate-700 border-r border-slate-200">20 - 49.99</td>
+                                        <td id="achievement-lemah" class="px-3 py-3 text-center text-orange-500 text-lg font-bold"></td>
                                     </tr>
 
-
-                                    {{-- Sangat Lemah --}}
                                     <tr>
-
-                                        <td class="px-3 py-3 text-slate-700 border-r border-slate-200">
-                                            Sangat Lemah
-                                        </td>
-
-                                        <td class="px-3 py-3 text-center text-slate-700 border-r border-slate-200">
-                                            0 - 19.99
-                                        </td>
-
-                                        <td
-                                            id="achievement-sangat-lemah"
-                                            class="px-3 py-3 text-center text-red-600 text-lg font-bold">
-                                        </td>
-
+                                        <td class="px-3 py-3 text-slate-700 border-r border-slate-200">Sangat Lemah</td>
+                                        <td class="px-3 py-3 text-center text-slate-700 border-r border-slate-200">0 - 19.99</td>
+                                        <td id="achievement-sangat-lemah" class="px-3 py-3 text-center text-red-600 text-lg font-bold"></td>
                                     </tr>
 
                                 </tbody>
@@ -822,9 +507,7 @@
                                     $gn_id
                                 ) }}"
                                 class="px-5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-600 text-sm font-semibold rounded-xl">
-
                                 Back
-
                             </a>
 
 
@@ -835,28 +518,18 @@
                                     name="submit_action"
                                     value="Draft"
                                     class="px-5 py-2.5 bg-white border border-green-400 hover:bg-green-50 text-slate-800 text-sm font-semibold rounded-xl">
-
                                     Save
-
                                 </button>
 
 
                                 <button
                                     type="submit"
+                                    id="submitButton"
                                     name="submit_action"
                                     value="Submitted"
-                                    :disabled="!formComplete"
-                                    :class="formComplete
-                                    ? 'bg-blue-700 hover:bg-blue-800 text-white cursor-pointer'
-                                    : 'bg-slate-300 text-slate-500 cursor-not-allowed'"
-                                    class="px-5 py-2.5
-                                    text-sm
-                                    font-semibold
-                                    rounded-xl
-                                    transition">
-
+                                    disabled
+                                    class="px-5 py-2.5 bg-slate-300 text-slate-500 text-sm font-semibold rounded-xl cursor-not-allowed transition">
                                     Submit
-
                                 </button>
 
                             </div>
@@ -874,7 +547,7 @@
     </div>
 
 
-    {{-- Calculation --}}
+    {{-- Calculation and Form Completion --}}
     <script>
         function calculateTums(tumsID) {
             const inputs = document.querySelectorAll(`[data-tums="${tumsID}"]`);
@@ -953,13 +626,52 @@
 
 
         document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('pdpcForm');
+            const submitButton = document.getElementById('submitButton');
+
+            const classInput = form.querySelector('[name="class_name"]');
+            const subjectInput = form.querySelector('[name="subject_name"]');
+            const dateInput = form.querySelector('[name="observation_date"]');
+            const timeInput = form.querySelector('[name="observation_time"]');
+            const scoreInputs = form.querySelectorAll('[data-tums]');
+
+            function updateSubmitButton() {
+                const informationComplete =
+                    classInput.value.trim() !== '' &&
+                    subjectInput.value.trim() !== '' &&
+                    dateInput.value !== '' &&
+                    timeInput.value !== '';
+
+                const scoresComplete =
+                    scoreInputs.length > 0 && [...scoreInputs].every(input => input.value !== '');
+
+                const formComplete = informationComplete && scoresComplete;
+
+                if (formComplete) {
+                    submitButton.disabled = false;
+                    submitButton.className = 'px-5 py-2.5 bg-blue-700 hover:bg-blue-800 text-white text-sm font-semibold rounded-xl cursor-pointer transition';
+                } else {
+                    submitButton.disabled = true;
+                    submitButton.className = 'px-5 py-2.5 bg-slate-300 text-slate-500 text-sm font-semibold rounded-xl cursor-not-allowed transition';
+                }
+            }
+
+
+            // Initial TUMS calculation
             const tumsIDs = new Set();
 
-            document.querySelectorAll('[data-tums]').forEach(input => {
+            scoreInputs.forEach(input => {
                 tumsIDs.add(input.dataset.tums);
             });
 
             tumsIDs.forEach(tumsID => calculateTums(tumsID));
+
+
+            // Check Submit availability
+            form.addEventListener('input', updateSubmitButton);
+            form.addEventListener('change', updateSubmitButton);
+
+            updateSubmitButton();
         });
     </script>
 

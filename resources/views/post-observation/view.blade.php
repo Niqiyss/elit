@@ -476,9 +476,7 @@
 
                 <div class="meta-value">
 
-                    {{ strtoupper(
-                        Auth::guard('teacher')->user()->teacher_name
-                    ) }}
+                    ( {{ strtoupper($evaluatorName ?? '-') }} )
 
                 </div>
 
@@ -689,9 +687,7 @@
                 <div class="signature-name">
 
                     (
-                    {{ strtoupper(
-                        Auth::guard('teacher')->user()->teacher_name
-                    ) }}
+                    {{ strtoupper($evaluatorName ?? '-') }}
                     )
 
                 </div>

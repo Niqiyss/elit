@@ -10,7 +10,6 @@
 
         <div class="max-w-7xl mx-auto">
 
-            {{-- Header --}}
             <div class="relative bg-gradient-to-br from-slate-900 via-violet-950 to-purple-900 rounded-3xl p-8 shadow-xl overflow-hidden mb-8">
 
                 <div class="absolute right-0 top-0 translate-x-10 -translate-y-10 w-72 h-72 bg-purple-500/10 rounded-full blur-3xl"></div>
@@ -58,7 +57,6 @@
             </div>
 
 
-            {{-- Main Card --}}
             <div class="bg-white rounded-3xl shadow-lg overflow-hidden">
 
                 <div class="px-8 py-6 border-b border-slate-100">
@@ -131,20 +129,16 @@
 
                             <tr class="hover:bg-slate-50 transition">
 
-                                {{-- No --}}
                                 <td class="px-8 py-6 text-slate-500">
                                     {{ $assignments->firstItem() + $loop->index }}
                                 </td>
 
-
-                                {{-- Teacher --}}
                                 <td class="px-8 py-6">
 
                                     <p class="font-bold text-slate-900 uppercase">
                                         {{ $assignment->gn_name }}
                                     </p>
 
-                                    {{-- External Attempt --}}
                                     @if(!$isObserver && isset($assignment->attempt_no))
 
                                     <p class="text-xs text-slate-600 mt-1">
@@ -155,22 +149,18 @@
 
                                 </td>
 
-
-                                {{-- School --}}
                                 <td class="px-8 py-6 text-slate-600">
                                     {{ $assignment->school_name ?? '-' }}
                                 </td>
 
 
-                                {{-- Completion --}}
                                 <td class="px-8 py-6">
 
                                     @if($isObserver)
 
-                                    {{-- OBSERVER --}}
                                     <div class="flex items-center justify-center gap-5">
 
-                                        {{-- PRE --}}
+
                                         <div class="flex flex-col items-center gap-1.5">
 
                                             <span
@@ -193,7 +183,6 @@
                                         </div>
 
 
-                                        {{-- PDPC --}}
                                         <div class="flex flex-col items-center gap-1.5">
 
                                             <span
@@ -216,7 +205,6 @@
                                         </div>
 
 
-                                        {{-- Feedback --}}
                                         <div class="flex flex-col items-center gap-1.5">
 
                                             <span
@@ -242,7 +230,6 @@
 
                                     @else
 
-                                    {{-- EXTERNAL --}}
                                     <div class="flex flex-col items-center gap-2">
 
                                         @if(isset($assignment->attempt_no))
@@ -256,7 +243,7 @@
 
                                         <div class="flex items-center justify-center gap-6">
 
-                                            {{-- PDPC --}}
+
                                             <div class="flex flex-col items-center gap-1.5">
 
                                                 <span
@@ -314,7 +301,6 @@
                                 </td>
 
 
-                                {{-- Status --}}
                                 <td class="px-8 py-6 text-center">
 
                                     @if(
@@ -368,7 +354,6 @@
                                 </td>
 
 
-                                {{-- Action --}}
                                 <td class="px-8 py-6 text-center">
 
                                     <a
@@ -416,11 +401,11 @@
 
                                             @elseif($status === 'completed')
 
-                                            There are currently no completed evaluations.
+                                            There are currently no completed evaluations
 
                                             @else
 
-                                            There are currently no active evaluation assignments.
+                                            There are currently no active evaluation assignments
 
                                             @endif
 
@@ -438,8 +423,6 @@
 
                     </table>
 
-
-                    {{-- Pagination --}}
                     @if($assignments->hasPages())
 
                     <div class="px-6 py-4 border-t border-slate-100 flex justify-end">

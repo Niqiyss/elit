@@ -16,19 +16,18 @@ class ManageFormController extends Controller
         $preForm = PreForm::orderByDesc('formID')
             ->first();
 
-        // Get latest PDPC form
+        //PDPC form
         $pdpcForm = PdpcForm::orderByDesc('formID')
             ->first();
 
-        // Get latest POST / Feedback form
+        //Feedback form
         $postForm = PostForm::orderByDesc('formID')
             ->first();
 
-        // Get uploaded evaluation documents
+        // Get uploaded ev docs
         $documents = EvaluationDoc::latest('doc_id')
             ->get();
 
-        // Show manage form page
         return view(
             'admin.manage-form',
             compact(

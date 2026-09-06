@@ -10,7 +10,6 @@
 
         <div class="max-w-7xl mx-auto px-6">
 
-            {{-- HEADER --}}
             <div class="relative bg-gradient-to-br from-slate-900 via-violet-950 to-purple-900 rounded-3xl px-8 py-6 shadow-xl overflow-hidden mb-8">
 
                 <div class="absolute right-0 top-0 translate-x-10 -translate-y-10 w-72 h-72 bg-purple-500/10 rounded-full blur-3xl"></div>
@@ -24,14 +23,13 @@
                         </h1>
 
                         <p class="text-violet-300 mt-2">
-                            Manage Aspect, TUMS, Tahap Tindakan and Rubric
+                            Manage Aspect, TUMS, Tahap Tindakan (TT) and Rubric
                         </p>
 
                     </div>
 
                     <div class="flex items-stretch gap-3">
 
-                        {{-- Version --}}
                         <div class="min-w-[110px] bg-white/10 border border-white/10 rounded-2xl px-5 py-3">
 
                             <p class="text-xs uppercase tracking-wider text-violet-200 font-semibold">
@@ -45,7 +43,6 @@
                         </div>
 
 
-                        {{-- Usage Notice --}}
                         @if($formUsed)
 
                         <div class="bg-amber-400/10 border border-amber-300/20 rounded-2xl px-5 py-3 flex items-center gap-3">
@@ -109,7 +106,7 @@
                             <div>
 
                                 <p class="text-sm font-bold text-white">
-                                    Current / Not Yet Used
+                                    Not Yet Used
                                 </p>
 
                                 <p class="text-xs text-blue-200 mt-0.5">
@@ -129,7 +126,6 @@
             </div>
 
 
-            {{-- SUCCESS --}}
             @if(session('success'))
 
             <div class="mb-6 px-5 py-4 bg-green-100 border border-green-200 text-green-700 rounded-xl">
@@ -139,7 +135,6 @@
             @endif
 
 
-            {{-- ERROR --}}
             @if(session('error'))
 
             <div class="mb-6 px-5 py-4 bg-red-100 border border-red-200 text-red-700 rounded-xl">
@@ -149,7 +144,6 @@
             @endif
 
 
-            {{-- VALIDATION --}}
             @if($errors->any())
 
             <div class="mb-6 px-5 py-4 bg-red-100 border border-red-200 text-red-700 rounded-xl">
@@ -171,20 +165,18 @@
             @endif
 
 
-            {{-- FORM BUILDER --}}
             <div x-data="pdpcFormBuilder()">
 
                 <form
                     id="pdpcFormBuilder"
                     method="POST"
-                    action="{{ route('admin.pdpc.form.update', $form) }}"
+                    action="{{ route('admin.pdpc.form.update', $form->formID) }}"
                     class="space-y-8 mb-24">
 
                     @csrf
                     @method('PUT')
 
 
-                    {{-- FORM INFORMATION --}}
                     <section class="bg-white rounded-3xl shadow-sm border border-gray-200 overflow-hidden">
 
                         <div class="px-6 py-5 border-b border-gray-100">
@@ -204,7 +196,6 @@
 
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
 
-                                {{-- Form Name --}}
                                 <div>
 
                                     <label class="block text-sm font-semibold text-gray-700 mb-2">
@@ -220,8 +211,6 @@
 
                                 </div>
 
-
-                                {{-- Instruction --}}
                                 <div>
 
                                     <label class="block text-sm font-semibold text-gray-700 mb-2">
@@ -243,7 +232,6 @@
                     </section>
 
 
-                    {{-- CONTENT GUIDE --}}
                     <section class="bg-white rounded-3xl shadow-sm border border-gray-200 overflow-hidden">
 
                         <div class="px-6 py-5 border-b border-gray-100">
@@ -326,28 +314,21 @@
                     </section>
 
 
-                    {{-- ASPECTS --}}
                     <template x-for="(aspect, aspectIndex) in aspects" :key="aspect._key">
 
                         <section class="bg-white rounded-3xl shadow-sm border border-gray-200 overflow-hidden">
 
-
-                            {{-- Hidden Aspect ID --}}
                             <input
                                 type="hidden"
                                 :name="`aspects[${aspectIndex}][aspectID]`"
                                 :value="aspect.aspectID">
 
-
-                            {{-- Aspect Header --}}
                             <div class="bg-blue-900 px-6 py-5">
 
                                 <div class="flex flex-col md:flex-row md:items-end gap-4">
 
                                     <div class="grid grid-cols-1 md:grid-cols-4 gap-4 flex-1">
 
-
-                                        {{-- Aspect Code --}}
                                         <div>
 
                                             <label class="block text-xs font-bold uppercase tracking-wider text-blue-200 mb-2">
@@ -376,8 +357,6 @@
 
                                         </div>
 
-
-                                        {{-- Aspect Name --}}
                                         <div class="md:col-span-3">
 
                                             <label class="block text-xs font-bold uppercase tracking-wider text-blue-200 mb-2">
@@ -397,7 +376,6 @@
                                     </div>
 
 
-                                    {{-- Delete Aspect --}}
                                     @if(!$formUsed)
 
                                     <button
@@ -431,28 +409,22 @@
                             </div>
 
 
-                            {{-- TUMS --}}
                             <div class="p-6 bg-blue-50/40 space-y-6">
 
                                 <template x-for="(tum, tumIndex) in aspect.tums" :key="tum._key">
 
                                     <div class="rounded-2xl bg-white border border-blue-200 overflow-hidden">
 
-
-                                        {{-- Hidden TUMS ID --}}
                                         <input
                                             type="hidden"
                                             :name="`aspects[${aspectIndex}][tums][${tumIndex}][tumsID]`"
                                             :value="tum.tumsID">
 
-
-                                        {{-- TUMS HEADER --}}
                                         <div class="p-5 bg-blue-50 border-b border-blue-100">
 
                                             <div class="grid grid-cols-1 lg:grid-cols-[150px_1fr_140px_42px] gap-4 items-end">
 
 
-                                                {{-- TUMS Code --}}
                                                 <div>
 
                                                     <label class="block text-xs font-bold uppercase tracking-wider text-blue-700 mb-2">
@@ -482,7 +454,6 @@
                                                 </div>
 
 
-                                                {{-- TUMS Name --}}
                                                 <div>
 
                                                     <label class="block text-xs font-bold uppercase tracking-wider text-blue-700 mb-2">
@@ -500,7 +471,6 @@
                                                 </div>
 
 
-                                                {{-- Wajaran --}}
                                                 <div>
 
                                                     <label class="block text-xs font-bold uppercase tracking-wider text-blue-700 mb-2">
@@ -534,7 +504,6 @@
                                                 </div>
 
 
-                                                {{-- Delete TUMS --}}
                                                 <div>
 
                                                     @if(!$formUsed)
@@ -572,7 +541,6 @@
                                         </div>
 
 
-                                        {{-- TT CONTENT --}}
                                         <div class="p-5 space-y-5">
 
                                             <template x-for="(tt, ttIndex) in tum.tt" :key="tt._key">
@@ -580,7 +548,6 @@
                                                 <div class="rounded-2xl bg-slate-50 border border-slate-200 p-5">
 
 
-                                                    {{-- Hidden TT ID --}}
                                                     <input
                                                         type="hidden"
                                                         :name="`aspects[${aspectIndex}][tums][${tumIndex}][tt][${ttIndex}][ttID]`"
@@ -596,13 +563,12 @@
                                                             </p>
 
                                                             <p class="text-xs text-gray-400 mt-1">
-                                                                Add one or more action points
+                                                                Add one or more points
                                                             </p>
 
                                                         </div>
 
 
-                                                        {{-- Delete TT --}}
                                                         @if(!$formUsed)
 
                                                         <button
@@ -634,39 +600,30 @@
                                                     </div>
 
 
-                                                    {{-- POINTS --}}
                                                     <div class="space-y-3">
 
                                                         <template x-for="(point, pointIndex) in tt.points" :key="point._key">
 
                                                             <div class="flex items-start gap-3">
 
-
-                                                                {{-- Hidden Point ID --}}
                                                                 <input
                                                                     type="hidden"
                                                                     :name="`aspects[${aspectIndex}][tums][${tumIndex}][tt][${ttIndex}][points][${pointIndex}][pointID]`"
                                                                     :value="point.pointID">
 
-
-                                                                {{-- Point Number --}}
                                                                 <div
                                                                     class="w-8 h-10 flex items-center justify-center text-sm font-semibold text-gray-400"
                                                                     x-text="pointIndex + 1">
                                                                 </div>
 
-
-                                                                {{-- Point Text --}}
                                                                 <textarea
                                                                     x-model="point.point_text"
                                                                     :name="`aspects[${aspectIndex}][tums][${tumIndex}][tt][${ttIndex}][points][${pointIndex}][point_text]`"
                                                                     required
                                                                     rows="2"
-                                                                    placeholder="Enter Tahap Tindakan point"
+                                                                    placeholder="Enter TT point"
                                                                     class="flex-1 rounded-xl border-gray-300"></textarea>
 
-
-                                                                {{-- Delete Point --}}
                                                                 @if(!$formUsed)
 
                                                                 <button
@@ -702,7 +659,6 @@
                                                     </div>
 
 
-                                                    {{-- Add Point --}}
                                                     @if(!$formUsed)
 
                                                     <button
@@ -720,8 +676,6 @@
 
                                             </template>
 
-
-                                            {{-- Add TT --}}
                                             @if(!$formUsed)
 
                                             <button
@@ -736,7 +690,6 @@
                                             @endif
 
 
-                                            {{-- RTK RUBRIC --}}
                                             <div class="rounded-2xl border border-violet-200 overflow-hidden">
 
                                                 <div class="px-5 py-4 bg-violet-50 border-b border-violet-200">
@@ -754,7 +707,7 @@
                                                                 @if($formUsed)
                                                                 Only rubric wording can be edited
                                                                 @else
-                                                                Define the rubric for each score
+                                                                Define the rubric 
                                                                 @endif
 
                                                             </p>
@@ -776,14 +729,11 @@
 
                                                         <div class="grid grid-cols-[70px_1fr] gap-3 items-start">
 
-                                                            {{-- Fixed RTK Score --}}
                                                             <div
                                                                 class="h-10 rounded-xl bg-violet-100 text-violet-700 flex items-center justify-center text-xs font-bold"
                                                                 x-text="`RTK ${score}`">
                                                             </div>
 
-
-                                                            {{-- Editable RTK Description --}}
                                                             <textarea
                                                                 x-model="tum.rubrics[score]"
                                                                 :name="`aspects[${aspectIndex}][tums][${tumIndex}][rubrics][${score}]`"
@@ -806,8 +756,6 @@
 
                                 </template>
 
-
-                                {{-- ADD TUMS --}}
                                 @if(!$formUsed)
 
                                 <button
@@ -827,8 +775,6 @@
 
                     </template>
 
-
-                    {{-- ADD ASPECT --}}
                     @if(!$formUsed)
 
                     <section class="bg-white rounded-3xl shadow-sm border border-gray-200 p-6">
@@ -855,7 +801,6 @@
     </div>
 
 
-    {{-- STICKY ACTION --}}
     <div class="fixed bottom-4 left-0 right-0 z-40 px-6 pointer-events-none">
 
         <div class="max-w-7xl mx-auto">
@@ -876,7 +821,7 @@
                     <div class="flex items-center gap-3">
 
                         <a
-                            href="{{ route('admin.pdpc.form.preview', $form) }}"
+                            href="{{ route('admin.pdpc.form.preview', $form->formID) }}"
                             class="px-5 py-2.5 bg-sky-100 hover:bg-sky-200 text-sky-700 font-semibold text-sm rounded-xl transition">
 
                             Preview

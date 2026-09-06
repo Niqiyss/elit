@@ -23,9 +23,9 @@
 
                     @if($form->instruction)
 
-                        <p class="text-violet-300 mt-2">
-                            {{ $form->instruction }}
-                        </p>
+                    <p class="text-violet-300 mt-2">
+                        {{ $form->instruction }}
+                    </p>
 
                     @endif
 
@@ -37,13 +37,13 @@
             {{-- Success message --}}
             @if(session('success'))
 
-                <div class="mb-6 px-5 py-4
+            <div class="mb-6 px-5 py-4
                             bg-green-100 border border-green-200
                             text-green-700 rounded-xl">
 
-                    {{ session('success') }}
+                {{ session('success') }}
 
-                </div>
+            </div>
 
             @endif
 
@@ -51,21 +51,21 @@
             {{-- Validation errors --}}
             @if($errors->any())
 
-                <div class="mb-6 px-5 py-4
+            <div class="mb-6 px-5 py-4
                             bg-red-100 border border-red-200
                             text-red-700 rounded-xl">
 
-                    <ul class="list-disc list-inside text-sm space-y-1">
+                <ul class="list-disc list-inside text-sm space-y-1">
 
-                        @foreach($errors->all() as $error)
+                    @foreach($errors->all() as $error)
 
-                            <li>{{ $error }}</li>
+                    <li>{{ $error }}</li>
 
-                        @endforeach
+                    @endforeach
 
-                    </ul>
+                </ul>
 
-                </div>
+            </div>
 
             @endif
 
@@ -78,7 +78,6 @@
 
                 @csrf
                 @method('PUT')
-
 
                 {{-- Observation information --}}
                 <div class="bg-white rounded-3xl shadow-lg px-6 py-5 mb-8">
@@ -162,9 +161,9 @@
 
                             @error('class_name')
 
-                                <p class="text-red-500 text-xs mt-1">
-                                    {{ $message }}
-                                </p>
+                            <p class="text-red-500 text-xs mt-1">
+                                {{ $message }}
+                            </p>
 
                             @enderror
 
@@ -194,9 +193,9 @@
 
                             @error('subject_name')
 
-                                <p class="text-red-500 text-xs mt-1">
-                                    {{ $message }}
-                                </p>
+                            <p class="text-red-500 text-xs mt-1">
+                                {{ $message }}
+                            </p>
 
                             @enderror
 
@@ -226,9 +225,9 @@
 
                             @error('observation_date')
 
-                                <p class="text-red-500 text-xs mt-1">
-                                    {{ $message }}
-                                </p>
+                            <p class="text-red-500 text-xs mt-1">
+                                {{ $message }}
+                            </p>
 
                             @enderror
 
@@ -263,9 +262,9 @@
 
                             @error('observation_time')
 
-                                <p class="text-red-500 text-xs mt-1">
-                                    {{ $message }}
-                                </p>
+                            <p class="text-red-500 text-xs mt-1">
+                                {{ $message }}
+                            </p>
 
                             @enderror
 
@@ -276,53 +275,52 @@
                 </div>
 
 
-
                 {{-- Dynamic sections --}}
                 @foreach($form->sections as $section)
 
-                    @php
-                        $displayFields = $section->fields
-                            ->where('field_type', 'display')
-                            ->values();
+                @php
+                $displayFields = $section->fields
+                ->where('field_type', 'display')
+                ->values();
 
-                        $inputFields = $section->fields
-                            ->where('field_type', '!=', 'display')
-                            ->values();
-                    @endphp
+                $inputFields = $section->fields
+                ->where('field_type', '!=', 'display')
+                ->values();
+                @endphp
 
 
-                    {{-- Display fields --}}
-                    @if($displayFields->isNotEmpty())
+                {{-- Display fields --}}
+                @if($displayFields->isNotEmpty())
 
-                        <div class="bg-white rounded-3xl
+                <div class="bg-white rounded-3xl
                                     shadow-lg overflow-hidden mb-6">
 
-                            <div class="bg-blue-900 px-6 py-3">
+                    <div class="bg-blue-900 px-6 py-3">
 
-                                <h2 class="text-sm font-bold
+                        <h2 class="text-sm font-bold
                                            text-white uppercase
                                            tracking-wide">
 
-                                    {{ $section->section_name }}
+                            {{ $section->section_name }}
 
-                                </h2>
+                        </h2>
 
-                            </div>
+                    </div>
 
 
-                            <div class="overflow-x-auto">
+                    <div class="overflow-x-auto">
 
-                                <table class="w-full table-fixed text-sm">
+                        <table class="w-full table-fixed text-sm">
 
-                                    <tbody>
+                            <tbody>
 
-                                        @foreach($displayFields->chunk(4) as $row)
+                                @foreach($displayFields->chunk(4) as $row)
 
-                                            <tr>
+                                <tr>
 
-                                                @foreach($row as $field)
+                                    @foreach($row as $field)
 
-                                                    <td class="border-r border-b
+                                    <td class="border-r border-b
                                                                border-slate-200
                                                                px-5 py-3
                                                                text-slate-700
@@ -332,112 +330,111 @@
                                                                    ? 'border-r-0'
                                                                    : '' }}">
 
-                                                        {{ $field->field_label }}
+                                        {{ $field->field_label }}
 
-                                                    </td>
+                                    </td>
 
-                                                @endforeach
+                                    @endforeach
 
 
-                                                @if($row->count() < 4)
+                                    @if($row->count() < 4)
 
-                                                    @for($i = $row->count(); $i < 4; $i++)
+                                        @for($i=$row->count(); $i < 4; $i++)
 
-                                                        <td class="border-r border-b
+                                            <td class="border-r border-b
                                                                    border-slate-200
                                                                    px-5 py-3
                                                                    {{ $i === 3
                                                                        ? 'border-r-0'
                                                                        : '' }}">
-                                                        </td>
+                                            </td>
 
-                                                    @endfor
+                                            @endfor
 
-                                                @endif
+                                            @endif
 
-                                            </tr>
+                                </tr>
 
-                                        @endforeach
+                                @endforeach
 
-                                    </tbody>
+                            </tbody>
 
-                                </table>
+                        </table>
 
-                            </div>
+                    </div>
 
-                        </div>
+                </div>
 
-                    @endif
+                @endif
 
 
+                {{-- Input fields --}}
+                @if($inputFields->isNotEmpty())
 
-                    {{-- Input fields --}}
-                    @if($inputFields->isNotEmpty())
-
-                        <div class="bg-white rounded-3xl
+                <div class="bg-white rounded-3xl
                                     shadow-lg overflow-hidden mb-8">
 
-                            <div class="bg-blue-900 px-6 py-3">
+                    <div class="bg-blue-900 px-6 py-3">
 
-                                <h2 class="text-sm font-bold
+                        <h2 class="text-sm font-bold
                                            text-white uppercase
                                            tracking-wide">
 
-                                    {{ $section->section_name }}
+                            {{ $section->section_name }}
 
-                                </h2>
+                        </h2>
 
-                            </div>
-
-
-                            <div class="divide-y divide-slate-200">
-
-                                @foreach($inputFields as $field)
-
-                                    @php
-                                        $savedAnswer = old(
-                                            'answers.' . $field->fieldID,
-                                            $existingAnswers[$field->fieldID] ?? null
-                                        );
-                                    @endphp
+                    </div>
 
 
-                                    {{-- Textarea --}}
-                                    @if($field->field_type === 'textarea')
+                    <div class="divide-y divide-slate-200">
 
-                                        <div class="px-6 py-4">
+                        @foreach($inputFields as $field)
 
-                                            <div class="grid grid-cols-1
+                        @php
+                        $savedAnswer = old(
+                        'answers.' . $field->fieldID,
+                        $existingAnswers[$field->fieldID] ?? null
+                        );
+                        @endphp
+
+
+                        {{-- Textarea --}}
+                        @if($field->field_type === 'textarea')
+
+                        <div class="px-6 py-4">
+
+                            <div class="grid grid-cols-1
                                                         md:grid-cols-6
                                                         gap-4 items-start">
 
-                                                <div class="md:col-span-1">
+                                <div class="md:col-span-1">
 
-                                                    <label class="block
+                                    <label class="block
                                                                   text-sm
                                                                   text-slate-700
                                                                   font-semibold
                                                                   pt-2">
 
-                                                        {{ $field->field_label }}
+                                        {{ $field->field_label }}
 
-                                                        @if($field->is_required)
+                                        @if($field->is_required)
 
-                                                            <span class="text-red-500">*</span>
+                                        <span class="text-red-500">*</span>
 
-                                                        @endif
+                                        @endif
 
-                                                    </label>
+                                    </label>
 
-                                                </div>
+                                </div>
 
 
-                                                <div class="md:col-span-5">
+                                <div class="md:col-span-5">
 
-                                                    <textarea
-                                                        name="answers[{{ $field->fieldID }}]"
-                                                        rows="3"
-                                                        class="{{ $field->is_required
+                                    <textarea
+                                        name="answers[{{ $field->fieldID }}]"
+                                        rows="3"
+                                        class="{{ $field->is_required
                                                             ? 'post-required-field'
                                                             : '' }}
                                                                w-full rounded-xl
@@ -445,79 +442,78 @@
                                                                focus:border-purple-500
                                                                focus:ring-purple-500">{{ $savedAnswer }}</textarea>
 
-                                                    @error('answers.' . $field->fieldID)
+                                    @error('answers.' . $field->fieldID)
 
-                                                        <p class="text-red-500 text-xs mt-1">
-                                                            {{ $message }}
-                                                        </p>
+                                    <p class="text-red-500 text-xs mt-1">
+                                        {{ $message }}
+                                    </p>
 
-                                                    @enderror
+                                    @enderror
 
-                                                </div>
+                                </div>
 
-                                            </div>
+                            </div>
 
-                                        </div>
+                        </div>
 
 
+                        {{-- Checkbox --}}
+                        @elseif($field->field_type === 'checkbox')
 
-                                    {{-- Checkbox --}}
-                                    @elseif($field->field_type === 'checkbox')
+                        @php
+                        $savedCheckboxes = is_array($savedAnswer)
+                        ? $savedAnswer
+                        : [];
+                        @endphp
 
-                                        @php
-                                            $savedCheckboxes = is_array($savedAnswer)
-                                                ? $savedAnswer
-                                                : [];
-                                        @endphp
+                        <div class="px-6 py-4">
 
-                                        <div class="px-6 py-4">
-
-                                            <div class="grid grid-cols-1
+                            <div class="grid grid-cols-1
                                                         md:grid-cols-6
                                                         gap-4 items-start">
 
-                                                <div class="md:col-span-1">
+                                <div class="md:col-span-1">
 
-                                                    <label class="block
+                                    <label class="block
                                                                   text-sm
                                                                   text-slate-700
                                                                   font-semibold">
 
-                                                        {{ $field->field_label }}
+                                        {{ $field->field_label }}
 
-                                                        @if($field->is_required)
+                                        @if($field->is_required)
 
-                                                            <span class="text-red-500">*</span>
+                                        <span class="text-red-500">*</span>
 
-                                                        @endif
+                                        @endif
 
-                                                    </label>
+                                    </label>
 
-                                                </div>
+                                </div>
 
 
-                                                <div class="md:col-span-5">
+                                <div class="md:col-span-5">
 
-                                                    <div class="flex flex-wrap
+                                    <div class="flex flex-wrap
                                                                 items-center
                                                                 gap-x-6 gap-y-2">
 
-                                                        @foreach($field->options as $option)
+                                        @foreach($field->options as $option)
 
-                                                            <label class="inline-flex
+                                        <label class="inline-flex
                                                                           items-center
                                                                           gap-2
                                                                           cursor-pointer">
 
-                                                                <input
-                                                                    type="checkbox"
-                                                                    name="answers[{{ $field->fieldID }}][]"
-                                                                    value="{{ $option->option_label }}"
-                                                                    {{ in_array(
+                                            <input
+                                                type="checkbox"
+                                                name="answers[{{ $field->fieldID }}][]"
+                                                value="{{ $option->option_label }}"
+                                                {{ in_array(
                                                                         $option->option_label,
                                                                         $savedCheckboxes
                                                                     ) ? 'checked' : '' }}
-                                                                    class="{{ $field->is_required
+                                                class="{{ $field->is_required
                                                                         ? 'post-required-field'
                                                                         : '' }}
                                                                            rounded
@@ -525,148 +521,146 @@
                                                                            text-blue-600
                                                                            focus:ring-blue-500">
 
-                                                                <span class="text-sm text-slate-700">
-                                                                    {{ $option->option_label }}
-                                                                </span>
+                                            <span class="text-sm text-slate-700">
+                                                {{ $option->option_label }}
+                                            </span>
 
-                                                            </label>
+                                        </label>
 
-                                                        @endforeach
+                                        @endforeach
 
-                                                    </div>
-
-
-                                                    @error('answers.' . $field->fieldID)
-
-                                                        <p class="text-red-500 text-xs mt-2">
-                                                            {{ $message }}
-                                                        </p>
-
-                                                    @enderror
-
-                                                </div>
-
-                                            </div>
-
-                                        </div>
+                                    </div>
 
 
+                                    @error('answers.' . $field->fieldID)
 
-                                    {{-- Radio --}}
-                                    @elseif($field->field_type === 'radio')
+                                    <p class="text-red-500 text-xs mt-2">
+                                        {{ $message }}
+                                    </p>
 
-                                        <div class="px-6 py-4">
+                                    @enderror
 
-                                            <div class="grid grid-cols-1
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+                        {{-- Radio --}}
+                        @elseif($field->field_type === 'radio')
+
+                        <div class="px-6 py-4">
+
+                            <div class="grid grid-cols-1
                                                         md:grid-cols-6
                                                         gap-4 items-start">
 
-                                                <div class="md:col-span-1">
+                                <div class="md:col-span-1">
 
-                                                    <label class="block
+                                    <label class="block
                                                                   text-sm
                                                                   text-slate-700
                                                                   font-semibold">
 
-                                                        {{ $field->field_label }}
+                                        {{ $field->field_label }}
 
-                                                        @if($field->is_required)
+                                        @if($field->is_required)
 
-                                                            <span class="text-red-500">*</span>
+                                        <span class="text-red-500">*</span>
 
-                                                        @endif
+                                        @endif
 
-                                                    </label>
+                                    </label>
 
-                                                </div>
+                                </div>
 
 
-                                                <div class="md:col-span-5">
+                                <div class="md:col-span-5">
 
-                                                    <div class="flex flex-wrap
+                                    <div class="flex flex-wrap
                                                                 items-center
                                                                 gap-x-6 gap-y-2">
 
-                                                        @foreach($field->options as $option)
+                                        @foreach($field->options as $option)
 
-                                                            <label class="inline-flex
+                                        <label class="inline-flex
                                                                           items-center
                                                                           gap-2
                                                                           cursor-pointer">
 
-                                                                <input
-                                                                    type="radio"
-                                                                    name="answers[{{ $field->fieldID }}]"
-                                                                    value="{{ $option->option_label }}"
-                                                                    {{ $savedAnswer === $option->option_label
+                                            <input
+                                                type="radio"
+                                                name="answers[{{ $field->fieldID }}]"
+                                                value="{{ $option->option_label }}"
+                                                {{ $savedAnswer === $option->option_label
                                                                         ? 'checked'
                                                                         : '' }}
-                                                                    class="{{ $field->is_required
+                                                class="{{ $field->is_required
                                                                         ? 'post-required-field'
                                                                         : '' }}
                                                                            border-slate-300
                                                                            text-blue-600
                                                                            focus:ring-blue-500">
 
-                                                                <span class="text-sm text-slate-700">
-                                                                    {{ $option->option_label }}
-                                                                </span>
+                                            <span class="text-sm text-slate-700">
+                                                {{ $option->option_label }}
+                                            </span>
 
-                                                            </label>
+                                        </label>
 
-                                                        @endforeach
+                                        @endforeach
 
-                                                    </div>
-
-
-                                                    @error('answers.' . $field->fieldID)
-
-                                                        <p class="text-red-500 text-xs mt-2">
-                                                            {{ $message }}
-                                                        </p>
-
-                                                    @enderror
-
-                                                </div>
-
-                                            </div>
-
-                                        </div>
+                                    </div>
 
 
+                                    @error('answers.' . $field->fieldID)
 
-                                    {{-- Text --}}
-                                    @else
+                                    <p class="text-red-500 text-xs mt-2">
+                                        {{ $message }}
+                                    </p>
 
-                                        <div class="px-6 py-4">
+                                    @enderror
 
-                                            <div class="grid grid-cols-1
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+                        {{-- Text --}}
+                        @else
+
+                        <div class="px-6 py-4">
+
+                            <div class="grid grid-cols-1
                                                         md:grid-cols-6
                                                         gap-4 items-center">
 
-                                                <label class="md:col-span-1
+                                <label class="md:col-span-1
                                                               text-sm
                                                               text-slate-700
                                                               font-semibold">
 
-                                                    {{ $field->field_label }}
+                                    {{ $field->field_label }}
 
-                                                    @if($field->is_required)
+                                    @if($field->is_required)
 
-                                                        <span class="text-red-500">*</span>
+                                    <span class="text-red-500">*</span>
 
-                                                    @endif
+                                    @endif
 
-                                                </label>
+                                </label>
 
 
-                                                <div class="md:col-span-5">
+                                <div class="md:col-span-5">
 
-                                                    <input
-                                                        type="text"
-                                                        name="answers[{{ $field->fieldID }}]"
-                                                        value="{{ $savedAnswer }}"
-                                                        class="{{ $field->is_required
+                                    <input
+                                        type="text"
+                                        name="answers[{{ $field->fieldID }}]"
+                                        value="{{ $savedAnswer }}"
+                                        class="{{ $field->is_required
                                                             ? 'post-required-field'
                                                             : '' }}
                                                                w-full rounded-xl
@@ -674,32 +668,31 @@
                                                                focus:border-purple-500
                                                                focus:ring-purple-500">
 
-                                                    @error('answers.' . $field->fieldID)
+                                    @error('answers.' . $field->fieldID)
 
-                                                        <p class="text-red-500 text-xs mt-1">
-                                                            {{ $message }}
-                                                        </p>
+                                    <p class="text-red-500 text-xs mt-1">
+                                        {{ $message }}
+                                    </p>
 
-                                                    @enderror
+                                    @enderror
 
-                                                </div>
-
-                                            </div>
-
-                                        </div>
-
-                                    @endif
-
-                                @endforeach
+                                </div>
 
                             </div>
 
                         </div>
 
-                    @endif
+                        @endif
+
+                        @endforeach
+
+                    </div>
+
+                </div>
+
+                @endif
 
                 @endforeach
-
 
 
                 {{-- Sticky action bar --}}
@@ -900,9 +893,9 @@
 
                 field.addEventListener(
                     field.type === 'radio' ||
-                    field.type === 'checkbox'
-                        ? 'change'
-                        : 'input',
+                    field.type === 'checkbox' ?
+                    'change' :
+                    'input',
                     updateSubmitButton
                 );
 

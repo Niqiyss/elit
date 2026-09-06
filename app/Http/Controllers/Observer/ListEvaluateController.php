@@ -32,7 +32,7 @@ class ListEvaluateController extends Controller
         abort_if(
             !$observer && !$externalObserver,
             403,
-            'You are not registered as an observer.'
+            'You are not registered as an observer'
         );
 
         $isObserver = !is_null($observer);
@@ -97,7 +97,7 @@ class ListEvaluateController extends Controller
             $gnId = $assignment->gn_id;
 
 
-            // Normal observer
+            // Normal ob
             if ($isObserver) {
 
                 $preResponse = PreResponse::where('gn_id', $gnId)
@@ -157,7 +157,7 @@ class ListEvaluateController extends Controller
             }
 
 
-            // Get latest External PDPC by current external observer.
+            // Get latest External PDPC by current external ob
             $currentOwnPdpc = PdpcResponse::where('gn_id', $gnId)
                 ->where('observation_stage', 'EXTERNAL')
                 ->where(
@@ -169,7 +169,7 @@ class ListEvaluateController extends Controller
                 ->first();
 
 
-            // Get latest External Feedback by current external observer.
+            // Get latest External Feedback by current external ob
             $currentOwnFeedback = PostResponse::where('gn_id', $gnId)
                 ->where('observation_stage', 'EXTERNAL')
                 ->where(
@@ -181,7 +181,7 @@ class ListEvaluateController extends Controller
                 ->first();
 
 
-            // Get latest submitted External PDPC across all external observers.
+            // Get latest submitted External PDPC across all external ob
             $latestPdpcSubmitted = PdpcResponse::where('gn_id', $gnId)
                 ->where('observation_stage', 'EXTERNAL')
                 ->where('status', 'Submitted')
@@ -190,7 +190,7 @@ class ListEvaluateController extends Controller
                 ->first();
 
 
-            // Keep current observer attempt if they already started one.
+            // Keep current observer attempt if they already started one
             if ($currentOwnPdpc || $currentOwnFeedback) {
 
                 $currentAttemptNo = max(
@@ -199,7 +199,7 @@ class ListEvaluateController extends Controller
                 );
             } else {
 
-                // New external observer continues after latest submitted attempt.
+                // New external observer continues after latest submitted attempt
                 $currentAttemptNo =
                     ($latestPdpcSubmitted?->attempt_no ?? 0) + 1;
             }

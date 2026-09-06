@@ -8,7 +8,7 @@
 
                 <a href="{{ route('external.dashboard') }}"
                     class="text-2xl font-extrabold text-violet-700 tracking-wide">
-                    ELIT
+                    TEMS-ELIT
                 </a>
 
             </div>
@@ -28,12 +28,12 @@
 
                 <a href="{{ route('external.download.form') }}"
                     class="text-lg font-semibold text-gray-700 hover:text-purple-700 transition">
-                    DownloadT
+                    Download
                 </a>
 
                 <a href="{{ route('external.profile') }}"
                     class="text-lg font-semibold text-gray-700 hover:text-purple-700 transition">
-                    My Profile
+                    MyProfile
                 </a>
 
                 <form method="POST" action="{{ route('logout') }}">

@@ -4,7 +4,6 @@
 
         <div class="max-w-7xl mx-auto">
 
-            {{-- Header --}}
             <div class="relative bg-gradient-to-br from-slate-900 via-violet-950 to-purple-900 rounded-3xl p-8 shadow-xl overflow-hidden mb-8">
 
                 <div class="absolute right-0 top-0 translate-x-10 -translate-y-10 w-72 h-72 bg-purple-500/10 rounded-full blur-3xl"></div>
@@ -19,7 +18,7 @@
                         View teacher evaluation results
                     </p>
 
-                    {{-- Teacher Information --}}
+
                     <div class="border-t border-white/20 mt-5 pt-2">
 
                         <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
@@ -44,7 +43,7 @@
                                 </p>
                             </div>
 
-                            {{-- Overall Status --}}
+                            
                             <div>
 
                                 <p class="text-xs font-bold uppercase tracking-wider text-violet-300">

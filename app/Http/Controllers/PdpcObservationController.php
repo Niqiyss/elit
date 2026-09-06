@@ -24,12 +24,12 @@ class PdpcObservationController extends Controller
         $externalObserver = ExternalObserver::where('teacherID', $teacherID)->first();
 
         if ($request->routeIs('observer.pdpc.create')) {
-            abort_if(!$observer, 403, 'You are not registered as an observer.');
+            abort_if(!$observer, 403, 'You are not registered as an observer');
 
             $role = 'observer';
             $stage = 'POST';
         } else {
-            abort_if(!$externalObserver, 403, 'You are not registered as an external observer.');
+            abort_if(!$externalObserver, 403, 'You are not registered as an external observer');
 
             $role = 'external';
             $stage = 'EXTERNAL';
@@ -49,7 +49,7 @@ class PdpcObservationController extends Controller
             ->where('external_observer_id', $externalObserver->external_observer_id)
             ->exists();
 
-        abort_if(!$assigned, 403, 'This teacher is not assigned to you.');
+        abort_if(!$assigned, 403, 'This teacher is not assigned to you');
 
         // Get existing draft
         $draftQuery = PdpcResponse::where('gn_id', $gn_id)
@@ -85,7 +85,7 @@ class PdpcObservationController extends Controller
             if ($latestSubmitted && $latestSubmitted->result === 'PASS') {
                 return redirect()
                     ->route('external.manage', $gn_id)
-                    ->with('error', 'The External Observation has already passed.');
+                    ->with('error', 'This External Observation has already passed');
             }
         }
 
@@ -99,7 +99,7 @@ class PdpcObservationController extends Controller
             if ($submitted) {
                 return redirect()
                     ->route('observer.manage', $gn_id)
-                    ->with('error', 'The Post Observation has already been submitted.');
+                    ->with('error', 'The Post Observation has already been submitted');
             }
         }
 
@@ -125,12 +125,12 @@ class PdpcObservationController extends Controller
         $externalObserver = ExternalObserver::where('teacherID', $teacherID)->first();
 
         if ($request->routeIs('observer.pdpc.store')) {
-            abort_if(!$observer, 403, 'You are not registered as an observer.');
+            abort_if(!$observer, 403, 'You are not registered as an observer');
 
             $role = 'observer';
             $stage = 'POST';
         } else {
-            abort_if(!$externalObserver, 403, 'You are not registered as an external observer.');
+            abort_if(!$externalObserver, 403, 'You are not registered as an external observer');
 
             $role = 'external';
             $stage = 'EXTERNAL';
@@ -148,7 +148,7 @@ class PdpcObservationController extends Controller
             ->where('external_observer_id', $externalObserver->external_observer_id)
             ->exists();
 
-        abort_if(!$assigned, 403, 'This teacher is not assigned to you.');
+        abort_if(!$assigned, 403, 'This teacher is not assigned to you');
 
         $form = $this->getActiveForm();
 
@@ -200,8 +200,8 @@ class PdpcObservationController extends Controller
             ->with(
                 'success',
                 $request->submit_action === 'Submitted'
-                    ? 'PDPC observation submitted successfully.'
-                    : 'PDPC observation draft saved successfully.'
+                    ? 'Form submitted successfully'
+                    : 'Form draft saved successfully'
             );
     }
 
@@ -223,7 +223,7 @@ class PdpcObservationController extends Controller
         abort_if(
             $response->status === 'Submitted',
             403,
-            'Submitted observations cannot be edited.'
+            'Submitted observations cannot be edited'
         );
 
         $this->checkOwnership(
@@ -274,7 +274,7 @@ class PdpcObservationController extends Controller
         abort_if(
             $response->status === 'Submitted',
             403,
-            'Submitted observations cannot be edited.'
+            'Submitted observations cannot be edited'
         );
 
         $this->checkOwnership(
@@ -323,8 +323,8 @@ class PdpcObservationController extends Controller
             ->with(
                 'success',
                 $request->submit_action === 'Submitted'
-                    ? 'PDPC observation submitted successfully.'
-                    : 'PDPC observation draft updated successfully.'
+                    ? 'Form submitted successfully'
+                    : 'Form draft updated successfully'
             );
     }
 
@@ -339,7 +339,11 @@ class PdpcObservationController extends Controller
             $externalObserver
         ] = $this->resolveRole($request);
 
-        $response = PdpcResponse::where('responseID', $responseID)
+        $response = PdpcResponse::with([
+            'observer.teacher',
+            'externalObserver.teacher',
+        ])
+            ->where('responseID', $responseID)
             ->where('observation_stage', $stage)
             ->where('status', 'Submitted')
             ->firstOrFail();
@@ -388,7 +392,7 @@ class PdpcObservationController extends Controller
             ->latest('formID')
             ->first();
 
-        abort_if(!$form, 404, 'No active PDPC form found.');
+        abort_if(!$form, 404, 'No active PDPC form found');
 
         return $form;
     }
@@ -646,7 +650,7 @@ class PdpcObservationController extends Controller
         $externalObserver = ExternalObserver::where('teacherID', $teacherID)->first();
 
         if ($request->routeIs('observer.pdpc.*')) {
-            abort_if(!$observer, 403, 'You are not registered as an observer.');
+            abort_if(!$observer, 403, 'You are not registered as an observer');
 
             return [
                 'observer',
@@ -659,7 +663,7 @@ class PdpcObservationController extends Controller
         abort_if(
             !$externalObserver,
             403,
-            'You are not registered as an external observer.'
+            'You are not registered as an external observer'
         );
 
         return [
@@ -682,13 +686,13 @@ class PdpcObservationController extends Controller
             abort_if(
                 $response->observer_id != $observer->observer_id,
                 403,
-                'You are not allowed to access this observation.'
+                'You are not allowed to access this observation'
             );
         } else {
             abort_if(
                 $response->external_observer_id != $externalObserver->external_observer_id,
                 403,
-                'You are not allowed to access this observation.'
+                'You are not allowed to access this observation'
             );
         }
     }

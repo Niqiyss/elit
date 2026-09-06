@@ -16,14 +16,12 @@ class AuthenticatedSessionController extends Controller
         return view('auth.login');
     }
 
-
     public function store(Request $request)
     {
         $request->validate([
             'email' => ['required', 'email'],
             'password' => ['required'],
         ]);
-
 
         // LOGOUT ALL EXISTING GUARDS
         $guards = [
@@ -40,7 +38,6 @@ class AuthenticatedSessionController extends Controller
             }
         }
 
-
         // ADMIN
         if (Auth::guard('admin')->attempt([
             'email' => $request->email,
@@ -54,7 +51,6 @@ class AuthenticatedSessionController extends Controller
             return redirect()->route('admin.dashboard');
         }
 
-
         // HR
         if (Auth::guard('hr')->attempt([
             'email' => $request->email,
@@ -66,7 +62,6 @@ class AuthenticatedSessionController extends Controller
 
             return redirect()->route('hr.dashboard');
         }
-
 
         // NEW TEACHER
         if (Auth::guard('new_teacher')->attempt([
@@ -81,7 +76,6 @@ class AuthenticatedSessionController extends Controller
             return redirect()->route('new_teacher.dashboard');
         }
 
-
         // PRINCIPAL
         if (Auth::guard('principal')->attempt([
             'email' => $request->email,
@@ -93,7 +87,6 @@ class AuthenticatedSessionController extends Controller
 
             return redirect()->route('principal.dashboard');
         }
-
 
         // TEACHER - OBSERVER / EXTERNAL OBSERVER
         if (Auth::guard('teacher')->attempt([
@@ -162,7 +155,6 @@ class AuthenticatedSessionController extends Controller
         ]);
     }
 
-
     public function destroy(Request $request)
     {
         $guards = [
@@ -173,13 +165,11 @@ class AuthenticatedSessionController extends Controller
             'teacher',
         ];
 
-
         foreach ($guards as $guard) {
             if (Auth::guard($guard)->check()) {
                 Auth::guard($guard)->logout();
             }
         }
-
 
         $request->session()->forget([
             'teacher_role',
@@ -187,10 +177,8 @@ class AuthenticatedSessionController extends Controller
             'external_observer_id',
         ]);
 
-
         $request->session()->invalidate();
         $request->session()->regenerateToken();
-
 
         return redirect()->route('login');
     }

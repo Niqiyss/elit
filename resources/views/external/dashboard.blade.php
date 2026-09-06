@@ -5,7 +5,6 @@
         <div class="max-w-7xl mx-auto px-6">
 
 
-            {{-- HEADER --}}
             <div class="relative bg-gradient-to-br from-slate-900 via-violet-950 to-purple-900 rounded-3xl p-8 shadow-xl overflow-hidden mb-8">
 
                 <div class="absolute right-0 top-0 translate-x-10 -translate-y-10 w-72 h-72 bg-purple-500/10 rounded-full blur-3xl"></div>
@@ -25,10 +24,8 @@
             </div>
 
 
-            {{-- SUMMARY CARDS --}}
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
 
-                {{-- ASSIGNED --}}
                 <div class="bg-white rounded-2xl shadow-sm border border-gray-200 px-5 py-4">
 
                     <p class="text-sm font-semibold text-gray-900">
@@ -42,7 +39,6 @@
                 </div>
 
 
-                {{-- ONGOING --}}
                 <div class="bg-white rounded-2xl shadow-sm border border-gray-200 px-5 py-4">
 
                     <p class="text-sm font-semibold text-gray-900">
@@ -56,7 +52,6 @@
                 </div>
 
 
-                {{-- COMPLETED --}}
                 <div class="bg-white rounded-2xl shadow-sm border border-gray-200 px-5 py-4">
 
                     <p class="text-sm font-semibold text-gray-900">
@@ -70,7 +65,6 @@
                 </div>
 
 
-                {{-- REPEAT --}}
                 <div class="bg-white rounded-2xl shadow-sm border border-gray-200 px-5 py-4">
 
                     <p class="text-sm font-semibold text-gray-900">
@@ -86,7 +80,6 @@
             </div>
 
 
-            {{-- RECENT EVALUATIONS --}}
             <div class="bg-white rounded-3xl shadow-lg overflow-hidden mb-8">
 
                 <div class="px-8 py-6 border-b border-gray-100 flex items-center justify-between gap-4">
@@ -115,7 +108,6 @@
                 </div>
 
 
-                {{-- TABLE --}}
                 <div class="overflow-x-auto">
 
                     <table class="w-full text-sm">
@@ -160,7 +152,6 @@
                             <tr class="hover:bg-violet-50/50 transition">
 
 
-                                {{-- TEACHER --}}
                                 <td class="px-6 py-5">
 
                                     <p class="font-bold text-gray-800 uppercase">
@@ -169,20 +160,16 @@
 
                                 </td>
 
-
-                                {{-- SCHOOL --}}
                                 <td class="px-6 py-5 text-gray-600">
                                     {{ $assignment->school_name ?? '-' }}
                                 </td>
 
 
-                                {{-- COMPLETION --}}
                                 <td class="px-6 py-5">
 
                                     <div class="flex justify-center gap-6">
 
 
-                                        {{-- PDPC --}}
                                         <div class="text-center">
 
                                             <span class="block mx-auto w-3 h-3 rounded-full {{ $assignment->pdpc_status === 'Completed' ? 'bg-emerald-500' : ($assignment->pdpc_status === 'Draft' ? 'bg-amber-400' : 'bg-slate-300') }}"></span>
@@ -194,7 +181,6 @@
                                         </div>
 
 
-                                        {{-- FEEDBACK --}}
                                         <div class="text-center">
 
                                             <span class="block mx-auto w-3 h-3 rounded-full {{ $assignment->feedback_status === 'Completed' ? 'bg-emerald-500' : ($assignment->feedback_status === 'Draft' ? 'bg-amber-400' : 'bg-slate-300') }}"></span>
@@ -210,7 +196,6 @@
                                 </td>
 
 
-                                {{-- PROGRESS --}}
                                 <td class="px-6 py-5">
 
                                     <div class="w-28 mx-auto">
@@ -264,7 +249,6 @@
                                 </td>
 
 
-                                {{-- RESULT --}}
                                 <td class="px-6 py-5 text-center">
 
                                     @if($assignment->result === 'REPEAT')
@@ -304,7 +288,6 @@
                                 </td>
 
 
-                                {{-- ACTION --}}
                                 <td class="px-6 py-5 text-center">
 
                                     <a
@@ -349,11 +332,9 @@
             </div>
 
 
-            {{-- PDPC EVALUATION RESULTS --}}
             <div class="bg-white rounded-3xl shadow-lg overflow-hidden">
 
 
-                {{-- HEADER --}}
                 <div class="px-8 py-6 border-b border-gray-100">
 
                     <h2 class="text-xl font-bold text-gray-800">
@@ -363,7 +344,6 @@
                 </div>
 
 
-                {{-- SEARCH & FILTER --}}
                 <div class="px-8 py-6 border-b border-gray-100">
 
                     <form method="GET" action="{{ route('external.dashboard') }}">
@@ -371,7 +351,6 @@
                         <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-12 gap-4 items-end">
 
 
-                            {{-- TEACHER --}}
                             <div class="xl:col-span-4">
 
                                 <label class="block text-xs font-bold uppercase tracking-wider text-gray-600 mb-2">
@@ -388,7 +367,6 @@
                             </div>
 
 
-                            {{-- MONTH --}}
                             <div class="xl:col-span-2">
 
                                 <label class="block text-xs font-bold uppercase tracking-wider text-gray-600 mb-2">
@@ -433,7 +411,6 @@
                             </div>
 
 
-                            {{-- YEAR --}}
                             <div class="xl:col-span-2">
 
                                 <label class="block text-xs font-bold uppercase tracking-wider text-gray-600 mb-2">
@@ -465,7 +442,6 @@
                             </div>
 
 
-                            {{-- LEVEL --}}
                             <div class="xl:col-span-2">
 
                                 <label class="block text-xs font-bold uppercase tracking-wider text-gray-600 mb-2">
@@ -505,7 +481,6 @@
                             </div>
 
 
-                            {{-- BUTTONS --}}
                             <div class="xl:col-span-2 flex gap-2">
 
                                 <button
@@ -533,7 +508,6 @@
                 </div>
 
 
-                {{-- RESULTS TABLE --}}
                 <div class="overflow-x-auto">
 
                     <table class="w-full text-sm">
@@ -581,14 +555,10 @@
 
                             <tr class="hover:bg-violet-50/50 transition">
 
-
-                                {{-- NUMBER --}}
                                 <td class="px-6 py-5 text-center text-gray-500">
                                     {{ $pdpcResults->firstItem() + $loop->index }}
                                 </td>
 
-
-                                {{-- DATE --}}
                                 <td class="px-6 py-5 text-center text-gray-600">
 
                                     {{ $result->observation_date
@@ -597,8 +567,6 @@
 
                                 </td>
 
-
-                                {{-- TEACHER --}}
                                 <td class="px-6 py-5">
 
                                     <p class="font-bold text-gray-800 uppercase">
@@ -615,20 +583,14 @@
 
                                 </td>
 
-
-                                {{-- CLASS --}}
                                 <td class="px-6 py-5 text-center text-gray-600">
                                     {{ $result->class_name ?? '-' }}
                                 </td>
 
-
-                                {{-- SUBJECT --}}
                                 <td class="px-6 py-5 text-gray-600">
                                     {{ $result->subject_name ?? '-' }}
                                 </td>
 
-
-                                {{-- SCORE --}}
                                 <td class="px-6 py-5 text-center">
 
                                     <span class="font-bold text-gray-800">
@@ -637,8 +599,6 @@
 
                                 </td>
 
-
-                                {{-- LEVEL --}}
                                 <td class="px-6 py-5 text-center">
 
                                     @if($result->achievement_level === 'Excellent')
@@ -716,7 +676,6 @@
                 </div>
 
 
-                {{-- PAGINATION --}}
                 @if($pdpcResults->hasPages())
 
                 <div class="px-8 py-5 border-t border-gray-100">

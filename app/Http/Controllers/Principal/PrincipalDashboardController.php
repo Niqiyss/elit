@@ -19,10 +19,10 @@ class PrincipalDashboardController extends Controller
             ->where('schoolID', $principal->schoolID)
             ->first();
 
-        $search = trim((string) $request->get('search', ''));
-        $month = $request->get('month', 'all');
-        $year = $request->get('year', 'all');
-        $status = $request->get('status', 'all');
+        $search = trim((string) $request->input('search', ''));
+        $month = $request->input('month', 'all');
+        $year = $request->input('year', 'all');
+        $status = $request->input('status', 'all');
 
         // Get active new teachers
         $teachers = DB::table('guru_new')
@@ -31,7 +31,7 @@ class PrincipalDashboardController extends Controller
             ->orderBy('gn_name')
             ->get();
 
-        // Prepare evaluation progress
+        // evaluation progress
         foreach ($teachers as $teacher) {
             $gnId = $teacher->gn_id;
 
@@ -86,18 +86,18 @@ class PrincipalDashboardController extends Controller
 
             $preStatus =
                 $teacher->pre_completed === 1
-                    ? 'Completed'
-                    : 'In Progress';
+                ? 'Completed'
+                : 'In Progress';
 
             $externalStatus =
                 $teacher->external_completed === 2
-                    ? 'Completed'
-                    : 'In Progress';
+                ? 'Completed'
+                : 'In Progress';
 
             $postStatus =
                 $teacher->post_completed === 2
-                    ? 'Completed'
-                    : 'In Progress';
+                ? 'Completed'
+                : 'In Progress';
 
             if (
                 $externalPdpc
@@ -141,8 +141,8 @@ class PrincipalDashboardController extends Controller
 
             $teacher->last_evaluation_date =
                 $dates->isNotEmpty()
-                    ? $dates->max()
-                    : null;
+                ? $dates->max()
+                : null;
         }
 
         // Build summary
@@ -195,8 +195,8 @@ class PrincipalDashboardController extends Controller
         // Use selected year or current year for PDPC chart
         $chartYear =
             $year !== 'all'
-                ? (int) $year
-                : (int) now()->year;
+            ? (int) $year
+            : (int) now()->year;
 
         // Build filtered PRE query
         $preQuery = DB::table('pre_response')
@@ -425,9 +425,9 @@ class PrincipalDashboardController extends Controller
 
                 $pdpcTrend['external_count'][$monthNumber - 1] =
                     $externalMonthly
-                        ->pluck('gn_id')
-                        ->unique()
-                        ->count();
+                    ->pluck('gn_id')
+                    ->unique()
+                    ->count();
             }
 
             if ($postMonthly->isNotEmpty()) {
@@ -441,9 +441,9 @@ class PrincipalDashboardController extends Controller
 
                 $pdpcTrend['post_count'][$monthNumber - 1] =
                     $postMonthly
-                        ->pluck('gn_id')
-                        ->unique()
-                        ->count();
+                    ->pluck('gn_id')
+                    ->unique()
+                    ->count();
             }
         }
 

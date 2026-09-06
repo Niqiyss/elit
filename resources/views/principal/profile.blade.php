@@ -445,9 +445,7 @@
                                 type="submit"
                                 class="px-5 py-2 bg-blue-700
                                        text-white font-semibold rounded-xl">
-
                                 Update Password
-
                             </button>
 
                         </div>

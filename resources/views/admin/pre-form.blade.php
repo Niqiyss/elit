@@ -11,7 +11,7 @@
 
         <div class="max-w-7xl mx-auto px-6">
 
-            {{-- Header --}}
+
             <div class="relative bg-gradient-to-br from-slate-900 via-violet-950 to-purple-900 rounded-3xl px-8 py-7 shadow-xl overflow-hidden mb-8">
 
                 <div class="absolute right-0 top-0 translate-x-10 -translate-y-10 w-72 h-72 bg-purple-500/10 rounded-full blur-3xl"></div>
@@ -31,7 +31,6 @@
             </div>
 
 
-            {{-- Success Message --}}
             @if(session('success'))
 
             <div class="mb-6 px-5 py-4 bg-green-100 border border-green-200 text-green-700 rounded-xl">
@@ -41,7 +40,6 @@
             @endif
 
 
-            {{-- Error Message --}}
             @if(session('error'))
 
             <div class="mb-6 px-5 py-4 bg-red-100 border border-red-200 text-red-700 rounded-xl">
@@ -51,7 +49,6 @@
             @endif
 
 
-            {{-- Validation Errors --}}
             @if($errors->any())
 
             <div class="mb-6 px-5 py-4 bg-red-100 border border-red-200 text-red-700 rounded-xl">
@@ -73,12 +70,11 @@
             @endif
 
 
-            {{-- Create First Form --}}
             @if($forms->isEmpty())
 
             <div class="bg-white rounded-3xl shadow-sm border border-gray-200 overflow-hidden mb-24">
 
-                {{-- Create Header --}}
+
                 <div class="px-6 py-5 border-b border-gray-100">
 
                     <h2 class="text-lg font-bold text-gray-900">
@@ -92,7 +88,6 @@
                 </div>
 
 
-                {{-- Create Form --}}
                 <div class="p-6">
 
                     <form
@@ -104,7 +99,6 @@
 
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
 
-                            {{-- Form Name --}}
                             <div>
 
                                 <label class="block text-sm font-semibold text-gray-700 mb-2">
@@ -121,7 +115,6 @@
                             </div>
 
 
-                            {{-- Instruction --}}
                             <div>
 
                                 <label class="block text-sm font-semibold text-gray-700 mb-2">
@@ -137,7 +130,6 @@
                             </div>
 
 
-                            {{-- Minimum Score --}}
                             <div>
 
                                 <label class="block text-sm font-semibold text-gray-700 mb-2">
@@ -155,7 +147,6 @@
                             </div>
 
 
-                            {{-- Maximum Score --}}
                             <div>
 
                                 <label class="block text-sm font-semibold text-gray-700 mb-2">
@@ -175,7 +166,6 @@
                         </div>
 
 
-                        {{-- Create Button --}}
                         <div class="flex justify-end mt-6">
 
                             <button
@@ -201,7 +191,6 @@
             @endphp
 
 
-            {{-- Version Table --}}
             <div class="bg-white border border-gray-200 rounded-3xl shadow-sm mb-24">
 
                 <div class="overflow-x-auto rounded-3xl">
@@ -243,7 +232,7 @@
 
                             <tr class="{{ $form->status === 'Active' ? 'bg-blue-50/40' : 'bg-white' }} hover:bg-slate-50 transition">
 
-                                {{-- Version --}}
+
                                 <td class="px-6 py-6">
 
                                     <div class="w-14 h-14 rounded-2xl bg-blue-600 text-white flex items-center justify-center text-lg font-bold">
@@ -255,7 +244,6 @@
                                 </td>
 
 
-                                {{-- Form Content --}}
                                 <td class="px-6 py-6">
 
                                     <p class="font-bold text-slate-900 text-base mb-2">
@@ -327,7 +315,6 @@
                                 </td>
 
 
-                                {{-- Status --}}
                                 <td class="px-6 py-6 text-center">
 
                                     @if($form->status === 'Active')
@@ -347,7 +334,6 @@
                                 </td>
 
 
-                                {{-- Usage --}}
                                 <td class="px-6 py-6 text-center">
 
                                     @if($form->is_used)
@@ -367,14 +353,13 @@
                                 </td>
 
 
-                                {{-- Action --}}
                                 <td class="px-6 py-6 text-center">
 
                                     <button
                                         type="button"
-                                        data-preview="{{ route('admin.pre.form.preview', $form) }}"
-                                        data-edit="{{ route('admin.pre.form.edit', $form) }}"
-                                        data-delete="{{ !$form->is_used ? route('admin.pre.form.delete', $form) : '' }}"
+                                        data-preview="{{ route('admin.pre.form.preview', $form->formID) }}"
+                                        data-edit="{{ route('admin.pre.form.edit', $form->formID) }}"
+                                        data-delete="{{ !$form->is_used ? route('admin.pre.form.delete', $form->formID) : '' }}"
                                         data-version="{{ $form->version }}"
                                         onclick="openActionMenu(this)"
                                         class="w-10 h-10 inline-flex items-center justify-center rounded-xl text-gray-500 hover:text-gray-800 hover:bg-gray-200 transition">
@@ -414,12 +399,11 @@
     </div>
 
 
-    {{-- Floating Action Menu --}}
     <div
         id="floatingActionMenu"
         class="hidden fixed w-44 bg-white border border-gray-200 rounded-xl shadow-xl z-[9999] overflow-hidden">
 
-        {{-- Preview --}}
+
         <a
             id="actionPreview"
             href="#"
@@ -449,7 +433,6 @@
         </a>
 
 
-        {{-- Edit --}}
         <a
             id="actionEdit"
             href="#"
@@ -477,7 +460,6 @@
         </a>
 
 
-        {{-- Delete --}}
         <form
             id="actionDeleteForm"
             method="POST"
@@ -517,7 +499,6 @@
     </div>
 
 
-    {{-- Sticky Action --}}
     <div class="fixed bottom-4 left-0 right-0 z-40 px-6 pointer-events-none">
 
         <div class="max-w-7xl mx-auto">
@@ -526,7 +507,7 @@
 
                 <div class="flex items-center justify-between">
 
-                    {{-- Back --}}
+
                     <a
                         href="{{ route('admin.manage.form') }}"
                         class="px-5 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold text-sm rounded-xl transition">
@@ -536,12 +517,11 @@
                     </a>
 
 
-                    {{-- New Version --}}
                     @if($forms->isNotEmpty() && $activeForm)
 
                     <form
                         method="POST"
-                        action="{{ route('admin.pre.form.new-version', $activeForm) }}">
+                        action="{{ route('admin.pre.form.new-version', $activeForm->formID) }}">
 
                         @csrf
 
@@ -569,166 +549,58 @@
 
     <script>
         function openActionMenu(button) {
+            const menu = document.getElementById('floatingActionMenu');
+            const preview = document.getElementById('actionPreview');
+            const edit = document.getElementById('actionEdit');
+            const deleteForm = document.getElementById('actionDeleteForm');
+            const deleteButton = document.getElementById('actionDeleteButton');
 
-            const menu =
-                document.getElementById(
-                    'floatingActionMenu'
-                );
-
-            const preview =
-                document.getElementById(
-                    'actionPreview'
-                );
-
-            const edit =
-                document.getElementById(
-                    'actionEdit'
-                );
-
-            const deleteForm =
-                document.getElementById(
-                    'actionDeleteForm'
-                );
-
-            const deleteButton =
-                document.getElementById(
-                    'actionDeleteButton'
-                );
-
-
-            preview.href =
-                button.dataset.preview;
-
-            edit.href =
-                button.dataset.edit;
-
+            preview.href = button.dataset.preview;
+            edit.href = button.dataset.edit;
 
             if (button.dataset.delete) {
+                deleteForm.action = button.dataset.delete;
+                deleteForm.classList.remove('hidden');
 
-                deleteForm.action =
-                    button.dataset.delete;
-
-                deleteForm.classList.remove(
-                    'hidden'
-                );
-
-                deleteButton.onclick =
-                    function() {
-
-                        return confirm(
-                            'Delete Version ' +
-                            button.dataset.version +
-                            '?'
-                        );
-                    };
-
+                deleteButton.onclick = function() {
+                    return confirm('Delete Version ' + button.dataset.version + '?');
+                };
             } else {
-
-                deleteForm.classList.add(
-                    'hidden'
-                );
-
+                deleteForm.classList.add('hidden');
             }
 
-
-            const rect =
-                button.getBoundingClientRect();
-
+            const rect = button.getBoundingClientRect();
             const menuWidth = 176;
+            const menuHeight = button.dataset.delete ? 145 : 98;
 
-            const menuHeight =
-                button.dataset.delete ?
-                145 :
-                98;
+            let left = rect.right - menuWidth;
+            let top = rect.bottom + 6;
 
+            if (left < 10) left = 10;
 
-            let left =
-                rect.right -
-                menuWidth;
-
-            let top =
-                rect.bottom +
-                6;
-
-
-            if (left < 10) {
-
-                left = 10;
-
+            if (top + menuHeight > window.innerHeight - 10) {
+                top = rect.top - menuHeight - 6;
             }
 
-
-            if (
-                top + menuHeight >
-                window.innerHeight - 10
-            ) {
-
-                top =
-                    rect.top -
-                    menuHeight -
-                    6;
-
-            }
-
-
-            menu.style.left =
-                left + 'px';
-
-            menu.style.top =
-                top + 'px';
-
-            menu.classList.remove(
-                'hidden'
-            );
-
+            menu.style.left = left + 'px';
+            menu.style.top = top + 'px';
+            menu.classList.remove('hidden');
         }
 
 
-        document.addEventListener(
-            'click',
-            function(event) {
+        document.addEventListener('click', function(event) {
+            const menu = document.getElementById('floatingActionMenu');
 
-                const menu =
-                    document.getElementById(
-                        'floatingActionMenu'
-                    );
-
-
-                if (
-                    !event.target.closest(
-                        '[onclick="openActionMenu(this)"]'
-                    ) &&
-                    !event.target.closest(
-                        '#floatingActionMenu'
-                    )
-                ) {
-
-                    menu.classList.add(
-                        'hidden'
-                    );
-
-                }
-
+            if (!event.target.closest('[onclick="openActionMenu(this)"]') &&
+                !event.target.closest('#floatingActionMenu')) {
+                menu.classList.add('hidden');
             }
-        );
+        });
 
 
-        window.addEventListener(
-            'scroll',
-            function() {
-
-                document
-                    .getElementById(
-                        'floatingActionMenu'
-                    )
-                    .classList
-                    .add(
-                        'hidden'
-                    );
-
-            },
-            true
-        );
+        window.addEventListener('scroll', function() {
+            document.getElementById('floatingActionMenu').classList.add('hidden');
+        }, true);
     </script>
 
 </x-app-layout>

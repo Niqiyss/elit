@@ -4,8 +4,6 @@
 
         <div class="max-w-7xl mx-auto">
 
-
-            {{-- HEADER --}}
             <div class="relative bg-gradient-to-br from-slate-900 via-violet-950 to-purple-900 rounded-3xl p-8 shadow-xl overflow-hidden mb-8">
 
                 <div class="absolute right-0 top-0 translate-x-10 -translate-y-10 w-72 h-72 bg-purple-500/10 rounded-full blur-3xl"></div>
@@ -29,11 +27,8 @@
             </div>
 
 
-            {{-- SUMMARY CARDS --}}
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
 
-
-                {{-- TOTAL --}}
                 <div class="bg-white rounded-2xl shadow-sm border border-gray-200 px-5 py-4">
 
                     <p class="text-sm font-semibold text-gray-900">
@@ -47,7 +42,6 @@
                 </div>
 
 
-                {{-- COMPLETED --}}
                 <div class="bg-white rounded-2xl shadow-sm border border-gray-200 px-5 py-4">
 
                     <p class="text-sm font-semibold text-gray-900">
@@ -61,7 +55,6 @@
                 </div>
 
 
-                {{-- IN PROGRESS --}}
                 <div class="bg-white rounded-2xl shadow-sm border border-gray-200 px-5 py-4">
 
                     <p class="text-sm font-semibold text-gray-900">
@@ -75,7 +68,6 @@
                 </div>
 
 
-                {{-- REPEAT REQUIRED --}}
                 <div class="bg-white rounded-2xl shadow-sm border border-gray-200 px-5 py-4">
 
                     <p class="text-sm font-semibold text-gray-900">
@@ -91,7 +83,6 @@
             </div>
 
 
-            {{-- SEARCH & FILTER --}}
             <div class="bg-white rounded-3xl border border-slate-200 shadow-sm p-6 mb-8">
 
                 <div class="mb-5">
@@ -112,7 +103,6 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-4 items-end">
 
 
-                        {{-- TEACHER --}}
                         <div class="lg:col-span-4">
 
                             <label class="block text-xs font-bold uppercase tracking-wider text-black mb-2">
@@ -149,7 +139,6 @@
                         </div>
 
 
-                        {{-- MONTH --}}
                         <div class="lg:col-span-2">
 
                             <label class="block text-xs font-bold uppercase tracking-wider text-black mb-2">
@@ -194,7 +183,6 @@
                         </div>
 
 
-                        {{-- YEAR --}}
                         <div class="lg:col-span-2">
 
                             <label class="block text-xs font-bold uppercase tracking-wider text-black mb-2">
@@ -226,7 +214,6 @@
                         </div>
 
 
-                        {{-- STATUS --}}
                         <div class="lg:col-span-2">
 
                             <label class="block text-xs font-bold uppercase tracking-wider text-black mb-2">
@@ -258,24 +245,19 @@
                         </div>
 
 
-                        {{-- BUTTONS --}}
                         <div class="lg:col-span-2 flex gap-2">
 
                             <button
                                 type="submit"
                                 class="flex-1 px-3 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold rounded-xl transition">
-
                                 Filter
-
                             </button>
 
 
                             <a
                                 href="{{ route('principal.dashboard') }}"
                                 class="px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-black text-sm font-semibold rounded-xl transition">
-
                                 Reset
-
                             </a>
 
                         </div>
@@ -287,11 +269,8 @@
             </div>
 
 
-            {{-- PERFORMANCE CHARTS --}}
             <div class="grid grid-cols-1 xl:grid-cols-2 gap-6 mb-8">
 
-
-                {{-- PRE PERFORMANCE --}}
                 <div class="bg-white rounded-3xl border border-slate-200 shadow-lg overflow-hidden">
 
                     <div class="px-7 py-5 border-b border-slate-100">
@@ -336,7 +315,6 @@
                 </div>
 
 
-                {{-- PDPC PERFORMANCE --}}
                 <div class="bg-white rounded-3xl border border-slate-200 shadow-lg overflow-hidden">
 
                     <div class="px-7 py-5 border-b border-slate-100 flex items-start justify-between gap-4">
@@ -392,7 +370,6 @@
             </div>
 
 
-            {{-- EVALUATION REPORT --}}
             <div class="bg-white rounded-3xl border border-slate-200 shadow-lg overflow-hidden">
 
 
@@ -473,14 +450,10 @@
 
                             <tr class="hover:bg-slate-50 transition">
 
-
-                                {{-- NUMBER --}}
                                 <td class="px-5 py-5 text-center text-sm text-black">
                                     {{ $reportTeachers->firstItem() + $loop->index }}
                                 </td>
 
-
-                                {{-- TEACHER --}}
                                 <td class="px-5 py-5">
 
                                     <p class="font-semibold text-black">
@@ -489,26 +462,20 @@
 
                                 </td>
 
-
-                                {{-- PRE --}}
                                 <td class="px-5 py-5 text-center font-bold text-black">
                                     {{ $teacher->pre_completed }}/{{ $teacher->pre_total }}
                                 </td>
 
-
-                                {{-- EXTERNAL --}}
                                 <td class="px-5 py-5 text-center font-bold text-black">
                                     {{ $teacher->external_completed }}/{{ $teacher->external_total }}
                                 </td>
 
 
-                                {{-- POST --}}
                                 <td class="px-5 py-5 text-center font-bold text-black">
                                     {{ $teacher->post_completed }}/{{ $teacher->post_total }}
                                 </td>
 
 
-                                {{-- STATUS --}}
                                 <td class="px-5 py-5 text-center">
 
                                     @if($teacher->evaluation_status === 'Completed')
@@ -536,7 +503,6 @@
                                 </td>
 
 
-                                {{-- LAST EVALUATION --}}
                                 <td class="px-5 py-5 text-center text-sm text-black">
 
                                     {{ $teacher->last_evaluation_date
@@ -546,7 +512,6 @@
                                 </td>
 
 
-                                {{-- ACTION --}}
                                 <td class="px-5 py-5 text-center">
 
                                     <a
@@ -589,7 +554,6 @@
                 </div>
 
 
-                {{-- PAGINATION --}}
                 @if($reportTeachers->hasPages())
 
                 <div class="px-6 py-5 border-t border-slate-100">

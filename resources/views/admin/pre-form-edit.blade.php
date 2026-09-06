@@ -8,7 +8,6 @@
 
         <div class="max-w-7xl mx-auto px-6">
 
-            {{-- Header --}}
             <div class="relative bg-gradient-to-br from-slate-900 via-violet-950 to-purple-900 rounded-3xl px-8 py-6 shadow-xl overflow-hidden mb-8">
 
                 <div class="absolute right-0 top-0 translate-x-10 -translate-y-10 w-72 h-72 bg-purple-500/10 rounded-full blur-3xl"></div>
@@ -71,7 +70,7 @@
             </div>
             @endif
 
-            {{-- Form Information --}}
+
             <div class="bg-white rounded-3xl shadow-lg overflow-hidden mb-8">
 
                 <div class="px-6 py-5 border-b border-gray-100 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
@@ -91,7 +90,7 @@
 
                 <div class="p-6">
 
-                    <form id="formInformation" method="POST" action="{{ route('admin.pre.form.update', $form) }}">
+                    <form id="formInformation" method="POST" action="{{ route('admin.pre.form.update', $form->formID) }}">
                         @csrf
                         @method('PUT')
 
@@ -135,7 +134,7 @@
 
             </div>
 
-            {{-- Form Content --}}
+
             <div class="bg-white rounded-3xl shadow-lg overflow-hidden mb-24">
 
                 <div class="px-6 py-5 border-b border-gray-100 flex items-center justify-between">
@@ -153,7 +152,7 @@
 
                 <div class="border-b border-gray-100">
 
-                    {{-- Section --}}
+
                     <div class="px-6 py-5 bg-blue-50">
 
                         <div class="flex items-center justify-between gap-4">
@@ -200,7 +199,7 @@
 
                     </div>
 
-                    {{-- Section Edit --}}
+
                     <div id="section-edit-{{ $section->sectionID }}" class="hidden px-6 py-5 bg-slate-50">
 
                         <form method="POST" action="{{ route('admin.pre.section.update', $section->sectionID) }}">
@@ -222,7 +221,7 @@
 
                     </div>
 
-                    {{-- Criteria --}}
+
                     <div class="divide-y divide-gray-100">
 
                         @foreach($section->criteria as $criteria)
@@ -270,7 +269,7 @@
 
                             </div>
 
-                            {{-- Criteria Edit --}}
+
                             <div id="criteria-edit-{{ $criteria->criteriaID }}" class="hidden mt-4 ml-12 p-4 bg-slate-50 rounded-xl">
 
                                 <form method="POST" action="{{ route('admin.pre.criteria.update', $criteria->criteriaID) }}">
@@ -298,7 +297,7 @@
 
                     </div>
 
-                    {{-- Add Criteria --}}
+
                     @if(!$formUsed)
 
                     <div class="px-6 py-4 bg-slate-50">
@@ -339,7 +338,7 @@
 
                 @endforelse
 
-                {{-- Add Section --}}
+
                 @if(!$formUsed)
 
                 <div class="px-6 py-5 bg-slate-50">
@@ -378,7 +377,7 @@
 
     </div>
 
-    {{-- Sticky Action --}}
+
     <div class="fixed bottom-4 left-0 right-0 z-40 px-6 pointer-events-none">
 
         <div class="max-w-7xl mx-auto">
@@ -387,13 +386,23 @@
 
                 <div class="flex items-center justify-between">
 
-                    <a href="{{ route('admin.pre.form') }}" class="px-5 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold text-sm rounded-xl">Back</a>
+                    <a href="{{ route('admin.pre.form') }}"
+                        class="px-5 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold text-sm rounded-xl">
+                        Back
+                    </a>
 
                     <div class="flex items-center gap-3">
 
-                        <a href="{{ route('admin.pre.form.preview', $form) }}" class="px-5 py-2.5 bg-sky-100 hover:bg-sky-200 text-sky-700 font-semibold text-sm rounded-xl">Preview</a>
+                        <a href="{{ route('admin.pre.form.preview', $form->formID) }}"
+                            class="px-5 py-2.5 bg-sky-100 hover:bg-sky-200 text-sky-700 font-semibold text-sm rounded-xl">
+                            Preview
+                        </a>
 
-                        <button type="submit" form="formInformation" class="px-5 py-2.5 bg-blue-700 hover:bg-blue-800 text-white font-semibold text-sm rounded-xl">Save</button>
+                        <button type="submit"
+                            form="formInformation"
+                            class="px-5 py-2.5 bg-blue-700 hover:bg-blue-800 text-white font-semibold text-sm rounded-xl">
+                            Save
+                        </button>
 
                     </div>
 

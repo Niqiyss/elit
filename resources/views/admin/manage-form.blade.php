@@ -10,13 +10,9 @@
 
         <div class="max-w-7xl mx-auto px-6">
 
-            {{-- Header --}}
-            <div class="relative bg-gradient-to-br from-slate-900 via-violet-950 to-purple-900
-                        rounded-3xl p-8 shadow-xl overflow-hidden mb-8">
+            <div class="relative bg-gradient-to-br from-slate-900 via-violet-950 to-purple-900 rounded-3xl p-8 shadow-xl overflow-hidden mb-8">
 
-                <div class="absolute right-0 top-0 translate-x-10 -translate-y-10
-                            w-72 h-72 bg-purple-500/10 rounded-full blur-3xl">
-                </div>
+                <div class="absolute right-0 top-0 translate-x-10 -translate-y-10 w-72 h-72 bg-purple-500/10 rounded-full blur-3xl"></div>
 
                 <div class="relative z-10">
 
@@ -32,8 +28,6 @@
 
             </div>
 
-
-            {{-- Observation forms --}}
             <div class="bg-white rounded-3xl shadow-lg overflow-hidden">
 
                 <div class="px-8 py-6 border-b border-gray-100">
@@ -47,7 +41,6 @@
                     </p>
 
                 </div>
-
 
                 <div class="overflow-x-auto">
 
@@ -73,10 +66,8 @@
 
                         </thead>
 
-
                         <tbody class="divide-y divide-gray-100">
 
-                            {{-- Pre observation form --}}
                             <tr class="hover:bg-violet-50/50 transition">
 
                                 <td class="px-6 py-5 text-gray-600">
@@ -101,17 +92,13 @@
                                                px-5 py-2 rounded-xl
                                                font-semibold text-sm
                                                shadow transition">
-
                                         Manage
-
                                     </a>
 
                                 </td>
 
                             </tr>
 
-
-                            {{-- External observation form --}}
                             <tr class="hover:bg-violet-50/50 transition">
 
                                 <td class="px-6 py-5 text-gray-600">
@@ -163,9 +150,7 @@
                                                px-5 py-2 rounded-xl
                                                font-semibold text-sm
                                                shadow transition">
-
                                         Manage
-
                                     </a>
 
                                 </td>
@@ -181,7 +166,6 @@
             </div>
 
 
-            {{-- Upload evaluation form --}}
             <div class="bg-white rounded-3xl shadow-lg overflow-hidden mt-8">
 
                 <div class="px-8 py-6 border-b border-gray-100">
@@ -197,7 +181,6 @@
                 </div>
 
 
-                {{-- Upload form --}}
                 <div class="p-8 border-b border-gray-100">
 
                     <form
@@ -214,9 +197,7 @@
                                 <label
                                     for="form_name"
                                     class="block text-gray-700 text-sm font-semibold mb-2">
-
                                     Form Name
-
                                 </label>
 
                                 <input
@@ -246,9 +227,7 @@
                                 <label
                                     for="file"
                                     class="block text-gray-700 text-sm font-semibold mb-2">
-
                                     Upload File
-
                                 </label>
 
                                 <input
@@ -262,7 +241,7 @@
                                            px-4 py-2 bg-white">
 
                                 <p class="text-xs text-gray-400 mt-2">
-                                    PDF, XLS or XLSX only. Maximum 10MB.
+                                    PDF, XLS or XLSX only. Maximum 10MB
                                 </p>
 
                                 @error('file')
@@ -281,9 +260,7 @@
                                 <label
                                     for="description"
                                     class="block text-gray-700 text-sm font-semibold mb-2">
-
                                     Description
-
                                 </label>
 
                                 <input
@@ -346,7 +323,6 @@
                 </div>
 
 
-                {{-- Uploaded evaluation forms --}}
                 <div class="overflow-x-auto">
 
                     <table class="w-full text-sm">
@@ -413,17 +389,13 @@
 
                                     @if($document->file_type === 'PDF')
 
-                                    <span class="px-3 py-1 rounded-full
-                                                         text-xs font-semibold
-                                                         bg-red-100 text-red-700">
+                                    <span class="px-3 py-1 rounded-full text-xs font-semibold bg-red-100 text-red-700">
                                         PDF
                                     </span>
 
                                     @else
 
-                                    <span class="px-3 py-1 rounded-full
-                                                         text-xs font-semibold
-                                                         bg-green-100 text-green-700">
+                                    <span class="px-3 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-700">
                                         EXCEL
                                     </span>
 

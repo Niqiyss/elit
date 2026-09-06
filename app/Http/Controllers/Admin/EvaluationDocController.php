@@ -84,7 +84,7 @@ class EvaluationDocController extends Controller
         );
 
         if (!file_exists($filePath)) {
-            abort(404, 'File not found.');
+            abort(404, 'File not found');
         }
 
         return response()->download(
@@ -120,7 +120,7 @@ class EvaluationDocController extends Controller
             ->route('admin.manage.form')
             ->with(
                 'success',
-                'Evaluation document deleted successfully'
+                'Document deleted successfully'
             );
     }
 }

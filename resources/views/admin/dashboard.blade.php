@@ -4,7 +4,6 @@
 
         <div class="max-w-7xl mx-auto">
 
-            {{-- Header --}}
             <div class="relative bg-gradient-to-br from-slate-900 via-violet-950 to-purple-900 rounded-3xl p-8 shadow-xl overflow-hidden mb-8">
 
                 <div class="absolute right-0 top-0 translate-x-10 -translate-y-10 w-72 h-72 bg-purple-500/10 rounded-full blur-3xl"></div>
@@ -26,20 +25,15 @@
                     <a
                         href="{{ route('admin.manage.form') }}"
                         class="px-5 py-2.5 bg-white text-violet-900 rounded-xl text-sm font-semibold shadow hover:bg-violet-50 transition">
-
                         Manage Forms
-
                     </a>
 
                 </div>
 
             </div>
 
-
-            {{-- Summary Cards --}}
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
 
-                {{-- Total Forms --}}
                 <div class="bg-white rounded-2xl border border-slate-200 shadow-sm px-5 py-4">
 
                     <p class="text-sm font-semibold text-slate-900">
@@ -53,7 +47,6 @@
                 </div>
 
 
-                {{-- Active Forms --}}
                 <div class="bg-white rounded-2xl border border-slate-200 shadow-sm px-5 py-4">
 
                     <p class="text-sm font-semibold text-slate-900">
@@ -66,8 +59,6 @@
 
                 </div>
 
-
-                {{-- Total Records --}}
                 <div class="bg-white rounded-2xl border border-slate-200 shadow-sm px-5 py-4">
 
                     <p class="text-sm font-semibold text-slate-900">
@@ -82,8 +73,6 @@
 
             </div>
 
-
-            {{-- Observation Forms --}}
             <div class="bg-white rounded-3xl border border-slate-200 shadow-sm p-7 mb-8">
 
                 <div class="mb-6">
@@ -97,7 +86,6 @@
 
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
 
-                    {{-- PRE Form --}}
                     <a
                         href="{{ route('admin.pre.form') }}"
                         class="group border border-slate-200 rounded-2xl p-5 hover:border-violet-400 hover:bg-violet-50/50 transition">
@@ -130,7 +118,6 @@
                     </a>
 
 
-                    {{-- PDPC Form --}}
                     <a
                         href="{{ route('admin.pdpc.form') }}"
                         class="group border border-slate-200 rounded-2xl p-5 hover:border-blue-400 hover:bg-blue-50/50 transition">
@@ -163,7 +150,6 @@
                     </a>
 
 
-                    {{-- Feedback Form --}}
                     <a
                         href="{{ route('admin.post.form') }}"
                         class="group border border-slate-200 rounded-2xl p-5 hover:border-emerald-400 hover:bg-emerald-50/50 transition">
@@ -200,10 +186,8 @@
             </div>
 
 
-            {{-- Observation Audit --}}
             <div class="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden">
 
-                {{-- Audit Header --}}
                 <div class="px-8 py-6 border-b border-slate-100 flex items-center justify-between gap-4">
 
                     <div>
@@ -221,15 +205,12 @@
                     <a
                         href="{{ route('admin.audit.observation') }}"
                         class="inline-flex items-center justify-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold rounded-lg transition">
-
                         View Audit
-
                     </a>
 
                 </div>
 
 
-                {{-- Audit Table --}}
                 <div class="overflow-x-auto">
 
                     <table class="w-full text-sm">
@@ -285,7 +266,6 @@
 
                             <tr class="hover:bg-violet-50/50 transition">
 
-                                {{-- Number --}}
                                 <td class="px-5 py-5 text-slate-900">
 
                                     {{ $loop->iteration }}
@@ -293,7 +273,6 @@
                                 </td>
 
 
-                                {{-- Date --}}
                                 <td class="px-5 py-5 text-slate-900">
 
                                     {{ $audit->audit_date
@@ -303,7 +282,6 @@
                                 </td>
 
 
-                                {{-- Time --}}
                                 <td class="px-5 py-5 text-slate-900">
 
                                     {{ $audit->audit_time
@@ -312,8 +290,6 @@
 
                                 </td>
 
-
-                                {{-- Observed By --}}
                                 <td class="px-5 py-5">
 
                                     <p class="font-semibold text-slate-900 uppercase">
@@ -323,7 +299,6 @@
                                 </td>
 
 
-                                {{-- Role --}}
                                 <td class="px-5 py-5">
 
                                     @if($audit->role === 'Observer')
@@ -349,7 +324,6 @@
                                 </td>
 
 
-                                {{-- Teacher Observed --}}
                                 <td class="px-5 py-5">
 
                                     <p class="font-semibold text-slate-900 uppercase">
@@ -359,7 +333,6 @@
                                 </td>
 
 
-                                {{-- Form --}}
                                 <td class="px-5 py-5 text-slate-900">
 
                                     {{ $audit->form_name ?? '-' }}
@@ -367,7 +340,6 @@
                                 </td>
 
 
-                                {{-- Stage --}}
                                 <td class="px-5 py-5">
 
                                     @if($audit->stage === 'PRE')
@@ -399,7 +371,6 @@
                                 </td>
 
 
-                                {{-- Action --}}
                                 <td class="px-5 py-5 text-center">
 
                                     @if($audit->action === 'Submitted')
@@ -435,9 +406,7 @@
                                 <td
                                     colspan="9"
                                     class="text-center py-12 text-slate-900">
-
-                                    No observation audit records found.
-
+                                    No observation audit records found
                                 </td>
 
                             </tr>

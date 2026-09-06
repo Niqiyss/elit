@@ -53,7 +53,6 @@
                 @csrf
 
 
-                {{-- Email --}}
                 <div class="mb-5">
 
                     <label
@@ -82,7 +81,6 @@
                 </div>
 
 
-                {{-- Password --}}
                 <div class="mb-7">
 
                     <label
@@ -110,7 +108,6 @@
                                    transition duration-200">
 
 
-                        {{-- Password Eye --}}
                         <button
                             type="button"
                             onclick="togglePassword()"
@@ -143,7 +140,6 @@
                             </svg>
 
 
-                            {{-- Closed Eye --}}
                             <svg
                                 id="eyeClosed"
                                 xmlns="http://www.w3.org/2000/svg"
@@ -174,7 +170,6 @@
                 </div>
 
 
-                {{-- Login Button --}}
                 <button
                     type="submit"
                     class="w-full h-12
@@ -194,7 +189,7 @@
     </div>
 
 
-    {{-- Toggle Password --}}
+
     <script>
         function togglePassword() {
 
@@ -213,7 +208,7 @@
     </script>
 
 
-    {{-- Success Message --}}
+
     @if(session('success'))
     <script>
         Swal.fire({
@@ -226,7 +221,6 @@
     @endif
 
 
-    {{-- Error Message --}}
     @if($errors->any())
     <script>
         Swal.fire({

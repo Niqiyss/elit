@@ -7,7 +7,6 @@
     <div class="py-10 bg-gray-100 min-h-screen">
         <div class="max-w-7xl mx-auto px-6">
 
-            {{-- Header --}}
             <div class="relative bg-gradient-to-br from-slate-900 via-violet-950 to-purple-900 rounded-3xl px-8 py-7 shadow-xl overflow-hidden mb-8">
                 <div class="absolute right-0 top-0 translate-x-10 -translate-y-10 w-72 h-72 bg-purple-500/10 rounded-full blur-3xl"></div>
 
@@ -17,17 +16,15 @@
                 </div>
             </div>
 
-            {{-- Success --}}
+
             @if(session('success'))
             <div class="mb-6 px-5 py-4 bg-green-100 border border-green-200 text-green-700 rounded-xl">{{ session('success') }}</div>
             @endif
 
-            {{-- Error --}}
             @if(session('error'))
             <div class="mb-6 px-5 py-4 bg-red-100 border border-red-200 text-red-700 rounded-xl">{{ session('error') }}</div>
             @endif
 
-            {{-- Validation --}}
             @if($errors->any())
             <div class="mb-6 px-5 py-4 bg-red-100 border border-red-200 text-red-700 rounded-xl">
                 <ul class="list-disc list-inside text-sm">
@@ -38,16 +35,18 @@
             </div>
             @endif
 
+
             @if($forms->isEmpty())
 
-            {{-- First Form --}}
             <div class="bg-white rounded-3xl shadow-sm border border-gray-200 overflow-hidden mb-24">
+
                 <div class="px-6 py-5 border-b border-gray-100">
                     <h2 class="text-lg font-bold text-gray-900">Create Feedback Observation Form</h2>
                     <p class="text-sm text-gray-400 mt-1">Create the first version of the form</p>
                 </div>
 
                 <div class="p-6">
+
                     <form method="POST" action="{{ route('admin.post.form.store') }}">
                         @csrf
 
@@ -68,7 +67,9 @@
                         <div class="flex justify-end mt-6">
                             <button type="submit" class="px-6 py-2.5 bg-blue-700 hover:bg-blue-800 text-white text-sm font-semibold rounded-xl transition">Create Form</button>
                         </div>
+
                     </form>
+
                 </div>
             </div>
 
@@ -78,8 +79,8 @@
             $activeForm = $forms->firstWhere('status', 'Active');
             @endphp
 
-            {{-- Version Table --}}
             <div class="bg-white border border-gray-200 rounded-3xl shadow-sm mb-24">
+
                 <div class="overflow-x-auto rounded-3xl">
 
                     <table class="w-full text-sm">
@@ -100,17 +101,13 @@
 
                             <tr class="{{ $form->status === 'Active' ? 'bg-blue-50/40' : 'bg-white' }} hover:bg-slate-50 transition">
 
-                                {{-- Version --}}
                                 <td class="px-6 py-6">
                                     <div class="w-14 h-14 rounded-2xl bg-blue-600 text-white flex items-center justify-center text-lg font-bold">V{{ $form->version }}</div>
                                 </td>
 
-                                {{-- Form Content --}}
                                 <td class="px-6 py-6">
 
-                                    <p class="font-semibold text-gray-900 mb-2">
-                                        {{ $form->form_name }}
-                                    </p>
+                                    <p class="font-semibold text-gray-900 mb-2">{{ $form->form_name }}</p>
 
                                     <div class="flex flex-wrap items-center gap-x-6 gap-y-1 text-gray-500">
                                         <span><strong class="text-gray-900">{{ $form->section_count }}</strong> Sections</span>
@@ -125,7 +122,6 @@
 
                                 </td>
 
-                                {{-- Status --}}
                                 <td class="px-6 py-6 text-center">
 
                                     @if($form->status === 'Active')
@@ -136,7 +132,6 @@
 
                                 </td>
 
-                                {{-- Usage --}}
                                 <td class="px-6 py-6 text-center">
 
                                     @if($form->is_used)
@@ -147,21 +142,25 @@
 
                                 </td>
 
-                                {{-- Action --}}
                                 <td class="px-6 py-6 text-center">
 
                                     <button type="button"
-                                        data-preview="{{ route('admin.post.form.show', $form) }}"
-                                        data-edit="{{ route('admin.post.form.edit', $form) }}"
-                                        data-delete="{{ !$form->is_used ? route('admin.post.form.delete', $form) : '' }}"
+                                        data-preview="{{ route('admin.post.form.show', $form->formID) }}"
+                                        data-edit="{{ route('admin.post.form.edit', $form->formID) }}"
+                                        data-delete="{{ !$form->is_used ? route('admin.post.form.delete', $form->formID) : '' }}"
                                         data-version="{{ $form->version }}"
                                         onclick="openActionMenu(this)"
                                         class="w-10 h-10 inline-flex items-center justify-center rounded-xl text-gray-500 hover:text-gray-800 hover:bg-gray-200 transition">
 
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                                        <svg xmlns="http://www.w3.org/2000/svg"
+                                            class="w-5 h-5"
+                                            fill="currentColor"
+                                            viewBox="0 0 24 24">
+
                                             <circle cx="12" cy="5" r="1.7"></circle>
                                             <circle cx="12" cy="12" r="1.7"></circle>
                                             <circle cx="12" cy="19" r="1.7"></circle>
+
                                         </svg>
 
                                     </button>
@@ -184,7 +183,7 @@
         </div>
     </div>
 
-    {{-- Floating Action Menu --}}
+
     <div id="floatingActionMenu" class="hidden fixed w-44 bg-white border border-gray-200 rounded-xl shadow-xl z-[9999] overflow-hidden">
 
         <a id="actionPreview" href="#" class="flex items-center gap-3 px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 transition">
@@ -216,7 +215,7 @@
 
     </div>
 
-    {{-- Sticky Action --}}
+
     <div class="fixed bottom-4 left-0 right-0 z-40 px-6 pointer-events-none">
         <div class="max-w-7xl mx-auto">
 
@@ -228,7 +227,7 @@
 
                     @if($forms->isNotEmpty() && $activeForm)
 
-                    <form method="POST" action="{{ route('admin.post.form.new-version', $activeForm) }}">
+                    <form method="POST" action="{{ route('admin.post.form.new-version', $activeForm->formID) }}">
                         @csrf
 
                         <button type="submit" onclick="return confirm('Create a new version based on Version {{ $activeForm->version }}?')" class="px-6 py-2.5 bg-blue-700 hover:bg-blue-800 text-white font-semibold text-sm rounded-xl transition">+ New Version</button>

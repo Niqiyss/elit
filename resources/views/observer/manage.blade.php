@@ -4,21 +4,6 @@
 
         <div class="max-w-7xl mx-auto">
 
-            {{-- Messages --}}
-            @if(session('success'))
-            <div class="mb-6 px-5 py-4 bg-green-100 border border-green-200 text-green-700 rounded-xl">
-                {{ session('success') }}
-            </div>
-            @endif
-
-            @if(session('error'))
-            <div class="mb-6 px-5 py-4 bg-red-100 border border-red-200 text-red-700 rounded-xl">
-                {{ session('error') }}
-            </div>
-            @endif
-
-
-            {{-- Header --}}
             <div class="relative bg-gradient-to-br from-slate-900 via-violet-950 to-purple-900 rounded-3xl p-8 shadow-xl overflow-hidden mb-8">
 
                 <div class="absolute right-0 top-0 translate-x-10 -translate-y-10 w-72 h-72 bg-purple-500/10 rounded-full blur-3xl"></div>
@@ -64,10 +49,8 @@
             </div>
 
 
-            {{-- Normal Observer --}}
             @if($isObserver)
 
-            {{-- PRE Stage --}}
             <div class="bg-white rounded-3xl shadow-lg overflow-hidden mb-8">
 
                 <div class="px-8 py-6 border-b border-slate-100">
@@ -133,9 +116,7 @@
                                     {{ \Carbon\Carbon::parse($preResponse->observation_date)->format('d/m/Y') }}
 
                                     @else
-
                                     -
-
                                     @endif
 
                                 </td>
@@ -147,9 +128,7 @@
                                     {{ number_format($preResponse->percentage, 2) }}%
 
                                     @else
-
                                     -
-
                                     @endif
 
                                 </td>
@@ -237,7 +216,6 @@
             </div>
 
 
-            {{-- POST Stage --}}
             <div class="bg-white rounded-3xl shadow-lg overflow-hidden mb-8">
 
                 <div class="px-8 py-6 border-b border-slate-100">
@@ -286,7 +264,6 @@
 
                         <tbody class="divide-y divide-slate-100">
 
-                            {{-- POST PDPC --}}
                             <tr class="hover:bg-slate-50 transition">
 
                                 <td class="px-6 py-6">
@@ -304,9 +281,7 @@
                                     {{ \Carbon\Carbon::parse($pdpcPostResponse->observation_date)->format('d/m/Y') }}
 
                                     @else
-
                                     -
-
                                     @endif
 
                                 </td>
@@ -318,9 +293,7 @@
                                     {{ number_format($pdpcPostResponse->percentage, 2) }}%
 
                                     @else
-
                                     -
-
                                     @endif
 
                                 </td>
@@ -400,7 +373,6 @@
                             </tr>
 
 
-                            {{-- POST Feedback --}}
                             <tr class="hover:bg-slate-50 transition">
 
                                 <td class="px-6 py-6">
@@ -418,9 +390,7 @@
                                     {{ \Carbon\Carbon::parse($feedbackResponse->observation_date)->format('d/m/Y') }}
 
                                     @else
-
                                     -
-
                                     @endif
 
                                 </td>
@@ -500,10 +470,8 @@
             @endif
 
 
-            {{-- External Observer --}}
             @if($isExternal && !$isObserver)
 
-            {{-- Current EXTERNAL Stage --}}
             <div class="bg-white rounded-3xl shadow-lg overflow-hidden mb-8">
 
                 <div class="px-8 py-6 border-b border-slate-100 flex items-center justify-between">
@@ -564,7 +532,6 @@
 
                         <tbody class="divide-y divide-slate-100">
 
-                            {{-- External PDPC --}}
                             <tr class="hover:bg-slate-50 transition">
 
                                 <td class="px-6 py-6">
@@ -582,9 +549,7 @@
                                     {{ \Carbon\Carbon::parse($latestExternalResponse->observation_date)->format('d/m/Y') }}
 
                                     @else
-
                                     -
-
                                     @endif
 
                                 </td>
@@ -596,9 +561,7 @@
                                     {{ number_format($latestExternalResponse->percentage, 2) }}%
 
                                     @else
-
                                     -
-
                                     @endif
 
                                 </td>
@@ -705,7 +668,6 @@
                             </tr>
 
 
-                            {{-- External Feedback --}}
                             <tr class="hover:bg-slate-50 transition">
 
                                 <td class="px-6 py-6">
@@ -723,9 +685,7 @@
                                     {{ \Carbon\Carbon::parse($feedbackResponse->observation_date)->format('d/m/Y') }}
 
                                     @else
-
                                     -
-
                                     @endif
 
                                 </td>
@@ -803,7 +763,6 @@
             </div>
 
 
-            {{-- External Evaluation History --}}
             @if($externalHistory->isNotEmpty())
 
             <div class="bg-white rounded-3xl shadow-lg overflow-hidden mb-8">
@@ -968,7 +927,6 @@
             @endif
 
 
-            {{-- Back --}}
             <div class="flex justify-center mt-10">
 
                 <a href="{{ $isObserver

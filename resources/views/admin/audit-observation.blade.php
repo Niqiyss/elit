@@ -8,12 +8,10 @@
 
     </x-slot>
 
-
     <div class="min-h-screen bg-slate-100 py-8 px-6">
 
         <div class="max-w-7xl mx-auto">
 
-            {{-- Header --}}
             <div class="relative bg-gradient-to-br from-slate-900 via-violet-950 to-purple-900 rounded-3xl p-8 shadow-xl overflow-hidden mb-8">
 
                 <div class="absolute right-0 top-0 translate-x-10 -translate-y-10 w-72 h-72 bg-purple-500/10 rounded-full blur-3xl"></div>
@@ -33,7 +31,6 @@
             </div>
 
 
-            {{-- Search and Filter --}}
             <div class="bg-white rounded-3xl border border-slate-200 shadow-sm p-6 mb-8">
 
                 <h2 class="text-lg font-bold text-slate-900 mb-5">
@@ -45,7 +42,6 @@
                     action="{{ route('admin.audit.observation') }}"
                     class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-4 items-end">
 
-                    {{-- Search --}}
                     <div class="lg:col-span-5">
 
                         <label class="block text-xs font-semibold uppercase tracking-wider text-slate-900 mb-2">
@@ -62,7 +58,6 @@
                     </div>
 
 
-                    {{-- Role --}}
                     <div class="lg:col-span-2">
 
                         <label class="block text-xs font-semibold uppercase tracking-wider text-slate-900 mb-2">
@@ -96,7 +91,6 @@
                     </div>
 
 
-                    {{-- Stage --}}
                     <div class="lg:col-span-2">
 
                         <label class="block text-xs font-semibold uppercase tracking-wider text-slate-900 mb-2">
@@ -136,7 +130,6 @@
                     </div>
 
 
-                    {{-- Date --}}
                     <div class="lg:col-span-2">
 
                         <label class="block text-xs font-semibold uppercase tracking-wider text-slate-900 mb-2">
@@ -151,8 +144,6 @@
 
                     </div>
 
-
-                    {{-- Filter --}}
                     <div class="lg:col-span-1">
 
                         <button
@@ -166,7 +157,6 @@
                     </div>
 
 
-                    {{-- Clear Filter --}}
                     @if($search !== '' || $role !== '' || $stage !== '' || $date !== '')
 
                     <div class="lg:col-span-12 flex justify-end">
@@ -174,9 +164,7 @@
                         <a
                             href="{{ route('admin.audit.observation') }}"
                             class="text-sm font-semibold text-red-600 hover:text-red-700">
-
                             Clear Filters
-
                         </a>
 
                     </div>
@@ -188,10 +176,9 @@
             </div>
 
 
-            {{-- Audit History --}}
             <div class="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden">
 
-                {{-- Audit Header --}}
+
                 <div class="px-8 py-6 border-b border-slate-100">
 
                     <h2 class="text-xl font-bold text-slate-900">
@@ -201,7 +188,6 @@
                 </div>
 
 
-                {{-- Audit Table --}}
                 <div class="overflow-x-auto">
 
                     <table class="w-full text-sm">
@@ -269,7 +255,6 @@
                                 </td>
 
 
-                                {{-- Date --}}
                                 <td class="px-6 py-5 text-slate-900">
 
                                     {{ $audit->audit_date
@@ -289,7 +274,6 @@
                                 </td>
 
 
-                                {{-- Observed By --}}
                                 <td class="px-6 py-5">
 
                                     <p class="font-semibold text-slate-900 uppercase">
@@ -299,7 +283,6 @@
                                 </td>
 
 
-                                {{-- Role --}}
                                 <td class="px-6 py-5">
 
                                     @if($audit->role === 'Observer')
@@ -325,7 +308,6 @@
                                 </td>
 
 
-                                {{-- Teacher Observed --}}
                                 <td class="px-6 py-5">
 
                                     <p class="font-semibold text-slate-900 uppercase">
@@ -334,16 +316,12 @@
 
                                 </td>
 
-
-                                {{-- Form --}}
                                 <td class="px-6 py-5 text-slate-900">
 
                                     {{ $audit->form_name ?? '-' }}
 
                                 </td>
 
-
-                                {{-- Stage --}}
                                 <td class="px-6 py-5">
 
                                     @if($audit->stage === 'PRE')
@@ -375,7 +353,6 @@
                                 </td>
 
 
-                                {{-- Action --}}
                                 <td class="px-6 py-5 text-center">
 
                                     @if($audit->action === 'Submitted')
@@ -426,8 +403,6 @@
 
                 </div>
 
-
-                {{-- Pagination --}}
                 @if($audits->hasPages())
 
                 <div class="px-8 py-5 border-t border-slate-100">

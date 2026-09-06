@@ -19,44 +19,43 @@ class ManageEvaluateController extends Controller
 {
     public function index($gn_id)
     {
-        // Get logged-in teacher.
+        // Get logged-in teacher
         $teacher = Auth::guard('teacher')->user();
 
         abort_if(
             !$teacher,
             403,
-            'Unauthorized access.'
+            'Unauthorized access'
         );
 
-        // Get observer record.
+        // Get observer record
         $observer = Observer::where(
             'teacherID',
             $teacher->teacherID
         )->first();
 
-        // Get external observer record.
+        // Get external observer record
         $externalObserver = ExternalObserver::where(
             'teacherID',
             $teacher->teacherID
         )->first();
 
-        // Make sure teacher is registered as an evaluator.
         abort_if(
             !$observer && !$externalObserver,
             403,
-            'You are not registered as an observer.'
+            'You are not registered as an observer'
         );
 
-        // Determine evaluator role.
+        // Determine ev role
         $isObserver = !is_null($observer);
         $isExternal = !is_null($externalObserver);
 
-        // Get selected new teacher.
+        // Get selected new teacher
         $guruNew = GuruNew::with('school')
             ->where('gn_id', $gn_id)
             ->firstOrFail();
 
-        // Check normal observer assignment.
+        // Check normal observer assignment
         if ($isObserver) {
 
             $assigned = DB::table('observer_assignment')
@@ -68,7 +67,7 @@ class ManageEvaluateController extends Controller
                 ->exists();
         } else {
 
-            // Check external observer assignment.
+            // Check external observer assignment
             $assigned = DB::table('observer_assignment')
                 ->where('gn_id', $gn_id)
                 ->where(
@@ -78,14 +77,14 @@ class ManageEvaluateController extends Controller
                 ->exists();
         }
 
-        // Prevent access to unassigned teacher.
+        // Prevent access to unassigned teacher
         abort_if(
             !$assigned,
             403,
-            'This teacher is not assigned to you.'
+            'This teacher is not assigned to you'
         );
 
-        // Get latest active PRE form.
+        // Get latest active PRE form
         $preForm = PreForm::where(
             'status',
             'Active'
@@ -93,7 +92,7 @@ class ManageEvaluateController extends Controller
             ->latest('formID')
             ->first();
 
-        // Get latest active Feedback form.
+        // Get latest active Feedback form
         $postForm = PostForm::where(
             'status',
             'Active'
@@ -101,7 +100,7 @@ class ManageEvaluateController extends Controller
             ->latest('formID')
             ->first();
 
-        // Get latest active PDPC form.
+        // Get latest active PDPC form
         $pdpcForm = PdpcForm::where(
             'status',
             'Active'
@@ -109,7 +108,7 @@ class ManageEvaluateController extends Controller
             ->latest('formID')
             ->first();
 
-        // Prepare default response variables.
+        // Prepare default response variables
         $preResponse = null;
         $pdpcPostResponse = null;
         $latestExternalResponse = null;
@@ -118,10 +117,10 @@ class ManageEvaluateController extends Controller
         $externalAttemptNo = null;
         $externalHistory = collect();
 
-        // Load normal observer evaluation records.
+        // Load normal observer evaluation records
         if ($isObserver) {
 
-            // Get latest PRE response by current observer.
+            // Get latest PRE response by current observer
             $preResponse = PreResponse::where(
                 'gn_id',
                 $gn_id
@@ -137,7 +136,7 @@ class ManageEvaluateController extends Controller
                 ->latest('responseID')
                 ->first();
 
-            // Get latest POST PDPC response by current observer.
+            // Get latest POST PDPC response by current observer
             $pdpcPostResponse = PdpcResponse::where(
                 'gn_id',
                 $gn_id
@@ -153,7 +152,7 @@ class ManageEvaluateController extends Controller
                 ->latest('responseID')
                 ->first();
 
-            // Get latest POST Feedback response by current observer.
+            // Get latest POST Feedback response by current observer
             $feedbackResponse = PostResponse::where(
                 'gn_id',
                 $gn_id
@@ -170,10 +169,10 @@ class ManageEvaluateController extends Controller
                 ->first();
         }
 
-        // Load external observer evaluation records.
+        // Load external observer evaluation records
         if ($isExternal && !$isObserver) {
 
-            // Get latest submitted External PDPC attempt across all external observers.
+            // Get latest submitted External PDPC attempt across all external observers
             $latestExternalSubmitted = PdpcResponse::where(
                 'gn_id',
                 $gn_id
@@ -190,7 +189,7 @@ class ManageEvaluateController extends Controller
                 ->orderByDesc('responseID')
                 ->first();
 
-            // Get latest External PDPC record belonging to current external observer.
+            // Get latest External PDPC record belonging to current external observer
             $currentOwnPdpc = PdpcResponse::where(
                 'gn_id',
                 $gn_id
@@ -207,7 +206,7 @@ class ManageEvaluateController extends Controller
                 ->orderByDesc('responseID')
                 ->first();
 
-            // Get latest External Feedback record belonging to current external observer.
+            // Get latest External Feedback record belonging to current external observer
             $currentOwnFeedback = PostResponse::where(
                 'gn_id',
                 $gn_id
@@ -224,7 +223,7 @@ class ManageEvaluateController extends Controller
                 ->orderByDesc('responseID')
                 ->first();
 
-            // Keep current observer attempt if an evaluation has already been started.
+            // Keep current observer attempt if an evaluation has already been started
             if ($currentOwnPdpc || $currentOwnFeedback) {
 
                 $externalAttemptNo = max(
@@ -238,7 +237,7 @@ class ManageEvaluateController extends Controller
                     ($latestExternalSubmitted?->attempt_no ?? 0) + 1;
             }
 
-            // Get current External PDPC response for calculated attempt.
+            // Get current External PDPC response for calculated attempt
             $latestExternalResponse = PdpcResponse::where(
                 'gn_id',
                 $gn_id
@@ -258,7 +257,7 @@ class ManageEvaluateController extends Controller
                 ->latest('responseID')
                 ->first();
 
-            // Get current External Feedback response for calculated attempt.
+            // Get current External Feedback response for calculated attempt
             $feedbackResponse = PostResponse::where(
                 'gn_id',
                 $gn_id
@@ -278,7 +277,7 @@ class ManageEvaluateController extends Controller
                 ->latest('responseID')
                 ->first();
 
-            // Get previous submitted External attempts only.
+            // Get previous submitted External attempts only
             $externalHistory = DB::table('pdpc_response')
                 ->leftJoin(
                     'external_observer',
@@ -328,7 +327,6 @@ class ManageEvaluateController extends Controller
                 ->get();
         }
 
-        // Return evaluation management page.
         return view(
             'observer.manage',
             compact(

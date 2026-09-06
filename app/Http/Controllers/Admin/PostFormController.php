@@ -3,10 +3,6 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\PostForm;
-use App\Models\PostSection;
-use App\Models\PostField;
-use App\Models\PostFieldOption;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -16,14 +12,34 @@ class PostFormController extends Controller
     // Show version list
     public function index()
     {
-        $forms = PostForm::with([
-            'sections' => fn($query) => $query->orderBy('display_order'),
-            'sections.fields' => fn($query) => $query->orderBy('display_order'),
-            'sections.fields.options' => fn($query) => $query->orderBy('display_order'),
-        ])->orderByDesc('version')->get();
+        $forms = DB::table('post_form')
+            ->orderByDesc('version')
+            ->get();
 
         foreach ($forms as $form) {
-            $form->is_used = $this->isFormUsed($form);
+
+            $form->sections = DB::table('post_section')
+                ->where('formID', $form->formID)
+                ->orderBy('display_order')
+                ->get();
+
+            foreach ($form->sections as $section) {
+
+                $section->fields = DB::table('post_field')
+                    ->where('sectionID', $section->sectionID)
+                    ->orderBy('display_order')
+                    ->get();
+
+                foreach ($section->fields as $field) {
+
+                    $field->options = DB::table('post_field_option')
+                        ->where('fieldID', $field->fieldID)
+                        ->orderBy('display_order')
+                        ->get();
+                }
+            }
+
+            $form->is_used = $this->isFormUsed($form->formID);
             $form->section_count = $form->sections->count();
             $form->field_count = $form->sections->sum(fn($section) => $section->fields->count());
         }
@@ -31,36 +47,31 @@ class PostFormController extends Controller
         return view('admin.post-form', compact('forms'));
     }
 
-    // Preview one version
-    public function show(PostForm $postForm)
+
+    // Preview version
+    public function show($postForm)
     {
-        $postForm->load([
-            'sections' => fn($query) => $query->orderBy('display_order'),
-            'sections.fields' => fn($query) => $query->orderBy('display_order'),
-            'sections.fields.options' => fn($query) => $query->orderBy('display_order'),
-        ]);
+        $form = $this->getFormWithStructure($postForm);
 
         return view('admin.post-form-preview', [
-            'form' => $postForm,
+            'form' => $form,
         ]);
     }
 
-    // Edit/manage one version
-    public function edit(PostForm $postForm)
-    {
-        $postForm->load([
-            'sections' => fn($query) => $query->orderBy('display_order'),
-            'sections.fields' => fn($query) => $query->orderBy('display_order'),
-            'sections.fields.options' => fn($query) => $query->orderBy('display_order'),
-        ]);
 
-        $formUsed = $this->isFormUsed($postForm);
+    // Edit/manage version
+    public function edit($postForm)
+    {
+        $form = $this->getFormWithStructure($postForm);
+
+        $formUsed = $this->isFormUsed($form->formID);
 
         return view('admin.post-form-edit', [
-            'form' => $postForm,
+            'form' => $form,
             'formUsed' => $formUsed,
         ]);
     }
+
 
     // Create first version
     public function storeForm(Request $request)
@@ -70,73 +81,74 @@ class PostFormController extends Controller
             'instruction' => 'nullable|string',
         ]);
 
-        if (PostForm::exists()) {
+        if (DB::table('post_form')->exists()) {
+
             return redirect()
                 ->route('admin.post.form')
-                ->with('error', 'A form already exists. Create a new version instead.');
+                ->with('error', 'Form already exists. Create a new version instead');
         }
 
-        $form = PostForm::create([
+        $formID = DB::table('post_form')->insertGetId([
             'form_name' => $request->form_name,
             'version' => 1,
             'instruction' => $request->instruction,
             'status' => 'Active',
             'staffid' => Auth::guard('admin')->id(),
-        ]);
+        ], 'formID');
 
         return redirect()
-            ->route('admin.post.form.edit', $form)
-            ->with('success', 'Feedback Observation form created successfully.');
+            ->route('admin.post.form.edit', $formID)
+            ->with('success', 'Feedback form created successfully');
     }
 
+
     // Create new version
-    public function createNewVersion(PostForm $postForm)
+    public function createNewVersion($postForm)
     {
-        $postForm->load([
-            'sections.fields.options',
-        ]);
+        $form = $this->getFormWithStructure($postForm);
 
         $newFormID = null;
 
-        DB::transaction(function () use ($postForm, &$newFormID) {
+        DB::transaction(function () use ($form, &$newFormID) {
 
-            PostForm::where('status', 'Active')->update([
-                'status' => 'Inactive',
-            ]);
+            DB::table('post_form')
+                ->where('status', 'Active')
+                ->update([
+                    'status' => 'Inactive',
+                ]);
 
-            $nextVersion = (PostForm::max('version') ?? 0) + 1;
+            $nextVersion = (DB::table('post_form')->max('version') ?? 0) + 1;
 
-            $newForm = PostForm::create([
-                'form_name' => $postForm->form_name,
+            $newFormID = DB::table('post_form')->insertGetId([
+                'form_name' => $form->form_name,
                 'version' => $nextVersion,
-                'instruction' => $postForm->instruction,
+                'instruction' => $form->instruction,
                 'status' => 'Active',
                 'staffid' => Auth::guard('admin')->id(),
-            ]);
+            ], 'formID');
 
-            $newFormID = $newForm->formID;
+            foreach ($form->sections as $oldSection) {
 
-            foreach ($postForm->sections as $oldSection) {
-
-                $newSection = PostSection::create([
-                    'formID' => $newForm->formID,
+                $newSectionID = DB::table('post_section')->insertGetId([
+                    'formID' => $newFormID,
                     'section_name' => $oldSection->section_name,
                     'display_order' => $oldSection->display_order,
-                ]);
+                ], 'sectionID');
 
                 foreach ($oldSection->fields as $oldField) {
 
-                    $newField = PostField::create([
-                        'sectionID' => $newSection->sectionID,
+                    $newFieldID = DB::table('post_field')->insertGetId([
+                        'sectionID' => $newSectionID,
                         'field_label' => $oldField->field_label,
                         'field_type' => $oldField->field_type,
                         'display_order' => $oldField->display_order,
                         'is_required' => $oldField->is_required,
-                    ]);
+                    ], 'fieldID');
 
                     foreach ($oldField->options as $oldOption) {
-                        PostFieldOption::create([
-                            'fieldID' => $newField->fieldID,
+
+                        DB::table('post_field_option')->insert([
+                            'fieldID' => $newFieldID,
                             'option_label' => $oldOption->option_label,
                             'display_order' => $oldOption->display_order,
                         ]);
@@ -147,79 +159,100 @@ class PostFormController extends Controller
 
         return redirect()
             ->route('admin.post.form.edit', $newFormID)
-            ->with('success', 'New Feedback Observation form version created successfully.');
+            ->with('success', 'New Feedback form version created successfully');
     }
 
+
     // Update form information
-    public function updateForm(Request $request, PostForm $postForm)
+    public function updateForm(Request $request, $postForm)
     {
         $request->validate([
             'form_name' => 'required|string|max:255',
             'instruction' => 'nullable|string',
         ]);
 
-        $postForm->update([
-            'form_name' => $request->form_name,
-            'instruction' => $request->instruction,
-            'staffid' => Auth::guard('admin')->id(),
-        ]);
+        $form = $this->findFormOrFail($postForm);
+
+        DB::table('post_form')
+            ->where('formID', $form->formID)
+            ->update([
+                'form_name' => $request->form_name,
+                'instruction' => $request->instruction,
+                'staffid' => Auth::guard('admin')->id(),
+            ]);
 
         return redirect()
-            ->route('admin.post.form.edit', $postForm)
-            ->with('success', 'Form information updated successfully.');
+            ->route('admin.post.form.edit', $form->formID)
+            ->with('success', 'Form information updated successfully');
     }
 
+
     // Delete unused version
-    public function destroyForm(PostForm $postForm)
+    public function destroyForm($postForm)
     {
-        if ($this->isFormUsed($postForm)) {
+        $form = $this->getFormWithStructure($postForm);
+
+        if ($this->isFormUsed($form->formID)) {
+
             return redirect()
                 ->route('admin.post.form')
-                ->with('error', 'This version has already been used and cannot be deleted.');
+                ->with('error', 'This version has data already and cannot be deleted');
         }
 
-        $wasActive = $postForm->status === 'Active';
+        $wasActive = $form->status === 'Active';
 
-        $postForm->load([
-            'sections.fields.options',
-        ]);
+        DB::transaction(function () use ($form) {
 
-        DB::transaction(function () use ($postForm) {
-
-            foreach ($postForm->sections as $section) {
+            foreach ($form->sections as $section) {
 
                 foreach ($section->fields as $field) {
 
-                    PostFieldOption::where('fieldID', $field->fieldID)->delete();
+                    DB::table('post_field_option')
+                        ->where('fieldID', $field->fieldID)
+                        ->delete();
 
-                    $field->delete();
+                    DB::table('post_field')
+                        ->where('fieldID', $field->fieldID)
+                        ->delete();
                 }
 
-                $section->delete();
+                DB::table('post_section')
+                    ->where('sectionID', $section->sectionID)
+                    ->delete();
             }
 
-            $postForm->delete();
+            DB::table('post_form')
+                ->where('formID', $form->formID)
+                ->delete();
         });
 
         if ($wasActive) {
 
-            PostForm::where('status', 'Active')->update([
-                'status' => 'Inactive',
-            ]);
+            DB::table('post_form')
+                ->where('status', 'Active')
+                ->update([
+                    'status' => 'Inactive',
+                ]);
 
-            $previousForm = PostForm::orderByDesc('version')->first();
+            $previousForm = DB::table('post_form')
+                ->orderByDesc('version')
+                ->first();
 
             if ($previousForm) {
-                $previousForm->update([
-                    'status' => 'Active',
-                ]);
+
+                DB::table('post_form')
+                    ->where('formID', $previousForm->formID)
+                    ->update([
+                        'status' => 'Active',
+                    ]);
             }
         }
 
         return redirect()
             ->route('admin.post.form')
-            ->with('success', 'Form version deleted successfully.');
+            ->with('success', 'Form version deleted successfully');
     }
+
 
     // Add section
     public function storeSection(Request $request)
@@ -229,79 +262,97 @@ class PostFormController extends Controller
             'section_name' => 'required|string|max:255',
         ]);
 
-        $form = PostForm::findOrFail($request->formID);
+        $form = $this->findFormOrFail($request->formID);
 
-        $this->ensureStructureEditable($form);
+        $this->ensureStructureEditable($form->formID);
 
-        $lastOrder = PostSection::where('formID', $form->formID)
+        $lastOrder = DB::table('post_section')
+            ->where('formID', $form->formID)
             ->max('display_order');
 
-        PostSection::create([
+        DB::table('post_section')->insert([
             'formID' => $form->formID,
             'section_name' => $request->section_name,
             'display_order' => ($lastOrder ?? 0) + 1,
         ]);
 
         return redirect()
-            ->route('admin.post.form.edit', $form)
-            ->with('success', 'Section added successfully.');
+            ->route('admin.post.form.edit', $form->formID)
+            ->with('success', 'Section added successfully');
     }
+
 
     // Update section wording
     public function updateSection(Request $request, $sectionID)
     {
-        $section = PostSection::findOrFail($sectionID);
-        $form = PostForm::findOrFail($section->formID);
+        $section = $this->findSectionOrFail($sectionID);
+        $form = $this->findFormOrFail($section->formID);
 
         $request->validate([
             'section_name' => 'required|string|max:255',
         ]);
 
-        $section->update([
-            'section_name' => $request->section_name,
-        ]);
+        DB::table('post_section')
+            ->where('sectionID', $section->sectionID)
+            ->update([
+                'section_name' => $request->section_name,
+            ]);
 
         return redirect()
-            ->route('admin.post.form.edit', $form)
-            ->with('success', 'Section updated successfully.');
+            ->route('admin.post.form.edit', $form->formID)
+            ->with('success', 'Section updated successfully');
     }
+
 
     // Delete section
     public function destroySection($sectionID)
     {
-        $section = PostSection::with('fields.options')
-            ->findOrFail($sectionID);
+        $section = $this->findSectionOrFail($sectionID);
+        $form = $this->findFormOrFail($section->formID);
 
-        $form = PostForm::findOrFail($section->formID);
-
-        $this->ensureStructureEditable($form);
+        $this->ensureStructureEditable($form->formID);
 
         DB::transaction(function () use ($section) {
 
-            foreach ($section->fields as $field) {
+            $fields = DB::table('post_field')
+                ->where('sectionID', $section->sectionID)
+                ->get();
 
-                PostFieldOption::where('fieldID', $field->fieldID)->delete();
+            foreach ($fields as $field) {
 
-                $field->delete();
+                DB::table('post_field_option')
+                    ->where('fieldID', $field->fieldID)
+                    ->delete();
+
+                DB::table('post_field')
+                    ->where('fieldID', $field->fieldID)
+                    ->delete();
             }
 
-            $section->delete();
+            DB::table('post_section')
+                ->where('sectionID', $section->sectionID)
+                ->delete();
         });
 
-        $sections = PostSection::where('formID', $form->formID)
+        $sections = DB::table('post_section')
+            ->where('formID', $form->formID)
             ->orderBy('display_order')
             ->get();
 
         foreach ($sections as $index => $item) {
-            $item->update([
-                'display_order' => $index + 1,
-            ]);
+
+            DB::table('post_section')
+                ->where('sectionID', $item->sectionID)
+                ->update([
+                    'display_order' => $index + 1,
+                ]);
         }
 
         return redirect()
-            ->route('admin.post.form.edit', $form)
-            ->with('success', 'Section deleted successfully.');
+            ->route('admin.post.form.edit', $form->formID)
+            ->with('success', 'Section deleted successfully');
     }
+
 
     // Add field
     public function storeField(Request $request)
@@ -315,15 +366,16 @@ class PostFormController extends Controller
             'options.*' => 'nullable|string|max:255',
         ]);
 
-        $section = PostSection::findOrFail($request->sectionID);
-        $form = PostForm::findOrFail($section->formID);
+        $section = $this->findSectionOrFail($request->sectionID);
+        $form = $this->findFormOrFail($section->formID);
 
-        $this->ensureStructureEditable($form);
+        $this->ensureStructureEditable($form->formID);
 
-        $lastOrder = PostField::where('sectionID', $section->sectionID)
+        $lastOrder = DB::table('post_field')
+            ->where('sectionID', $section->sectionID)
             ->max('display_order');
 
-        $field = PostField::create([
+        $fieldID = DB::table('post_field')->insertGetId([
             'sectionID' => $section->sectionID,
             'field_label' => $request->field_label,
             'field_type' => $request->field_type,
@@ -331,23 +383,24 @@ class PostFormController extends Controller
             'is_required' => $request->field_type === 'display'
                 ? 0
                 : $request->is_required,
-        ]);
+        ], 'fieldID');
 
-        $this->saveOptions($request, $field);
+        $this->saveOptions($request, $fieldID);
 
         return redirect()
-            ->route('admin.post.form.edit', $form)
-            ->with('success', 'Field added successfully.');
+            ->route('admin.post.form.edit', $form->formID)
+            ->with('success', 'Field added successfully');
     }
+
 
     // Update field
     public function updateField(Request $request, $fieldID)
     {
-        $field = PostField::findOrFail($fieldID);
-        $section = PostSection::findOrFail($field->sectionID);
-        $form = PostForm::findOrFail($section->formID);
+        $field = $this->findFieldOrFail($fieldID);
+        $section = $this->findSectionOrFail($field->sectionID);
+        $form = $this->findFormOrFail($section->formID);
 
-        $formUsed = $this->isFormUsed($form);
+        $formUsed = $this->isFormUsed($form->formID);
 
         if ($formUsed) {
 
@@ -355,9 +408,11 @@ class PostFormController extends Controller
                 'field_label' => 'required|string|max:500',
             ]);
 
-            $field->update([
-                'field_label' => $request->field_label,
-            ]);
+            DB::table('post_field')
+                ->where('fieldID', $field->fieldID)
+                ->update([
+                    'field_label' => $request->field_label,
+                ]);
         } else {
 
             $request->validate([
@@ -368,56 +423,70 @@ class PostFormController extends Controller
                 'options.*' => 'nullable|string|max:255',
             ]);
 
-            $field->update([
-                'field_label' => $request->field_label,
-                'field_type' => $request->field_type,
-                'is_required' => $request->field_type === 'display'
-                    ? 0
-                    : $request->is_required,
-            ]);
+            DB::table('post_field')
+                ->where('fieldID', $field->fieldID)
+                ->update([
+                    'field_label' => $request->field_label,
+                    'field_type' => $request->field_type,
+                    'is_required' => $request->field_type === 'display'
+                        ? 0
+                        : $request->is_required,
+                ]);
 
-            PostFieldOption::where('fieldID', $field->fieldID)->delete();
+            DB::table('post_field_option')
+                ->where('fieldID', $field->fieldID)
+                ->delete();
 
-            $this->saveOptions($request, $field);
+            $this->saveOptions($request, $field->fieldID);
         }
 
         return redirect()
-            ->route('admin.post.form.edit', $form)
-            ->with('success', 'Field updated successfully.');
+            ->route('admin.post.form.edit', $form->formID)
+            ->with('success', 'Field updated successfully');
     }
+
 
     // Delete field
     public function destroyField($fieldID)
     {
-        $field = PostField::findOrFail($fieldID);
-        $section = PostSection::findOrFail($field->sectionID);
-        $form = PostForm::findOrFail($section->formID);
+        $field = $this->findFieldOrFail($fieldID);
+        $section = $this->findSectionOrFail($field->sectionID);
+        $form = $this->findFormOrFail($section->formID);
 
-        $this->ensureStructureEditable($form);
+        $this->ensureStructureEditable($form->formID);
 
         $sectionID = $field->sectionID;
 
-        PostFieldOption::where('fieldID', $field->fieldID)->delete();
+        DB::table('post_field_option')
+            ->where('fieldID', $field->fieldID)
+            ->delete();
 
-        $field->delete();
+        DB::table('post_field')
+            ->where('fieldID', $field->fieldID)
+            ->delete();
 
-        $fields = PostField::where('sectionID', $sectionID)
+        $fields = DB::table('post_field')
+            ->where('sectionID', $sectionID)
             ->orderBy('display_order')
             ->get();
 
         foreach ($fields as $index => $item) {
-            $item->update([
-                'display_order' => $index + 1,
-            ]);
+
+            DB::table('post_field')
+                ->where('fieldID', $item->fieldID)
+                ->update([
+                    'display_order' => $index + 1,
+                ]);
         }
 
         return redirect()
-            ->route('admin.post.form.edit', $form)
-            ->with('success', 'Field deleted successfully.');
+            ->route('admin.post.form.edit', $form->formID)
+            ->with('success', 'Field deleted successfully');
     }
 
+
     // Save checkbox/radio options
-    private function saveOptions(Request $request, PostField $field)
+    private function saveOptions(Request $request, $fieldID)
     {
         if (!in_array($request->field_type, ['checkbox', 'radio'])) {
             return;
@@ -433,29 +502,100 @@ class PostFormController extends Controller
                 continue;
             }
 
-            PostFieldOption::create([
-                'fieldID' => $field->fieldID,
+            DB::table('post_field_option')->insert([
+                'fieldID' => $fieldID,
                 'option_label' => trim($option),
                 'display_order' => $index + 1,
             ]);
         }
     }
 
+
     // Check whether version has been used
-    private function isFormUsed(PostForm $form): bool
+    private function isFormUsed($formID): bool
     {
         return DB::table('post_response')
-            ->where('formID', $form->formID)
+            ->where('formID', $formID)
             ->exists();
     }
 
+
     // Block structural changes for used version
-    private function ensureStructureEditable(PostForm $form): void
+    private function ensureStructureEditable($formID): void
     {
         abort_if(
-            $this->isFormUsed($form),
+            $this->isFormUsed($formID),
             403,
-            'This form version has already been used. Create a new version to make structural changes.'
+            'This form has already been used. Create a new version to make changes'
         );
+    }
+
+
+    // Get form with sections, fields and options
+    private function getFormWithStructure($formID)
+    {
+        $form = $this->findFormOrFail($formID);
+
+        $form->sections = DB::table('post_section')
+            ->where('formID', $form->formID)
+            ->orderBy('display_order')
+            ->get();
+
+        foreach ($form->sections as $section) {
+
+            $section->fields = DB::table('post_field')
+                ->where('sectionID', $section->sectionID)
+                ->orderBy('display_order')
+                ->get();
+
+            foreach ($section->fields as $field) {
+
+                $field->options = DB::table('post_field_option')
+                    ->where('fieldID', $field->fieldID)
+                    ->orderBy('display_order')
+                    ->get();
+            }
+        }
+
+        return $form;
+    }
+
+
+    // Find form
+    private function findFormOrFail($formID)
+    {
+        $form = DB::table('post_form')
+            ->where('formID', $formID)
+            ->first();
+
+        abort_if(!$form, 404);
+
+        return $form;
+    }
+
+
+    // Find section
+    private function findSectionOrFail($sectionID)
+    {
+        $section = DB::table('post_section')
+            ->where('sectionID', $sectionID)
+            ->first();
+
+        abort_if(!$section, 404);
+
+        return $section;
+    }
+
+
+    // Find field
+    private function findFieldOrFail($fieldID)
+    {
+        $field = DB::table('post_field')
+            ->where('fieldID', $fieldID)
+            ->first();
+
+        abort_if(!$field, 404);
+
+        return $field;
     }
 }

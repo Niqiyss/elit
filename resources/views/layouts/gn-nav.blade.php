@@ -8,7 +8,7 @@
 
                 <a href="{{ route('new_teacher.dashboard') }}"
                     class="text-2xl font-extrabold text-violet-700 tracking-wide">
-                    ELIT
+                    TEMS-ELIT
                 </a>
 
             </div>
@@ -27,7 +27,7 @@
 
                 <a href="{{ route('new_teacher.profile') }}"
                     class="text-lg font-semibold text-gray-700 hover:text-purple-700 transition">
-                    My Profile
+                    MyProfile
                 </a>
 
                 <form method="POST"
@@ -50,9 +50,7 @@
                                 d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h6a2 2 0 012 2v1" />
 
                         </svg>
-
                         Logout
-
                     </button>
 
                 </form>

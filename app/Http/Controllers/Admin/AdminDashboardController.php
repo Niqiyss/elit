@@ -10,58 +10,57 @@ class AdminDashboardController extends Controller
 {
     public function index()
     {
-        // Get logged-in admin/staff.
         $admin = Auth::guard('admin')->user();
 
         abort_if(!$admin, 403, 'Unauthorized access.');
 
-        // Count PRE form versions.
+        // Count PRE form versions
         $preFormCount = DB::table('pre_form')
             ->count();
 
-        // Count PDPC form versions.
+        // Count PDPC form versions
         $pdpcFormCount = DB::table('pdpc_form')
             ->count();
 
-        // Count Feedback form versions.
+        // Count Feedback form versions
         $postFormCount = DB::table('post_form')
             ->count();
 
-        // Calculate total form versions.
+        // Calculate total form versions
         $totalForms =
             $preFormCount
             + $pdpcFormCount
             + $postFormCount;
 
-        // Get active PRE form.
+        // Get active PRE form
         $activePreForm = DB::table('pre_form')
             ->where('status', 'Active')
             ->orderByDesc('formID')
             ->first();
 
-        // Get active PDPC form.
+        // Get active PDPC form
         $activePdpcForm = DB::table('pdpc_form')
             ->where('status', 'Active')
             ->orderByDesc('formID')
             ->first();
 
-        // Get active Feedback form.
+        // Get active Feedback form
         $activePostForm = DB::table('post_form')
             ->where('status', 'Active')
             ->orderByDesc('formID')
             ->first();
 
-        // Calculate total active forms.
+        // Calculate total active forms
         $activeForms =
             ($activePreForm ? 1 : 0)
             + ($activePdpcForm ? 1 : 0)
             + ($activePostForm ? 1 : 0);
 
-        // Count all observation audit records.
+        // Count all observation audit records
         $totalRecords = DB::table('audit_observation')
             ->count();
 
-        // Get latest five observation audit records.
+        // Get latest five observation audit records
         $recentAudits = DB::table('audit_observation')
             ->leftJoin(
                 'teacher',
@@ -85,7 +84,7 @@ class AdminDashboardController extends Controller
             ->take(5)
             ->get();
 
-        // Return admin dashboard.
+        // Return admin dashboard
         return view(
             'admin.dashboard',
             compact(

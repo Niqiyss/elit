@@ -38,7 +38,7 @@ class EvaluationDocDownloadController extends Controller
         );
 
         if (!file_exists($filePath)) {
-            abort(404, 'File not found.');
+            abort(404, 'File not found');
         }
 
         return response()->download(

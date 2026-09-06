@@ -4,7 +4,6 @@
 
         <div class="max-w-7xl mx-auto">
 
-            {{-- Header --}}
             <div class="relative bg-gradient-to-br from-slate-900 via-violet-950 to-purple-900 rounded-3xl p-8 shadow-xl overflow-hidden mb-8">
 
                 <div class="absolute right-0 top-0 translate-x-10 -translate-y-10 w-72 h-72 bg-purple-500/10 rounded-full blur-3xl"></div>
@@ -34,7 +33,6 @@
             </div>
 
 
-            {{-- Errors --}}
             @if($errors->any())
 
             <div class="mb-6 bg-red-50 border border-red-200 text-red-700 rounded-xl px-5 py-4">
@@ -54,37 +52,15 @@
 
             <form
                 method="POST"
-                x-data="{ formComplete: false }"
-                x-init="$nextTick(() => {
-                    const checkForm = () => {
-                        const className = $el.querySelector('[name=class_name]').value.trim();
-                        const subjectName = $el.querySelector('[name=subject_name]').value.trim();
-                        const date = $el.querySelector('[name=observation_date]').value;
-                        const time = $el.querySelector('[name=observation_time]').value;
-                        const scores = [...$el.querySelectorAll('[data-tums]')];
-
-                        formComplete =
-                            className !== '' &&
-                            subjectName !== '' &&
-                            date !== '' &&
-                            time !== '' &&
-                            scores.length > 0 &&
-                            scores.every(input => input.value !== '');
-                    };
-
-                    checkForm();
-                    $el.addEventListener('input', checkForm);
-                    $el.addEventListener('change', checkForm);
-                })"
+                id="pdpcForm"
                 action="{{ $role === 'observer'
-                    ? route('observer.pdpc.update', $response->responseID)
-                    : route('external.pdpc.update', $response->responseID) }}">
+                ? route('observer.pdpc.update', $response->responseID)
+                : route('external.pdpc.update', $response->responseID) }}">
 
                 @csrf
                 @method('PUT')
 
 
-                {{-- Observation Information --}}
                 <div class="bg-white rounded-3xl shadow-lg px-6 py-5 mb-8">
 
                     <h2 class="text-lg font-bold text-slate-900 mb-4">
@@ -207,12 +183,10 @@
                 </div>
 
 
-                {{-- Aspects --}}
                 @foreach($form->aspects as $aspect)
 
                 <div class="mb-8">
 
-                    {{-- Aspect Header --}}
                     <div class="bg-blue-900 rounded-t-2xl px-6 py-4 text-white">
 
                         <p class="text-xs uppercase tracking-wider text-blue-200 font-semibold">
@@ -827,16 +801,12 @@
 
                                 <button
                                     type="submit"
+                                    id="submitButton"
                                     name="submit_action"
                                     value="Submitted"
-                                    :disabled="!formComplete"
-                                    :class="formComplete
-                                        ? 'bg-blue-700 hover:bg-blue-800 text-white cursor-pointer'
-                                        : 'bg-slate-300 text-slate-500 cursor-not-allowed'"
-                                    class="px-5 py-2.5 text-sm font-semibold rounded-xl transition">
-
+                                    disabled
+                                    class="px-5 py-2.5 bg-slate-300 text-slate-500 text-sm font-semibold rounded-xl cursor-not-allowed transition">
                                     Submit
-
                                 </button>
 
                             </div>
@@ -933,13 +903,48 @@
 
 
         document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('pdpcForm');
+            const submitButton = document.getElementById('submitButton');
+
+            const classInput = form.querySelector('[name="class_name"]');
+            const subjectInput = form.querySelector('[name="subject_name"]');
+            const dateInput = form.querySelector('[name="observation_date"]');
+            const timeInput = form.querySelector('[name="observation_time"]');
+            const scoreInputs = form.querySelectorAll('[data-tums]');
+
+            function updateSubmitButton() {
+                const informationComplete =
+                    classInput.value.trim() !== '' &&
+                    subjectInput.value.trim() !== '' &&
+                    dateInput.value !== '' &&
+                    timeInput.value !== '';
+
+                const scoresComplete =
+                    scoreInputs.length > 0 && [...scoreInputs].every(input => input.value !== '');
+
+                const formComplete = informationComplete && scoresComplete;
+
+                if (formComplete) {
+                    submitButton.disabled = false;
+                    submitButton.className = 'px-5 py-2.5 bg-blue-700 hover:bg-blue-800 text-white text-sm font-semibold rounded-xl cursor-pointer transition';
+                } else {
+                    submitButton.disabled = true;
+                    submitButton.className = 'px-5 py-2.5 bg-slate-300 text-slate-500 text-sm font-semibold rounded-xl cursor-not-allowed transition';
+                }
+            }
+
             const tumsIDs = new Set();
 
-            document.querySelectorAll('[data-tums]').forEach(input => {
+            scoreInputs.forEach(input => {
                 tumsIDs.add(input.dataset.tums);
             });
 
             tumsIDs.forEach(tumsID => calculateTums(tumsID));
+
+            form.addEventListener('input', updateSubmitButton);
+            form.addEventListener('change', updateSubmitButton);
+
+            updateSubmitButton();
         });
     </script>
 

@@ -3,7 +3,6 @@
     <div class="min-h-screen bg-slate-100 py-8 px-6">
         <div class="max-w-7xl mx-auto">
 
-            {{-- Header --}}
             <div class="relative bg-gradient-to-br from-slate-900 via-violet-950 to-purple-900 rounded-3xl p-8 shadow-xl overflow-hidden mb-8">
                 <div class="absolute right-0 top-0 translate-x-10 -translate-y-10 w-72 h-72 bg-purple-500/10 rounded-full blur-3xl"></div>
 
@@ -31,7 +30,6 @@
                 </div>
             </div>
 
-            {{-- Validation errors --}}
             @if($errors->any())
                 <div class="mb-6 px-5 py-4 bg-red-100 border border-red-200 text-red-700 rounded-xl">
                     <ul class="list-disc list-inside text-sm">
@@ -48,7 +46,6 @@
                 {{-- Exact form version --}}
                 <input type="hidden" name="formID" value="{{ $form->formID }}">
 
-                {{-- Observer Information --}}
                 <div class="bg-white rounded-3xl shadow-lg px-6 py-5 mb-8">
                     <h2 class="text-lg font-bold text-slate-900 mb-4">
                         Observer Information
@@ -320,7 +317,7 @@
 
                 </div>
 
-                {{-- Achievement Level --}}
+
                 <div class="bg-white rounded-3xl shadow-lg px-6 py-5 mb-8">
 
                     <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-5">
@@ -381,7 +378,7 @@
                     </div>
                 </div>
 
-                {{-- Sticky Action --}}
+
                 <div class="sticky bottom-4 z-40 mt-8">
 
                     <div class="bg-white/95 backdrop-blur-sm border border-slate-200 shadow-xl rounded-2xl px-6 py-4">

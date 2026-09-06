@@ -22,22 +22,33 @@ class PreObservationController extends Controller
         $teacherID = Auth::guard('teacher')->id();
         $observer = Observer::where('teacherID', $teacherID)->first();
 
-        abort_if(!$observer, 403, 'You are not registered as an observer.');
+        abort_if(!$observer, 403, 'You are not registered as an observer');
 
-        $guru = GuruNew::with('school')->where('gn_id', $gn_id)->firstOrFail();
+        $guru = GuruNew::with('school')
+            ->where('gn_id', $gn_id)
+            ->firstOrFail();
 
-        $assigned = DB::table('observer_assignment')->where('gn_id', $gn_id)->where('observer_id', $observer->observer_id)->exists();
+        $assigned = DB::table('observer_assignment')
+            ->where('gn_id', $gn_id)
+            ->where('observer_id', $observer->observer_id)
+            ->exists();
 
-        abort_if(!$assigned, 403, 'This teacher is not assigned to you.');
+        abort_if(!$assigned, 403, 'This teacher is not assigned to you');
 
-        $existingResponse = PreResponse::where('gn_id', $gn_id)->where('observer_id', $observer->observer_id)->where('observation_stage', 'PRE')->latest('responseID')->first();
+        $existingResponse = PreResponse::where('gn_id', $gn_id)
+            ->where('observer_id', $observer->observer_id)
+            ->where('observation_stage', 'PRE')
+            ->latest('responseID')
+            ->first();
 
         if ($existingResponse && $existingResponse->status === 'Draft') {
             return redirect()->route('observer.pre.edit', $existingResponse->responseID);
         }
 
         if ($existingResponse && $existingResponse->status === 'Submitted') {
-            return redirect()->route('observer.manage', $gn_id)->with('error', 'This Pre-Observation has already been submitted.');
+            return redirect()
+                ->route('observer.manage', $gn_id)
+                ->with('error', 'This form has already been submitted');
         }
 
         $form = $this->getActiveForm();
@@ -45,19 +56,23 @@ class PreObservationController extends Controller
         return view('pre-observation.form', compact('form', 'guru', 'gn_id'));
     }
 
+
     // Store new PRE response
     public function store(Request $request, $gn_id)
     {
         $teacherID = Auth::guard('teacher')->id();
         $observer = Observer::where('teacherID', $teacherID)->first();
 
-        abort_if(!$observer, 403, 'You are not registered as an observer.');
+        abort_if(!$observer, 403, 'You are not registered as an observer');
 
         GuruNew::where('gn_id', $gn_id)->firstOrFail();
 
-        $assigned = DB::table('observer_assignment')->where('gn_id', $gn_id)->where('observer_id', $observer->observer_id)->exists();
+        $assigned = DB::table('observer_assignment')
+            ->where('gn_id', $gn_id)
+            ->where('observer_id', $observer->observer_id)
+            ->exists();
 
-        abort_if(!$assigned, 403, 'This teacher is not assigned to you.');
+        abort_if(!$assigned, 403, 'This teacher is not assigned to you');
 
         $request->validate([
             'formID' => 'required|exists:pre_form,formID',
@@ -70,9 +85,12 @@ class PreObservationController extends Controller
 
         DB::transaction(function () use ($request, $gn_id, $observer, $form) {
 
-            $existingResponse = PreResponse::where('gn_id', $gn_id)->where('observer_id', $observer->observer_id)->where('observation_stage', 'PRE')->first();
+            $existingResponse = PreResponse::where('gn_id', $gn_id)
+                ->where('observer_id', $observer->observer_id)
+                ->where('observation_stage', 'PRE')
+                ->first();
 
-            abort_if($existingResponse, 409, 'A Pre-Observation response already exists.');
+            abort_if($existingResponse, 409, 'A Pre-Observation response already exists');
 
             $result = $this->calculateResult($request, $form);
 
@@ -108,13 +126,16 @@ class PreObservationController extends Controller
             }
         });
 
-        return redirect()->route('observer.manage', $gn_id)->with(
-            'success',
-            $request->submit_action === 'Submitted'
-                ? 'Pre-Observation submitted successfully.'
-                : 'Pre-Observation draft saved successfully.'
-        );
+        return redirect()
+            ->route('observer.manage', $gn_id)
+            ->with(
+                'success',
+                $request->submit_action === 'Submitted'
+                    ? 'Form submitted successfully'
+                    : 'Form draft saved successfully'
+            );
     }
+
 
     // Show PRE draft edit form
     public function edit($responseID)
@@ -122,28 +143,61 @@ class PreObservationController extends Controller
         $teacherID = Auth::guard('teacher')->id();
         $observer = Observer::where('teacherID', $teacherID)->first();
 
-        abort_if(!$observer, 403, 'You are not registered as an observer.');
+        abort_if(!$observer, 403, 'You are not registered as an observer');
 
-        $response = PreResponse::where('responseID', $responseID)->where('observation_stage', 'PRE')->firstOrFail();
+        $response = PreResponse::where('responseID', $responseID)
+            ->where('observation_stage', 'PRE')
+            ->firstOrFail();
 
-        abort_if($response->observer_id != $observer->observer_id, 403, 'You are not allowed to edit this response.');
-        abort_if($response->status === 'Submitted', 403, 'Submitted Pre-Observation cannot be edited.');
+        abort_if(
+            $response->observer_id != $observer->observer_id,
+            403,
+            'You are not allowed to edit this response'
+        );
 
-        $assigned = DB::table('observer_assignment')->where('gn_id', $response->gn_id)->where('observer_id', $observer->observer_id)->exists();
+        abort_if(
+            $response->status === 'Submitted',
+            403,
+            'Submitted form cannot be edited'
+        );
 
-        abort_if(!$assigned, 403, 'This teacher is not assigned to you.');
+        $assigned = DB::table('observer_assignment')
+            ->where('gn_id', $response->gn_id)
+            ->where('observer_id', $observer->observer_id)
+            ->exists();
 
-        $guru = GuruNew::with('school')->where('gn_id', $response->gn_id)->firstOrFail();
+        abort_if(!$assigned, 403, 'This teacher is not assigned to you');
+
+        $guru = GuruNew::with('school')
+            ->where('gn_id', $response->gn_id)
+            ->firstOrFail();
+
         $gn_id = $response->gn_id;
 
         // Draft always loads its original form version
         $form = $this->getForm($response->formID);
 
-        $existingScores = PreScore::where('responseID', $response->responseID)->pluck('score', 'criteriaID')->toArray();
-        $existingComments = PreSectionComment::where('responseID', $response->responseID)->pluck('comment', 'sectionID')->toArray();
+        $existingScores = PreScore::where('responseID', $response->responseID)
+            ->pluck('score', 'criteriaID')
+            ->toArray();
 
-        return view('pre-observation.edit', compact('form', 'guru', 'gn_id', 'response', 'existingScores', 'existingComments'));
+        $existingComments = PreSectionComment::where('responseID', $response->responseID)
+            ->pluck('comment', 'sectionID')
+            ->toArray();
+
+        return view(
+            'pre-observation.edit',
+            compact(
+                'form',
+                'guru',
+                'gn_id',
+                'response',
+                'existingScores',
+                'existingComments'
+            )
+        );
     }
+
 
     // Update PRE draft
     public function update(Request $request, $responseID)
@@ -151,16 +205,30 @@ class PreObservationController extends Controller
         $teacherID = Auth::guard('teacher')->id();
         $observer = Observer::where('teacherID', $teacherID)->first();
 
-        abort_if(!$observer, 403, 'You are not registered as an observer.');
+        abort_if(!$observer, 403, 'You are not registered as an observer');
 
-        $response = PreResponse::where('responseID', $responseID)->where('observation_stage', 'PRE')->firstOrFail();
+        $response = PreResponse::where('responseID', $responseID)
+            ->where('observation_stage', 'PRE')
+            ->firstOrFail();
 
-        abort_if($response->observer_id != $observer->observer_id, 403, 'You are not allowed to edit this response.');
-        abort_if($response->status === 'Submitted', 403, 'Submitted Pre-Observation cannot be edited.');
+        abort_if(
+            $response->observer_id != $observer->observer_id,
+            403,
+            'You are not allowed to edit this response'
+        );
 
-        $assigned = DB::table('observer_assignment')->where('gn_id', $response->gn_id)->where('observer_id', $observer->observer_id)->exists();
+        abort_if(
+            $response->status === 'Submitted',
+            403,
+            'Submitted Pre-Observation cannot be edited'
+        );
 
-        abort_if(!$assigned, 403, 'This teacher is not assigned to you.');
+        $assigned = DB::table('observer_assignment')
+            ->where('gn_id', $response->gn_id)
+            ->where('observer_id', $observer->observer_id)
+            ->exists();
+
+        abort_if(!$assigned, 403, 'This teacher is not assigned to you');
 
         // Never switch a draft to a newer active version
         $form = $this->getForm($response->formID);
@@ -202,13 +270,16 @@ class PreObservationController extends Controller
             }
         });
 
-        return redirect()->route('observer.manage', $response->gn_id)->with(
-            'success',
-            $request->submit_action === 'Submitted'
-                ? 'Pre-Observation submitted successfully.'
-                : 'Pre-Observation draft updated successfully.'
-        );
+        return redirect()
+            ->route('observer.manage', $response->gn_id)
+            ->with(
+                'success',
+                $request->submit_action === 'Submitted'
+                    ? 'Form submitted successfully'
+                    : 'Form draft updated successfully'
+            );
     }
+
 
     // Show submitted PRE observation
     public function show($responseID)
@@ -216,25 +287,44 @@ class PreObservationController extends Controller
         $teacherID = Auth::guard('teacher')->id();
         $observer = Observer::where('teacherID', $teacherID)->first();
 
-        abort_if(!$observer, 403, 'You are not registered as an observer.');
+        abort_if(!$observer, 403, 'You are not registered as an observer');
 
         $response = PreResponse::where('responseID', $responseID)
             ->where('observation_stage', 'PRE')
             ->where('status', 'Submitted')
             ->firstOrFail();
 
-        abort_if($response->observer_id != $observer->observer_id, 403, 'You are not allowed to view this response.');
+        abort_if(
+            $response->observer_id != $observer->observer_id,
+            403,
+            'You are not allowed to view this response'
+        );
 
-        $guru = GuruNew::with('school')->where('gn_id', $response->gn_id)->firstOrFail();
+        $guru = GuruNew::with('school')
+            ->where('gn_id', $response->gn_id)
+            ->firstOrFail();
 
         // Submitted response always shows its original version
         $form = $this->getForm($response->formID);
 
-        $scores = PreScore::where('responseID', $response->responseID)->pluck('score', 'criteriaID');
-        $sectionComments = PreSectionComment::where('responseID', $response->responseID)->pluck('comment', 'sectionID');
+        $scores = PreScore::where('responseID', $response->responseID)
+            ->pluck('score', 'criteriaID');
 
-        return view('pre-observation.view', compact('form', 'guru', 'response', 'scores', 'sectionComments'));
+        $sectionComments = PreSectionComment::where('responseID', $response->responseID)
+            ->pluck('comment', 'sectionID');
+
+        return view(
+            'pre-observation.view',
+            compact(
+                'form',
+                'guru',
+                'response',
+                'scores',
+                'sectionComments'
+            )
+        );
     }
+
 
     // Get current active PRE form
     private function getActiveForm()
@@ -247,10 +337,11 @@ class PreObservationController extends Controller
             ->orderByDesc('version')
             ->first();
 
-        abort_if(!$form, 404, 'No active Pre-Observation form found.');
+        abort_if(!$form, 404, 'No active Pre-Observation form found');
 
         return $form;
     }
+
 
     // Get exact PRE form version
     private function getForm($formID)
@@ -263,26 +354,48 @@ class PreObservationController extends Controller
             ->firstOrFail();
     }
 
+
     // Validate PRE form
     private function validateForm(Request $request, $form)
     {
         $isSubmit = $request->submit_action === 'Submitted';
 
         $rules = [
-            'class_name' => $isSubmit ? ['required', 'string', 'max:100'] : ['nullable', 'string', 'max:100'],
-            'subject_name' => $isSubmit ? ['required', 'string', 'max:100'] : ['nullable', 'string', 'max:100'],
-            'observation_date' => $isSubmit ? ['required', 'date'] : ['nullable', 'date'],
+            'class_name' => $isSubmit
+                ? ['required', 'string', 'max:100']
+                : ['nullable', 'string', 'max:100'],
+
+            'subject_name' => $isSubmit
+                ? ['required', 'string', 'max:100']
+                : ['nullable', 'string', 'max:100'],
+
+            'observation_date' => $isSubmit
+                ? ['required', 'date']
+                : ['nullable', 'date'],
+
             'other_comment' => ['nullable', 'string'],
             'submit_action' => ['required', 'in:Draft,Submitted'],
         ];
 
         foreach ($form->sections as $section) {
+
             foreach ($section->criteria as $criteria) {
+
                 $key = 'scores.' . $criteria->criteriaID;
 
                 $rules[$key] = $isSubmit
-                    ? ['required', 'integer', 'min:' . $form->min_score, 'max:' . $form->max_score]
-                    : ['nullable', 'integer', 'min:' . $form->min_score, 'max:' . $form->max_score];
+                    ? [
+                        'required',
+                        'integer',
+                        'min:' . $form->min_score,
+                        'max:' . $form->max_score,
+                    ]
+                    : [
+                        'nullable',
+                        'integer',
+                        'min:' . $form->min_score,
+                        'max:' . $form->max_score,
+                    ];
             }
 
             $rules['section_comments.' . $section->sectionID] = $isSubmit
@@ -292,6 +405,7 @@ class PreObservationController extends Controller
 
         $request->validate($rules);
     }
+
 
     // Calculate PRE result
     private function calculateResult(Request $request, $form)
@@ -308,8 +422,12 @@ class PreObservationController extends Controller
         $criteriaCount = 0;
 
         foreach ($form->sections as $section) {
+
             foreach ($section->criteria as $criteria) {
-                $score = (int) $request->input('scores.' . $criteria->criteriaID);
+
+                $score = (int) $request->input(
+                    'scores.' . $criteria->criteriaID
+                );
 
                 $totalScore += $score;
                 $criteriaCount++;
@@ -317,8 +435,9 @@ class PreObservationController extends Controller
         }
 
         $maxScore = $criteriaCount * $form->max_score;
-
-        $percentage = $maxScore > 0 ? round(($totalScore / $maxScore) * 100, 2) : 0;
+        $percentage = $maxScore > 0
+            ? round(($totalScore / $maxScore) * 100, 2)
+            : 0;
 
         if ($percentage < 40) {
             $level = 'Weak';
@@ -339,12 +458,17 @@ class PreObservationController extends Controller
         ];
     }
 
+
     // Save criteria scores
     private function saveScores(Request $request, $form, PreResponse $response)
     {
         foreach ($form->sections as $section) {
+
             foreach ($section->criteria as $criteria) {
-                $score = $request->input('scores.' . $criteria->criteriaID);
+
+                $score = $request->input(
+                    'scores.' . $criteria->criteriaID
+                );
 
                 if ($score !== null) {
                     PreScore::create([
@@ -357,11 +481,15 @@ class PreObservationController extends Controller
         }
     }
 
+
     // Save one comment per section
     private function saveSectionComments(Request $request, $form, PreResponse $response)
     {
         foreach ($form->sections as $section) {
-            $comment = $request->input('section_comments.' . $section->sectionID);
+
+            $comment = $request->input(
+                'section_comments.' . $section->sectionID
+            );
 
             if ($comment !== null && trim($comment) !== '') {
                 PreSectionComment::create([

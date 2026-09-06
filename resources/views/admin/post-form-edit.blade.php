@@ -9,7 +9,6 @@
     <div class="py-10 bg-gray-100 min-h-screen">
         <div class="max-w-7xl mx-auto px-6">
 
-            {{-- HEADER --}}
             <div class="relative bg-gradient-to-br from-slate-900 via-violet-950 to-purple-900 rounded-3xl px-8 py-6 shadow-xl overflow-hidden mb-8">
 
                 <div class="absolute right-0 top-0 translate-x-10 -translate-y-10 w-72 h-72 bg-purple-500/10 rounded-full blur-3xl"></div>
@@ -30,7 +29,6 @@
 
                     <div class="flex items-stretch gap-3">
 
-                        {{-- VERSION --}}
                         <div class="min-w-[110px] bg-white/10 border border-white/10 rounded-2xl px-5 py-3">
 
                             <p class="text-xs uppercase tracking-wider text-violet-200 font-semibold">
@@ -43,7 +41,7 @@
 
                         </div>
 
-                        {{-- USAGE --}}
+                        {{-- USED --}}
                         @if($formUsed)
 
                         <div class="bg-amber-400/10 border border-amber-300/20 rounded-2xl px-5 py-3 flex items-center gap-3">
@@ -126,21 +124,20 @@
 
             </div>
 
-            {{-- SUCCESS --}}
             @if(session('success'))
             <div class="mb-6 px-5 py-4 bg-green-100 border border-green-200 text-green-700 rounded-xl">
                 {{ session('success') }}
             </div>
             @endif
 
-            {{-- ERROR --}}
+
             @if(session('error'))
             <div class="mb-6 px-5 py-4 bg-red-100 border border-red-200 text-red-700 rounded-xl">
                 {{ session('error') }}
             </div>
             @endif
 
-            {{-- VALIDATION --}}
+
             @if($errors->any())
 
             <div class="mb-6 px-5 py-4 bg-red-100 border border-red-200 text-red-700 rounded-xl">
@@ -169,7 +166,7 @@
             });
             @endphp
 
-            {{-- FORM INFORMATION --}}
+            {{-- FORM INFO --}}
             <div class="bg-white rounded-3xl shadow-sm border border-gray-200 overflow-hidden mb-8">
 
                 <div class="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
@@ -211,7 +208,7 @@
                     <form
                         id="formInformation"
                         method="POST"
-                        action="{{ route('admin.post.form.update', $form) }}">
+                        action="{{ route('admin.post.form.update', $form->formID) }}">
 
                         @csrf
                         @method('PUT')
@@ -262,7 +259,6 @@
 
                 <div class="bg-white rounded-3xl shadow-sm border border-gray-200 overflow-hidden">
 
-                    {{-- SECTION HEADER --}}
                     <div class="bg-blue-900 px-6 py-4">
 
                         <div class="flex items-center justify-between gap-4">
@@ -333,7 +329,6 @@
 
                     </div>
 
-                    {{-- SECTION EDIT --}}
                     <div
                         id="section-edit-{{ $section->sectionID }}"
                         class="hidden p-5 bg-blue-50 border-b border-blue-100">
@@ -384,7 +379,7 @@
 
                     </div>
 
-                    {{-- FIELD TABLE --}}
+
                     <div class="overflow-x-auto">
 
                         <table class="w-full text-sm">
@@ -521,7 +516,7 @@
 
                                 </tr>
 
-                                {{-- FIELD EDIT --}}
+
                                 <tr
                                     id="field-edit-{{ $field->fieldID }}"
                                     class="hidden bg-slate-50">
@@ -537,7 +532,7 @@
 
                                             @if($formUsed)
 
-                                            {{-- USED VERSION --}}
+
                                             <div class="flex flex-col md:flex-row gap-4 items-end">
 
                                                 <div class="flex-1">
@@ -554,7 +549,7 @@
                                                         class="w-full rounded-xl border-gray-300">
 
                                                     <p class="text-xs text-amber-600 mt-2">
-                                                        Wording correction only.
+                                                        Wording correction only
                                                     </p>
 
                                                 </div>
@@ -571,7 +566,7 @@
 
                                             @else
 
-                                            {{-- UNUSED VERSION --}}
+
                                             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
 
                                                 <div class="md:col-span-2">
@@ -648,7 +643,7 @@
 
                                                 </div>
 
-                                                {{-- OPTIONS --}}
+
                                                 <div
                                                     id="edit-options-{{ $field->fieldID }}"
                                                     class="md:col-span-2 {{ in_array($field->field_type, ['checkbox', 'radio']) ? '' : 'hidden' }}">
@@ -759,7 +754,7 @@
 
                     </div>
 
-                    {{-- ADD FIELD --}}
+
                     @if(!$formUsed)
 
                     <div class="px-6 py-5 border-t border-gray-100">
@@ -845,7 +840,7 @@
 
                                     </div>
 
-                                    {{-- OPTIONS --}}
+
                                     <div
                                         id="add-options-{{ $section->sectionID }}"
                                         class="hidden md:col-span-2">
@@ -925,7 +920,7 @@
 
             </div>
 
-            {{-- ADD SECTION --}}
+
             @if(!$formUsed)
 
             <div class="bg-white rounded-3xl shadow-sm border border-gray-200 overflow-hidden mb-28">
@@ -995,7 +990,7 @@
         </div>
     </div>
 
-    {{-- STICKY ACTION --}}
+
     <div class="fixed bottom-4 left-0 right-0 z-40 px-6 pointer-events-none">
 
         <div class="max-w-7xl mx-auto">
@@ -1015,7 +1010,7 @@
                     <div class="flex items-center gap-3">
 
                         <a
-                            href="{{ route('admin.post.form.show', $form) }}"
+                            href="{{ route('admin.post.form.show', $form->formID) }}"
                             class="px-5 py-2.5 bg-sky-100 hover:bg-sky-200 text-sky-800 font-semibold text-sm rounded-xl transition">
 
                             Preview

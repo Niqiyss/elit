@@ -11,8 +11,6 @@
 
         <div class="max-w-7xl mx-auto px-6">
 
-
-            {{-- Header --}}
             <div class="relative bg-gradient-to-br from-slate-900 via-violet-950 to-purple-900 rounded-3xl p-8 shadow-xl overflow-hidden mb-8">
 
                 <div class="absolute right-0 top-0 translate-x-10 -translate-y-10 w-72 h-72 bg-purple-500/10 rounded-full blur-3xl"></div>
@@ -32,7 +30,6 @@
                     </div>
 
 
-                    {{-- Active Teachers --}}
                     <div class="bg-white/10 backdrop-blur-sm border border-white/10 rounded-2xl px-6 py-4 min-w-[150px]">
 
                         <p class="text-sm text-white">
@@ -50,12 +47,8 @@
             </div>
 
 
-
-            {{-- Result List --}}
             <div class="bg-white rounded-3xl shadow-lg overflow-hidden">
 
-
-                {{-- Search & Filter --}}
                 <div class="px-8 py-6 border-b border-gray-100">
 
                     <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
@@ -74,8 +67,6 @@
                             action="{{ route('principal.result') }}"
                             class="flex flex-col sm:flex-row items-center gap-3">
 
-
-                            {{-- Search --}}
                             <div class="relative w-full sm:w-auto">
 
                                 <svg
@@ -103,8 +94,6 @@
                             </div>
 
 
-
-                            {{-- Status --}}
                             <select
                                 name="status"
                                 onchange="this.form.submit()"
@@ -143,8 +132,6 @@
                             </select>
 
 
-
-                            {{-- Search Button --}}
                             <button
                                 type="submit"
                                 class="w-full sm:w-auto px-4 py-2 bg-blue-700 hover:bg-blue-800 text-white text-sm font-semibold rounded-xl shadow-sm transition">
@@ -154,7 +141,6 @@
                             </button>
 
 
-                            {{-- Clear --}}
                             @if(request('search') || (request('status') && request('status') !== 'all'))
 
                             <a
@@ -174,8 +160,6 @@
                 </div>
 
 
-
-                {{-- Table --}}
                 <div class="overflow-x-auto">
 
                     <table class="w-full text-sm">
@@ -218,7 +202,6 @@
                         </thead>
 
 
-
                         <tbody class="divide-y divide-gray-100">
 
                             @forelse($teachers as $teacher)
@@ -226,7 +209,6 @@
                             <tr class="hover:bg-violet-50/50 transition">
 
 
-                                {{-- Number --}}
                                 <td class="px-6 py-5 text-gray-600">
 
                                     {{ $teachers->firstItem() + $loop->index }}
@@ -234,22 +216,16 @@
                                 </td>
 
 
-
-                                {{-- Teacher --}}
                                 <td class="px-6 py-5">
 
                                     <div class="flex items-center gap-3">
 
                                         <div class="w-10 h-10 rounded-full border-2 border-blue-500 flex items-center justify-center text-blue-700 font-bold shrink-0">
-
                                             {{ strtoupper(substr($teacher->gn_name, 0, 1)) }}
-
                                         </div>
 
                                         <p class="font-bold text-gray-800">
-
                                             {{ $teacher->gn_name }}
-
                                         </p>
 
                                     </div>
@@ -257,8 +233,6 @@
                                 </td>
 
 
-
-                                {{-- PRE --}}
                                 <td class="px-6 py-5">
 
                                     <div class="w-28">
@@ -266,21 +240,16 @@
                                         <div class="flex items-center justify-between mb-2">
 
                                             <span class="text-sm font-semibold text-gray-700">
-
                                                 {{ $teacher->pre_completed }}/{{ $teacher->pre_total }}
-
                                             </span>
 
                                             <span class="text-xs font-medium text-gray-500">
-
                                                 {{ $teacher->pre_progress }}%
-
                                             </span>
 
                                         </div>
 
 
-                                        {{-- PRE --}}
                                         <div class="w-full h-2 bg-gray-200 rounded-full overflow-hidden">
                                             <div
                                                 class="h-full bg-blue-600 rounded-full"
@@ -293,8 +262,6 @@
                                 </td>
 
 
-
-                                {{-- EXTERNAL --}}
                                 <td class="px-6 py-5">
 
                                     <div class="w-28">
@@ -315,8 +282,6 @@
 
                                         </div>
 
-
-                                        {{-- EXTERNAL --}}
                                         <div class="w-full h-2 bg-gray-200 rounded-full overflow-hidden">
                                             <div
                                                 class="h-full bg-blue-600 rounded-full"
@@ -329,8 +294,6 @@
                                 </td>
 
 
-
-                                {{-- POST --}}
                                 <td class="px-6 py-5">
 
                                     <div class="w-28">
@@ -338,21 +301,16 @@
                                         <div class="flex items-center justify-between mb-2">
 
                                             <span class="text-sm font-semibold text-gray-700">
-
                                                 {{ $teacher->post_completed }}/{{ $teacher->post_total }}
-
                                             </span>
 
                                             <span class="text-xs font-medium text-gray-500">
-
                                                 {{ $teacher->post_progress }}%
-
                                             </span>
 
                                         </div>
 
 
-                                        {{-- POST --}}
                                         <div class="w-full h-2 bg-gray-200 rounded-full overflow-hidden">
                                             <div
                                                 class="h-full bg-blue-600 rounded-full"
@@ -365,8 +323,6 @@
                                 </td>
 
 
-
-                                {{-- Overall Status --}}
                                 <td class="px-6 py-5 text-center">
 
                                     @if($teacher->evaluation_status === 'Completed')
@@ -401,16 +357,12 @@
                                 </td>
 
 
-
-                                {{-- Action --}}
                                 <td class="px-6 py-5 text-center">
 
                                     <a
                                         href="{{ route('principal.result.show', $teacher->gn_id) }}"
                                         class="inline-flex items-center justify-center px-4 py-2 bg-blue-700 hover:bg-blue-800 text-white text-sm font-semibold rounded-lg shadow-sm transition">
-
                                         View
-
                                     </a>
 
                                 </td>
@@ -425,9 +377,7 @@
                                 <td
                                     colspan="7"
                                     class="text-center py-12 text-gray-500">
-
                                     No evaluation results found
-
                                 </td>
 
                             </tr>
@@ -441,8 +391,6 @@
                 </div>
 
 
-
-                {{-- Pagination --}}
                 @if($teachers->hasPages())
 
                 <div class="px-8 py-6 border-t border-gray-100">

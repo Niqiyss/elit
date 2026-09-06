@@ -4,7 +4,6 @@
 
         <div class="max-w-7xl mx-auto px-6">
 
-            {{-- HEADER --}}
             <div class="relative bg-gradient-to-br from-slate-900 via-violet-950 to-purple-900 rounded-3xl p-8 shadow-xl overflow-hidden mb-8">
 
                 <div class="absolute right-0 top-0 translate-x-10 -translate-y-10 w-72 h-72 bg-purple-500/10 rounded-full blur-3xl"></div>
@@ -39,29 +38,23 @@
 
             </div>
 
-
-            {{-- STATISTIC CARDS --}}
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
 
-                {{-- TOTAL --}}
                 <div class="bg-white rounded-2xl shadow-sm border border-gray-200 px-5 py-4">
                     <p class="text-sm font-semibold text-gray-900">Total Teachers</p>
                     <p class="text-2xl font-bold text-gray-900 mt-1">{{ $totalTeachers }}</p>
                 </div>
 
-                {{-- ACTIVE --}}
                 <div class="bg-white rounded-2xl shadow-sm border border-gray-200 px-5 py-4">
                     <p class="text-sm font-semibold text-gray-900">Active</p>
                     <p class="text-2xl font-bold text-gray-900 mt-1">{{ $activeTeachers }}</p>
                 </div>
 
-                {{-- INACTIVE --}}
                 <div class="bg-white rounded-2xl shadow-sm border border-gray-200 px-5 py-4">
                     <p class="text-sm font-semibold text-gray-900">Inactive</p>
                     <p class="text-2xl font-bold text-gray-900 mt-1">{{ $inactiveTeachers }}</p>
                 </div>
 
-                {{-- COMPLETE --}}
                 <div class="bg-white rounded-2xl shadow-sm border border-gray-200 px-5 py-4">
                     <p class="text-sm font-semibold text-gray-900">Complete</p>
                     <p class="text-2xl font-bold text-gray-900 mt-1">{{ $completeTeachers }}</p>
@@ -70,7 +63,6 @@
             </div>
 
 
-            {{-- RECENT NEW TEACHERS --}}
             <div class="bg-white rounded-3xl shadow-lg overflow-hidden">
 
                 <div class="px-8 py-6 border-b border-gray-100 flex items-center justify-between gap-4">
@@ -88,7 +80,6 @@
                     </div>
 
 
-                    {{-- VIEW ALL BUTTON --}}
                     <a
                         href="{{ route('hr.gurunew.index') }}"
                         class="inline-flex items-center justify-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold rounded-lg shadow-sm transition">
@@ -133,7 +124,6 @@
 
                             <tr class="hover:bg-violet-50/50 transition">
 
-                                {{-- TEACHER --}}
                                 <td class="px-6 py-5">
 
                                     <div class="flex items-center gap-4">
@@ -159,13 +149,11 @@
                                 </td>
 
 
-                                {{-- SCHOOL --}}
                                 <td class="px-6 py-5 text-gray-600">
                                     {{ $guru->school?->school_name ?? '-' }}
                                 </td>
 
 
-                                {{-- APPOINTED DATE --}}
                                 <td class="px-6 py-5 text-gray-600">
 
                                     @if($guru->appointed_date)
@@ -173,15 +161,12 @@
                                     {{ \Carbon\Carbon::parse($guru->appointed_date)->format('d M Y') }}
 
                                     @else
-
                                     -
-
                                     @endif
 
                                 </td>
 
 
-                                {{-- STATUS --}}
                                 <td class="px-6 py-5">
 
                                     @if($guru->current_status === 'Active')
